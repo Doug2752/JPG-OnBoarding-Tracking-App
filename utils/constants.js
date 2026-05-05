@@ -2,8 +2,8 @@
 
 // ── USERS (FLAG 2 — fill passwords from source monolith) ──────
 export const USERS = {
-  Doug: '', // FILL FROM SOURCE
-  Test: ''  // FILL FROM SOURCE
+  Doug: '', // JPG2026
+  Test: ''  // JPG2026
 };
 
 // ── LOGO PATHS ────────────────────────────────────────────────
