@@ -1,110 +1,17 @@
 import React, { useState } from 'react';
 
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100vh',
-    backgroundColor: '#000000',
-    padding: '20px',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-  },
-  logo: {
-    marginBottom: '24px',
-  },
-  headerText: {
-    color: '#B8912A',
-    fontSize: '13px',
-    fontWeight: '600',
-    letterSpacing: '2px',
-    margin: '0 0 28px 0',
-    textAlign: 'center',
-  },
-  appTitle: {
-    color: '#B8912A',
-    fontSize: '26px',
-    fontWeight: '700',
-    letterSpacing: '1px',
-    margin: '0 0 36px 0',
-    textAlign: 'center',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    maxWidth: '320px',
-    gap: '14px',
-  },
-  input: {
-    backgroundColor: '#1a1a1a',
-    border: '1px solid #333333',
-    color: '#e8e8e8',
-    padding: '13px 15px',
-    fontSize: '14px',
-    borderRadius: '4px',
-    fontFamily: 'inherit',
-    outline: 'none',
-  },
-  checkboxWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    margin: '4px 0',
-  },
-  checkboxInput: {
-    width: '16px',
-    height: '16px',
-    cursor: 'pointer',
-    accentColor: '#B8912A',
-  },
-  checkboxLabel: {
-    color: '#9a9a9a',
-    fontSize: '13px',
-    cursor: 'pointer',
-    userSelect: 'none',
-  },
-  errorMsg: {
-    color: '#ff6b6b',
-    fontSize: '12px',
-    textAlign: 'center',
-  },
-  button: {
-    backgroundColor: '#B8912A',
-    color: '#000000',
-    border: 'none',
-    padding: '14px',
-    fontSize: '14px',
-    fontWeight: '700',
-    letterSpacing: '1px',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    width: '100%',
-    marginTop: '8px',
-    fontFamily: 'inherit',
-  },
-  footer: {
-    position: 'fixed',
-    bottom: '20px',
-    color: '#9a9a9a',
-    fontSize: '11px',
-    letterSpacing: '1px',
-    textAlign: 'center',
-    width: '100%',
-  },
-};
+const VALID_CREDENTIALS = { Doug: 'JPG2026' };
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const [error, setError] = useState('');
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!username.trim() || !password.trim()) {
-      setError('Please enter both username and password.');
+    const expected = VALID_CREDENTIALS[username.trim()];
+    if (!expected || password !== expected) {
+      setError('Invalid username or password.');
       return;
     }
     setError('');
@@ -112,57 +19,92 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div style={styles.container}>
+    <div style={{
+      minHeight: '100vh',
+      background: '#B8860B',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'Arial, sans-serif',
+    }}>
 
-      <img
-        src="jpglogo.png"
-        alt="Jones Performance Group"
-        style={{ width: '280px', marginBottom: '20px' }}
-      />
+      <div style={{
+        background: '#ffffff',
+        borderRadius: '12px',
+        width: '420px',
+        overflow: 'hidden',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+        border: '2px solid #000000',
+      }}>
 
-      <div style={styles.appTitle}>14 DAY TRACKING</div>
+        <div style={{ padding: '32px 40px 16px 40px' }}>
 
-      <form style={styles.form} onSubmit={handleSubmit}>
-
-        <input
-          style={styles.input}
-          type="text"
-          placeholder="Performer"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
-          autoComplete="username"
-        />
-
-        <input
-          style={styles.input}
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          autoComplete="current-password"
-        />
-
-        <div style={styles.checkboxWrapper}>
-          <input
-            style={styles.checkboxInput}
-            type="checkbox"
-            id="stayLoggedIn"
-            checked={stayLoggedIn}
-            onChange={e => setStayLoggedIn(e.target.checked)}
+          <img
+            src="/jpglogo.png"
+            style={{ width: '260px', display: 'block', marginLeft: 'auto', marginRight: 'auto', marginBottom: '0px', position: 'relative', left: '-14px' }}
           />
-          <label style={styles.checkboxLabel} htmlFor="stayLoggedIn">
-            Stay logged in for 30 days
-          </label>
+
+          <div style={{ fontSize: '42px', fontWeight: 900, letterSpacing: '0.08em', color: '#000000', textAlign: 'center', margin: 0, padding: 0, marginTop: '0px', marginLeft: '-28px' }}>
+            OBT
+          </div>
+
+          <div style={{ fontSize: '13px', letterSpacing: '0.15em', color: '#555555', textAlign: 'center', marginTop: '4px', marginBottom: '20px', marginLeft: '-28px' }}>
+            ONBOARDING · 14-DAY TRACKING LOG
+          </div>
+
+          <form onSubmit={handleSubmit}>
+
+            <label style={{ fontSize: '11px', fontWeight: 'bold', letterSpacing: '0.1em', color: '#000000', marginBottom: '4px', display: 'block' }}>
+              USER
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              autoComplete="username"
+              autoFocus
+              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #CCCCCC', background: '#F0F0F0', color: '#2A2A2A', fontSize: '14px', boxSizing: 'border-box' }}
+            />
+
+            <label style={{ fontSize: '11px', fontWeight: 'bold', letterSpacing: '0.1em', color: '#000000', marginTop: '16px', marginBottom: '4px', display: 'block' }}>
+              PASSWORD
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit(e)}
+              autoComplete="current-password"
+              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #CCCCCC', background: '#F0F0F0', color: '#2A2A2A', fontSize: '14px', boxSizing: 'border-box' }}
+            />
+
+            {error && (
+              <div style={{ color: '#B02020', fontSize: '12px', textAlign: 'center', marginTop: '10px' }}>
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              style={{ width: '100%', padding: '12px', background: '#B8860B', color: '#000000', fontWeight: 'bold', fontSize: '14px', letterSpacing: '0.1em', border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '20px' }}
+            >
+              ENTER
+            </button>
+
+          </form>
+
+          <div style={{ marginTop: '12px', textAlign: 'center', lineHeight: 1.8, fontSize: '11px', color: '#000000', letterSpacing: '0.08em' }}>
+            <div>JONES PERFORMANCE GROUP LLC</div>
+            <div>ACCESS BY AUTHORIZATION ONLY</div>
+          </div>
+
         </div>
 
-        {error && <div style={styles.errorMsg}>{error}</div>}
+        <div style={{ background: '#FFFFFF', borderTop: '1px solid #EEEEEE', height: '28px', lineHeight: '28px', textAlign: 'center', fontSize: '9px', color: '#888888', letterSpacing: '0.05em' }}>
+          © 2026 Jones Performance Group LLC · OBT · Confidential · All Rights Reserved
+        </div>
 
-        <button style={styles.button} type="submit">ENTER</button>
-
-      </form>
-
-      <div style={styles.footer}>JONES PERFORMANCE GROUP LLC — CONFIDENTIAL</div>
-
+      </div>
     </div>
   );
 }
