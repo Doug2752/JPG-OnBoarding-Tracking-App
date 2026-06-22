@@ -25,7 +25,9 @@ const TABS = [
 ];
 
 export default function OBApp() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(
+    () => new URLSearchParams(window.location.search).get('hub_user') ?? null
+  );
   const [section, setSection] = useState('info');
   const [showInstr, setShowInstr] = useState(false);
   const [startDate, setStartDate] = useState('');
