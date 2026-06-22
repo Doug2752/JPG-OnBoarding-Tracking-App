@@ -83,7 +83,7 @@ export default function OBApp() {
           <div style={S.pageTitle}>14-DAY TRACKING</div>
           <div style={S.pageSub}>Initial Onboarding Log · Baseline Assessment · JPG-TK-001</div>
         </div>
-        <button style={S.instrBtn} onClick={() => setShowInstr(true)}>? Instructions</button>
+        <button style={S.instrBtn} onClick={() => setShowInstr(true)}>Set-Up and Instructions</button>
       </div>
 
       {/* Tab bar */}

@@ -61,7 +61,7 @@ export default function InstructionsPanel({ onClose }) {
       <div style={{ background: '#fff', borderRadius: '8px', maxWidth: '700px', margin: '0 auto', padding: '26px 22px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '2px solid ' + GOLD, paddingBottom: '10px' }}>
           <div>
-            <div style={{ fontSize: '15px', fontWeight: '700', color: DARK, letterSpacing: '2px' }}>INSTRUCTIONS</div>
+            <div style={{ fontSize: '15px', fontWeight: '700', color: DARK, letterSpacing: '2px' }}>Set-Up and Instructions</div>
             <div style={{ fontSize: '10px', color: '#888', letterSpacing: '1px', marginTop: '2px' }}>14-Day Initial Onboarding Tracking Log</div>
           </div>
           <button
