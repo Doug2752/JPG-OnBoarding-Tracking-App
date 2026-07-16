@@ -13,29 +13,6 @@ export const S = {
     fontFamily: "'Gill Sans MT','Gill Sans',Calibri,sans-serif", color: DARK
   },
 
-  // ── Top nav ─────────────────────────────────────────────────
-  topNav: {
-    background: DARK, padding: '6px 12px', display: 'flex',
-    alignItems: 'center', gap: '10px', position: 'sticky', top: 0, zIndex: 100, minHeight: '48px'
-  },
-  navLogoWrap: { height: '36px', display: 'flex', alignItems: 'center' },
-  navLogo:     { height: '34px', width: 'auto' },
-  navCenter:   { color: GOLD, fontSize: '11px', fontWeight: '700', letterSpacing: '1px', flex: 1, textAlign: 'center' },
-  navRight:    { display: 'flex', alignItems: 'center', gap: '8px' },
-  navUser:     { color: '#aaa', fontSize: '11px' },
-  navLogout:   { background: 'none', border: '1px solid #555', color: '#aaa', fontSize: '10px', cursor: 'pointer', padding: '3px 7px', borderRadius: '3px', fontFamily: 'inherit' },
-
-  // ── Page header ─────────────────────────────────────────────
-  pageHeader: { background: '#fff', borderBottom: '2px solid ' + GOLD, padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-  pageTitle:  { fontSize: '18px', fontWeight: '700', color: DARK, letterSpacing: '2px' },
-  pageSub:    { fontSize: '10px', color: '#6A6A6A', letterSpacing: '1px', marginTop: '2px' },
-  instrBtn:   { background: DARK, border: '1px solid ' + GOLD, borderRadius: '4px', padding: '5px 12px', fontSize: '10px', fontWeight: '700', color: GOLD, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px', whiteSpace: 'nowrap' },
-
-  // ── Tab bar ─────────────────────────────────────────────────
-  tabBar:   { background: DARK, padding: '0 10px', display: 'flex', overflowX: 'auto', WebkitOverflowScrolling: 'touch', gap: '4px', alignItems: 'center', height: '40px' },
-  tab:      { padding: '5px 10px', fontSize: '10px', fontWeight: '700', color: GOLD, border: '1px solid #555', background: CHARCOAL, cursor: 'pointer', borderRadius: '4px', whiteSpace: 'nowrap', fontFamily: 'inherit', letterSpacing: '0.5px', flexShrink: 0 },
-  tabActive: { background: GOLD, color: '#fff', border: '1px solid ' + GOLD_DARK },
-
   // ── Content ─────────────────────────────────────────────────
   content: { maxWidth: '900px', margin: '0 auto', padding: '18px 12px 90px' },
 

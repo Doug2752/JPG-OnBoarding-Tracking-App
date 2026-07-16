@@ -11,7 +11,7 @@ export const LOGO_LIGHT = 'jpglogo.png';
 export const LOGO_DARK  = 'jpglogo.png';
 
 // ── COLORS ────────────────────────────────────────────────────
-export const GOLD        = '#B8912A';
+export const GOLD        = '#B8860B';
 export const GOLD_DARK   = '#7A6010';
 export const GOLD_LIGHT  = '#FDF3D0';
 export const BG          = '#F5F5F2';   // FIX: was '#B8860B' (gold) — correct to light background

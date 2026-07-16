@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DAYS, BORDER } from '../utils/constants.js';
+import { DAYS, BORDER, GOLD } from '../utils/constants.js';
 import { formatDayDate } from '../utils/date.js';
 import { S } from '../utils/styles.js';
 import { DayBtn, SummaryBtn, SaveNote } from './Shared';
@@ -115,7 +115,7 @@ export default function NutritionSection({ storage, startDate }) {
       <div style={{ ...S.blockCharcoal, borderRadius: '4px' }}>14-DAY NUTRITION SUMMARY</div>
       <div style={{ background: '#f8f8f6', border: '1px solid ' + BORDER, borderTop: 'none', borderRadius: '0 0 4px 4px', padding: '16px' }}>
         <div style={S.grid2}>
-          <div style={{ background: '#B8912A', borderRadius: '6px', padding: '14px', textAlign: 'center' }}>
+          <div style={{ background: GOLD, borderRadius: '6px', padding: '14px', textAlign: 'center' }}>
             <div style={{ fontSize: '28px', fontWeight: '700', color: '#fff' }}>{sumData.totalCal.toLocaleString()}</div>
             <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.8)', letterSpacing: '1px', marginTop: '2px' }}>ESTIMATED TOTAL CALORIES</div>
           </div>
