@@ -16,17 +16,6 @@ import SummaryResults from '../components/SummaryResults.jsx';
 import Header from '../components/Header.jsx';
 import BrandBar from '../components/BrandBar.jsx';
 
-const TABS = [
-  { id: 'info',      label: 'Client Info' },
-  { id: 'nutrition', label: '01 — Nutrition' },
-  { id: 'alcohol',   label: '02 — Alcohol' },
-  { id: 'fitness',   label: '03 — Fitness' },
-  { id: 'sleep',     label: '04 — Sleep' },
-  { id: 'timelife',  label: '05 — Time & Life' },
-  { id: 'reflect',   label: 'Reflect' },
-  { id: 'results',   label: 'Summary Results' }
-];
-
 export default function OBApp() {
   const [user, setUser] = useState(
     () => new URLSearchParams(window.location.search).get('hub_user') ?? null
