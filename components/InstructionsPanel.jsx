@@ -7,7 +7,7 @@ export default function InstructionsPanel({ onClose }) {
     {
       title: 'Note from Doug',
       color: GOLD,
-      text: 'Welcome to Jones Performance Group. The fact that you are here means you have made a decision that most people never make — a decision to improve yourself and pursue something better. That decision matters. Congratulations on taking it.\n\nYou are now entering the first tier of the Jones Performance Group system. This path will require work, patience, consistency, and discipline. It will not be easy. But it will yield tangible, real-world outcomes that you can see and feel. Jones Performance Group is focused on your journey and, ultimately, your results. Those are the metrics that govern our success — yours and ours together. Once you complete this baseline tier, you will have the opportunity to move forward into your individualized plan, built specifically for you.\n\nLet\'s get to work.\n\n— Doug Jones',
+      text: 'Welcome to Jones Performance Group. The fact that you are here means you have made a decision that most people never make — a decision to improve yourself and pursue something better. That decision matters. Congratulations on taking it.\n\nYou are now entering the first tier of the Jones Performance Group system. This path will require work, patience, consistency, and discipline. It will not be easy. But it will yield tangible, real-world outcomes that you can see and feel. Jones Performance Group is focused on your journey and, ultimately, your results. Those are the metrics that govern our success — yours and ours together. Once you complete this baseline tier, you will have the opportunity to move forward into your individualized plan, built specifically for you.\n\nLet\'s get to work.\n\n— Doug',
     },
     {
       title: 'Overview',
@@ -27,7 +27,7 @@ export default function InstructionsPanel({ onClose }) {
     {
       title: 'Section 02 — Alcohol',
       color: GOLD,
-      text: 'Track all alcohol consumed each day. Beer is counted in 12-oz servings. Mixed drinks counted individually. Use Other / None for wine, spirits, or anything that does not fit the first two. If no alcohol was consumed, write None in that field. Do not leave any day blank.\n\nYears ago, Doug Jones consumed alcohol regularly. Over time the cumulative effects became impossible to ignore: poor sleep, low energy, declining fitness. He made a decision to change. What began as a reduction eventually became full abstinence. Doug credits eliminating alcohol as one of the primary catalysts in a transformation that touched every area of his life. Being honest about your alcohol consumption here is not about judgment. It is about giving yourself — and your coach — an accurate picture of one of the most impactful variables in your performance.\n\nJones Performance Group is not a mandatory alcohol-free program. Many clients have made meaningful progress while still consuming alcohol at times. What matters here is honesty.',
+      text: 'Track all alcohol consumed each day. Beer is counted in 12-oz servings. Mixed drinks counted individually. Use Other / None for wine, spirits, or anything that does not fit the first two. If no alcohol was consumed, write None in that field. Do not leave any day blank.\n\nYears ago, Doug consumed alcohol regularly. Over time the cumulative effects became impossible to ignore: poor sleep, low energy, declining fitness. He made a decision to change. What began as a reduction eventually became full abstinence. Doug credits eliminating alcohol as one of the primary catalysts in a transformation that touched every area of his life. Being honest about your alcohol consumption here is not about judgment. It is about giving yourself — and your coach — an accurate picture of one of the most impactful variables in your performance.\n\nJones Performance Group is not a mandatory alcohol-free program. Many clients have made meaningful progress while still consuming alcohol at times. What matters here is honesty.',
     },
     {
       title: 'Section 03 — Fitness & Activity',
@@ -57,25 +57,32 @@ export default function InstructionsPanel({ onClose }) {
   ];
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.75)', zIndex: 200, overflowY: 'auto', padding: '20px 12px' }}>
-      <div style={{ background: '#fff', borderRadius: '8px', maxWidth: '700px', margin: '0 auto', padding: '26px 22px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '2px solid ' + GOLD, paddingBottom: '10px' }}>
-          <div>
-            <div style={{ fontSize: '15px', fontWeight: '700', color: DARK, letterSpacing: '2px' }}>Set-Up and Instructions</div>
-            <div style={{ fontSize: '10px', color: '#888', letterSpacing: '1px', marginTop: '2px' }}>14-Day Initial Onboarding Tracking Log</div>
-          </div>
-          <button
-            onClick={onClose}
-            style={{ background: DARK, border: 'none', color: '#fff', fontSize: '16px', cursor: 'pointer', padding: '4px 10px', borderRadius: '4px' }}
-          >
-            ✕
-          </button>
-        </div>
+    <div style={{ background: '#E0E0E0', border: `2px solid ${GOLD}`,
+      borderRadius: 8, padding: '18px 20px', marginBottom: 14,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.08)', position: 'relative',
+      maxWidth: 700, margin: '20px auto', overflowY: 'auto' }}>
+      <div style={{ fontWeight: 800, fontSize: 13, color: DARK,
+        textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12,
+        paddingBottom: 8, borderBottom: `2px solid ${GOLD}` }}>
+        OBT — Set-Up and Instructions
+      </div>
+      <button
+        onClick={onClose}
+        style={{ position: 'absolute', top: 14, right: 16,
+          background: 'transparent', border: 'none', fontSize: 16,
+          cursor: 'pointer', color: DARK, fontWeight: 700,
+          lineHeight: 1, padding: 0 }}
+        aria-label="Close"
+      >✕</button>
 
         {sections.map(({ title, color, text }) => (
           <div key={title} style={{ marginBottom: '18px' }}>
-            <div style={{ fontSize: '11px', fontWeight: '700', color, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px', paddingBottom: '3px', borderBottom: '1px solid ' + BORDER }}>
-              {title}
+            <div style={{ display: 'flex', alignItems: 'flex-start',
+              marginBottom: 5 }}>
+              <span style={{ color: GOLD, fontWeight: 700,
+                minWidth: 14, flexShrink: 0 }}>•</span>
+              <div style={{ fontSize: 13, fontWeight: 800,
+                color: DARK, marginBottom: 3 }}>{title}</div>
             </div>
             {text.split('\n\n').map((p, i) => (
               <p key={i} style={{ fontSize: '12px', color: MID, lineHeight: '1.75', marginBottom: '6px' }}>{p}</p>
@@ -83,13 +90,6 @@ export default function InstructionsPanel({ onClose }) {
           </div>
         ))}
 
-        <button
-          onClick={onClose}
-          style={{ width: '100%', padding: '12px', background: GOLD, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px', marginTop: '6px' }}
-        >
-          CLOSE INSTRUCTIONS
-        </button>
-      </div>
     </div>
   );
 }
