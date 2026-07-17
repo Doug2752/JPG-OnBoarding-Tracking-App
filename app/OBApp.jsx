@@ -87,8 +87,6 @@ export default function OBApp() {
 
   return (
     <div style={S.app}>
-{showInstr && <InstructionsPanel onClose={() => setShowInstr(false)} />}
-
       <Header
         section={section}
         setSection={setSection}
@@ -159,6 +157,10 @@ export default function OBApp() {
           >{t.label}</button>
         ))}
       </div>
+
+      {showInstr && (
+        <InstructionsPanel onClose={() => setShowInstr(false)} />
+      )}
 
       {/* Content */}
       <div style={S.content}>

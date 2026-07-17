@@ -58,11 +58,11 @@ export default function InstructionsPanel({ onClose }) {
 
   return (
     <div style={{ background: '#E0E0E0', border: `2px solid ${GOLD}`,
-      borderRadius: 8, padding: '18px 20px', marginBottom: 14,
-      boxShadow: '0 2px 8px rgba(0,0,0,0.08)', position: 'relative',
-      maxWidth: 700, margin: '20px auto', overflowY: 'auto' }}>
+        borderRadius: 8, padding: '18px 20px', marginBottom: 14,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)', position: 'relative',
+        maxWidth: 700, margin: '0 auto', marginTop: 12 }}>
       <div style={{ fontWeight: 800, fontSize: 13, color: DARK,
-        textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12,
+        textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 20,
         paddingBottom: 8, borderBottom: `2px solid ${GOLD}` }}>
         OBT — Set-Up and Instructions
       </div>
@@ -76,7 +76,7 @@ export default function InstructionsPanel({ onClose }) {
       >✕</button>
 
         {sections.map(({ title, color, text }) => (
-          <div key={title} style={{ marginBottom: '18px' }}>
+          <div key={title} style={{ marginBottom: '18px', marginTop: 12 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start',
               marginBottom: 5 }}>
               <span style={{ color: GOLD, fontWeight: 700,
