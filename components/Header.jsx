@@ -1,9 +1,23 @@
 import React from 'react';
-import { GOLD } from '../utils/constants';
+import { GOLD, GOLD_LIGHT } from '../utils/constants';
+
+const gbtn = (extra = {}) => ({
+  padding: '8px 18px',
+  borderRadius: 5,
+  border: '1.5px solid #000',
+  cursor: 'pointer',
+  fontSize: 12,
+  fontWeight: 700,
+  background: GOLD_LIGHT,
+  color: '#000',
+  letterSpacing: 0.5,
+  whiteSpace: 'nowrap',
+  ...extra,
+});
 
 export default function Header({
-  onInstructions, showInstr,
-  onLogout, firstName,
+  onInstructions, showInstr, onLogout, firstName,
+  view, setView, daysComplete = 0,
 }) {
   return (
     <div style={{
@@ -11,7 +25,7 @@ export default function Header({
       borderBottom: `2px solid ${GOLD}`,
       padding: '0 20px',
       display: 'flex',
-      justifyContent: 'flex-end',
+      justifyContent: 'space-between',
       alignItems: 'center',
       position: 'sticky',
       top: 0,
@@ -19,6 +33,42 @@ export default function Header({
       boxShadow: '0 2px 8px rgba(0,0,0,0.6)',
       height: 52,
     }}>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
+          onClick={() => setView('today')}
+          style={gbtn({
+            background: view === 'today' ? GOLD : '#333',
+            color: '#fff',
+            border: 'none',
+            fontSize: 12,
+          })}
+        >Today</button>
+        <button
+          onClick={() => setView('archive')}
+          style={gbtn({
+            background: view === 'archive' ? GOLD : '#333',
+            color: '#fff',
+            border: 'none',
+            fontSize: 12,
+          })}
+        >Archive</button>
+      </div>
+
+      <div style={{
+        background: '#333',
+        color: '#fff',
+        borderRadius: 6,
+        padding: '5px 14px',
+        fontSize: 12,
+        fontWeight: 700,
+        letterSpacing: 0.3,
+        whiteSpace: 'nowrap',
+        marginLeft: 120,
+        marginRight: 16,
+      }}>
+        {daysComplete} of 14 days complete
+      </div>
+
       <div style={{
         display: 'flex',
         alignItems: 'center',

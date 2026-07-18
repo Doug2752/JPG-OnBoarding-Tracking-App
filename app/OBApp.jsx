@@ -15,12 +15,14 @@ import ReflectSection from '../components/ReflectSection.jsx';
 import SummaryResults from '../components/SummaryResults.jsx';
 import Header from '../components/Header.jsx';
 import BrandBar from '../components/BrandBar.jsx';
+import ArchiveView from '../components/ArchiveView';
 
 export default function OBApp() {
   const [user, setUser] = useState(
     () => new URLSearchParams(window.location.search).get('hub_user') ?? null
   );
   const [section, setSection] = useState('info');
+  const [view, setView] = useState('today');
   const [showInstr, setShowInstr] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [dateOpen, setDateOpen] = useState(false);
@@ -62,6 +64,18 @@ export default function OBApp() {
 
   if (!user) return <Login onLogin={setUser} />;
 
+  if (view === 'archive') {
+    return (
+      <ArchiveView
+        view={view}
+        setView={setView}
+        onLogout={() => setUser(null)}
+        firstName={user}
+        dayCompleteDates={[]}
+      />
+    );
+  }
+
   function renderSection() {
     if (section === 'info')      return <ClientInfo storage={storage} />;
     if (section === 'nutrition') return <NutritionSection storage={storage} startDate={startDate} />;
@@ -84,6 +98,9 @@ export default function OBApp() {
         onLogout={() => setUser(null)}
         firstName={user}
         streak={0}
+        view={view}
+        setView={setView}
+        daysComplete={0}
       />
 
       <BrandBar
