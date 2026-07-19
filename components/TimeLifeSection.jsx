@@ -34,30 +34,14 @@ export default function TimeLifeSection({
 
   const dd = dayData.timelife || {
     workHours: '', nonNegList: [], _nonNegPending: '',
-    _nonNegDetail: '', screenSocial: '', screenOther: '',
+    screenSocial: '', screenOther: '',
     familyTimeNone: false, familyTimeHrs: '', familyTimeMins: '',
     pitHrs: '', pitMins: '', mood: '', rating: null,
-    oneThing: '', yesterdayDone: false, addl: '',
+    oneThing: '', addl: '',
   };
 
   function upd(k, v) {
     onSave('timelife', { ...dd, [k]: v });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
-  }
-
-  function addNonNeg() {
-    if (!dd._nonNegPending) return;
-    const entry = {
-      cat: dd._nonNegPending,
-      detail: dd._nonNegDetail || '',
-    };
-    onSave('timelife', {
-      ...dd,
-      nonNegList: [...(dd.nonNegList || []), entry],
-      _nonNegPending: '',
-      _nonNegDetail: '',
-    });
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   }
@@ -146,9 +130,21 @@ export default function TimeLifeSection({
               background: GOLD_LIGHT, border: '1px solid ' + GOLD,
               borderRadius: '4px', padding: '6px 10px'
             }}>
-              <span style={{ fontSize: '11px', fontWeight: '600', color: GOLD_DARK, flex: 1 }}>
-                {item.cat}{item.detail ? ' — ' + item.detail : ''}
+              <span style={{ fontSize: '11px', fontWeight: '600', color: GOLD_DARK, flex: '0 0 auto' }}>
+                {item.cat}
               </span>
+              <input
+                placeholder="Note (optional)"
+                value={item.detail || ''}
+                disabled={dayComplete}
+                style={{ flex: 1, fontSize: 11, padding: '3px 6px', borderRadius: 3, border: '1px solid #ccc', background: '#fff' }}
+                onChange={e => {
+                  const next = (dd.nonNegList || []).map((it, idx) =>
+                    idx === i ? { ...it, detail: e.target.value } : it
+                  );
+                  onSave('timelife', { ...dd, nonNegList: next });
+                }}
+              />
               <button
                 disabled={dayComplete}
                 style={{ ...S.chipX, opacity: dayComplete ? 0.4 : 1, cursor: dayComplete ? 'not-allowed' : 'pointer' }}
@@ -161,26 +157,27 @@ export default function TimeLifeSection({
           ))}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
             <select
-              style={{ ...S.select, flex: '0 0 180px' }}
+              style={{ ...S.select, flex: '0 0 100px' }}
               value={dd._nonNegPending || ''}
-              onChange={e => upd('_nonNegPending', e.target.value)}
+              disabled={dayComplete}
+              onChange={e => {
+                const cat = e.target.value;
+                if (!cat) return;
+                const entry = { cat, detail: '' };
+                onSave('timelife', {
+                  ...dd,
+                  nonNegList: [...(dd.nonNegList || []), entry],
+                  _nonNegPending: '',
+                });
+                setSaved(true);
+                setTimeout(() => setSaved(false), 1500);
+              }}
             >
               <option value="">Select category...</option>
               {NON_NEG_CATS.map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
-            <input
-              style={{ ...S.input, flex: 1 }}
-              placeholder={dd._nonNegPending ? 'Describe specifically (optional)...' : ''}
-              disabled={!dd._nonNegPending}
-              readOnly={dayComplete}
-              value={dd._nonNegDetail || ''}
-              onChange={e => upd('_nonNegDetail', e.target.value)}
-            />
-            <button disabled={dayComplete} style={{ ...S.copyBtn, whiteSpace: 'nowrap', flexShrink: 0, opacity: dayComplete ? 0.4 : 1, cursor: dayComplete ? 'not-allowed' : 'pointer' }} onClick={addNonNeg}>
-              + Add
-            </button>
           </div>
         </div>
 
@@ -303,25 +300,6 @@ export default function TimeLifeSection({
             </div>
           )}
         </div>
-
-        {selectedDay > 1 && (
-          <div style={{
-            background: STEEL_LIGHT, border: '1px solid ' + STEEL,
-            borderRadius: '4px', padding: '12px 14px', marginTop: '10px',
-            display: 'flex', alignItems: 'center', gap: '12px'
-          }}>
-            <input
-              type="checkbox"
-              id="ydone"
-              checked={dd.yesterdayDone || false}
-              onChange={e => upd('yesterdayDone', e.target.checked)}
-              style={{ width: '20px', height: '20px', accentColor: STEEL, cursor: 'pointer' }}
-            />
-            <label htmlFor="ydone" style={{ fontSize: '12px', fontWeight: '600', color: STEEL_MID, cursor: 'pointer' }}>
-              Yesterday's One Thing — Completed
-            </label>
-          </div>
-        )}
 
         <div style={S.addlWrap}>
           <div style={S.addlLabel}>Additional Information — Day {selectedDay}</div>
