@@ -18,7 +18,17 @@ const gbtn = (extra = {}) => ({
 export default function Header({
   onInstructions, showInstr, onLogout, firstName,
   view, setView, daysComplete = 0,
+  dayComplete = false, isDayMarked = false,
 }) {
+  let pillBg = '#333';
+  let pillText = daysComplete + ' of 14 Days Complete';
+  if (isDayMarked) {
+    pillBg = '#333';
+    pillText = 'Day Complete';
+  } else if (dayComplete) {
+    pillBg = '#B8860B';
+    pillText = 'Required Fields Done';
+  }
   return (
     <div style={{
       background: '#111',
@@ -55,7 +65,7 @@ export default function Header({
       </div>
 
       <div style={{
-        background: '#333',
+        background: pillBg,
         color: '#fff',
         borderRadius: 6,
         padding: '5px 14px',
@@ -66,7 +76,7 @@ export default function Header({
         marginLeft: 120,
         marginRight: 16,
       }}>
-        {daysComplete} of 14 days complete
+        {pillText}
       </div>
 
       <div style={{

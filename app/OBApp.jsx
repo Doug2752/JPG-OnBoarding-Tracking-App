@@ -217,6 +217,8 @@ export default function OBApp() {
         view={view}
         setView={setView}
         daysComplete={dayCompleteDates.length}
+        dayComplete={isDayComplete(dayData)}
+        isDayMarked={dayCompleteDates.includes(isoForDay(selectedDay) || '')}
       />
 
       <BrandBar
