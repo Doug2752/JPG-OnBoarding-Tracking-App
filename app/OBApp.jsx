@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStorage } from '../services/storage';
 import { S } from '../utils/styles';
 import { GOLD, MONTHS } from '../utils/constants';
-import { parseDateStr } from '../utils/date';
+import { parseDateStr, startPlusDay } from '../utils/date';
 import Login from '../components/Login.jsx';
 import InstructionsPanel from '../components/InstructionsPanel.jsx';
 import ClientInfo from '../components/ClientInfo.jsx';
@@ -27,6 +27,8 @@ export default function OBApp() {
   const [startDate, setStartDate] = useState('');
   const [dateOpen, setDateOpen] = useState(false);
   const [neverTwiceRead, setNeverTwiceRead] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(1);
+  const [dayData, setDayData] = useState({});
 
   const storage = user ? makeStorage(user) : null;
 
@@ -56,6 +58,35 @@ export default function OBApp() {
     if (storage) storage.save('neverTwiceRead', v);
   }
 
+  // Convert a 1-based day number to its YYYY-MM-DD key.
+  // Returns null when no start date is set.
+  function isoForDay(dayNum) {
+    if (!startDate) return null;
+    return startPlusDay(startDate, dayNum);
+  }
+
+  function loadDayData(dayNum) {
+    const iso = isoForDay(dayNum);
+    if (!iso || !storage) {
+      setDayData({});
+      return;
+    }
+    storage.loadDay(iso, {}).then(d => setDayData(d || {}));
+  }
+
+  function saveDayData(section, sectionData) {
+    const iso = isoForDay(selectedDay);
+    if (!iso || !storage) return;
+    const next = { ...dayData, [section]: sectionData };
+    setDayData(next);
+    storage.saveDay(iso, next);
+    storage.addToList('obt_arch', iso);
+  }
+
+  useEffect(() => {
+    loadDayData(selectedDay);
+  }, [selectedDay, startDate]);
+
   const dateInputVal = (() => {
     if (!startDate) return '';
     const [m, d, y] = startDate.split('/');
@@ -76,15 +107,23 @@ export default function OBApp() {
     );
   }
 
+  const dayProps = {
+    storage,
+    startDate,
+    dayData,
+    selectedDay,
+    onSave: saveDayData,
+  };
+
   function renderSection() {
-    if (section === 'info')      return <ClientInfo storage={storage} />;
-    if (section === 'nutrition') return <NutritionSection storage={storage} startDate={startDate} />;
-    if (section === 'alcohol')   return <AlcoholSection storage={storage} startDate={startDate} />;
-    if (section === 'fitness')   return <FitnessSection storage={storage} startDate={startDate} />;
-    if (section === 'sleep')     return <SleepSection storage={storage} startDate={startDate} />;
-    if (section === 'timelife')  return <TimeLifeSection storage={storage} startDate={startDate} />;
-    if (section === 'reflect')   return <ReflectSection storage={storage} />;
-    if (section === 'results')   return <SummaryResults storage={storage} />;
+    if (section === 'info') return <ClientInfo storage={storage} />;
+    if (section === 'nutrition') return <NutritionSection {...dayProps} />;
+    if (section === 'alcohol') return <AlcoholSection {...dayProps} />;
+    if (section === 'fitness') return <FitnessSection {...dayProps} />;
+    if (section === 'sleep') return <SleepSection {...dayProps} />;
+    if (section === 'timelife') return <TimeLifeSection {...dayProps} />;
+    if (section === 'reflect') return <ReflectSection storage={storage} />;
+    if (section === 'results') return <SummaryResults storage={storage} />;
     return null;
   }
 
@@ -123,6 +162,8 @@ export default function OBApp() {
         }}
         neverTwiceRead={neverTwiceRead}
         setNeverTwice={setNeverTwice}
+        selectedDay={selectedDay}
+        onDaySelect={setSelectedDay}
       />
 
       <div style={{

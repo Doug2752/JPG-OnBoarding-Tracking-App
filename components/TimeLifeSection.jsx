@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  DAYS, NON_NEG_CATS,
+  NON_NEG_CATS,
   GOLD, GOLD_LIGHT, GOLD_DARK,
   STEEL, STEEL_MID, STEEL_LIGHT,
   RED
 } from '../utils/constants.js';
 import { formatDayDate } from '../utils/date.js';
 import { S } from '../utils/styles.js';
-import { Field, SaveNote, DayBtn, RatingButtons } from './Shared';
+import { Field, SaveNote, RatingButtons } from './Shared';
 
 const WORK_OPTIONS = [
   '',
@@ -24,84 +24,54 @@ const WORK_OPTIONS = [
   'Other'
 ];
 
-export default function TimeLifeSection({ storage, startDate }) {
-  const [day, setDay] = useState(1);
-  const [data, setData] = useState({});
+export default function TimeLifeSection({
+  dayData, selectedDay, onSave, startDate,
+}) {
   const [saved, setSaved] = useState(false);
   const [oneThingErr, setOneThingErr] = useState(false);
 
-  useEffect(() => {
-    storage.load('timelife6', {}).then(d => d && setData(d));
-  }, []);
-
-  function getDayData(d) {
-    return data[d] || {
-      workHours: '',
-      nonNegList: [],
-      _nonNegPending: '',
-      _nonNegDetail: '',
-      screenSocial: '',
-      screenOther: '',
-      familyTimeHrs: '',
-      familyTimeMins: '',
-      pitHrs: '',
-      pitMins: '',
-      mood: '',
-      rating: null,
-      oneThing: '',
-      yesterdayDone: false,
-      addl: ''
-    };
-  }
+  const dd = dayData.timelife || {
+    workHours: '', nonNegList: [], _nonNegPending: '',
+    _nonNegDetail: '', screenSocial: '', screenOther: '',
+    familyTimeNone: false, familyTimeHrs: '', familyTimeMins: '',
+    pitHrs: '', pitMins: '', mood: '', rating: null,
+    oneThing: '', yesterdayDone: false, addl: '',
+  };
 
   function upd(k, v) {
-    const n = { ...data, [day]: { ...getDayData(day), [k]: v } };
-    setData(n);
-    storage.save('timelife6', n);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
-  }
-
-  function copyYesterday() {
-    if (day <= 1) return;
-    const prev = getDayData(day - 1);
-    const copied = { ...prev, rating: null, oneThing: '', yesterdayDone: false, addl: '' };
-    const n = { ...data, [day]: copied };
-    setData(n);
-    storage.save('timelife6', n);
+    onSave('timelife', { ...dd, [k]: v });
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   }
 
   function addNonNeg() {
-    const current = getDayData(day);
-    if (!current._nonNegPending) return;
-    const entry = { cat: current._nonNegPending, detail: current._nonNegDetail || '' };
-    const merged = {
-      ...current,
-      nonNegList: [...(current.nonNegList || []), entry],
-      _nonNegPending: '',
-      _nonNegDetail: ''
+    if (!dd._nonNegPending) return;
+    const entry = {
+      cat: dd._nonNegPending,
+      detail: dd._nonNegDetail || '',
     };
-    const n = { ...data, [day]: merged };
-    setData(n);
-    storage.save('timelife6', n);
+    onSave('timelife', {
+      ...dd,
+      nonNegList: [...(dd.nonNegList || []), entry],
+      _nonNegPending: '',
+      _nonNegDetail: '',
+    });
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   }
 
-  const filled = {};
-  DAYS.forEach(d => {
-    const x = data[d];
-    if (x && x.rating) filled[d] = true;
-  });
-
-  const dd = getDayData(day);
-
-  let runningTotal = 0;
-  for (let d = 1; d <= day; d++) {
-    const sd = data[d];
-    if (sd && sd.rating) runningTotal += sd.rating;
+  if (!startDate) {
+    return (
+      <div>
+        <div style={S.blockSteel}>SECTION 05 — TIME &amp; LIFE TRACKING</div>
+        <div style={S.card}>
+          <div style={S.infoBoxSteel}>
+            Set a start date first — use the date picker at the top
+            of the page. Daily entries are keyed to your start date.
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -114,19 +84,7 @@ export default function TimeLifeSection({ storage, startDate }) {
           self-development not covered elsewhere.
         </div>
 
-        <div style={{ fontSize: '11px', color: '#6A6A6A', marginBottom: '7px' }}>Select a day to log:</div>
-        <div style={S.dayPicker}>
-          {DAYS.map(d => (
-            <DayBtn key={d} day={d} active={d === day} filled={!!filled[d]} onClick={() => setDay(d)} />
-          ))}
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
-          <div style={S.dayTag}>{formatDayDate(startDate, day)}</div>
-          {day > 1 && (
-            <button style={S.copyBtn} onClick={copyYesterday}>⬆ Copy Same as Yesterday</button>
-          )}
-        </div>
+        <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
 
         <Field label="Work Hours & Schedule">
           <select
@@ -286,12 +244,6 @@ export default function TimeLifeSection({ storage, startDate }) {
                   {dd.rating} / 10
                 </div>
               </div>
-              <div>
-                <div style={{ fontSize: '9px', color: '#aaa', letterSpacing: '1px', marginBottom: '2px' }}>RUNNING TOTAL</div>
-                <div style={{ ...S.pmTotBox, fontSize: '20px', fontWeight: '700', color: '#fff' }}>
-                  {runningTotal} / {day * 10}
-                </div>
-              </div>
             </div>
           )}
         </div>
@@ -319,7 +271,7 @@ export default function TimeLifeSection({ storage, startDate }) {
           )}
         </div>
 
-        {day > 1 && (
+        {selectedDay > 1 && (
           <div style={{
             background: STEEL_LIGHT, border: '1px solid ' + STEEL,
             borderRadius: '4px', padding: '12px 14px', marginTop: '10px',
@@ -339,7 +291,7 @@ export default function TimeLifeSection({ storage, startDate }) {
         )}
 
         <div style={S.addlWrap}>
-          <div style={S.addlLabel}>Additional Information — Day {day}</div>
+          <div style={S.addlLabel}>Additional Information — Day {selectedDay}</div>
           <textarea style={S.textarea} value={dd.addl || ''} onChange={e => upd('addl', e.target.value)} />
         </div>
 
@@ -348,4 +300,3 @@ export default function TimeLifeSection({ storage, startDate }) {
     </div>
   );
 }
-

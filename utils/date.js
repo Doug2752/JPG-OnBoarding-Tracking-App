@@ -18,3 +18,25 @@ export function formatDayDate(start, dayNum) {
   return 'Day ' + dayNum + ' \u2014 ' + MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
+export function todayISO() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dd}`;
+}
+
+export function startPlusDay(startDateStr, dayNum) {
+  // startDateStr is MM/DD/YYYY
+  // dayNum is 1-based (Day 1 = startDate)
+  // returns YYYY-MM-DD string
+  const base = parseDateStr(startDateStr);
+  if (!base) return null;
+  const d = new Date(base);
+  d.setDate(d.getDate() + (dayNum - 1));
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dd}`;
+}
+

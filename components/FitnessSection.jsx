@@ -1,37 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { DAYS, ACTIVITIES, ACTIVITY_RATE, DARK } from '../utils/constants.js';
+import React, { useState } from 'react';
+import { ACTIVITIES, ACTIVITY_RATE, DARK } from '../utils/constants.js';
 import { formatDayDate } from '../utils/date.js';
 import { S } from '../utils/styles.js';
-import { DayBtn, Field, SaveNote, RatingButtons } from './Shared';
+import { Field, SaveNote, RatingButtons } from './Shared';
 
-export default function FitnessSection({ storage, startDate }) {
-  const [day, setDay] = useState(1);
-  const [data, setData] = useState({});
+export default function FitnessSection({
+  dayData, selectedDay, onSave, startDate,
+}) {
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    storage.load('fitness6', {}).then(d => d && setData(d));
-  }, []);
-
-  function getDayData(d) {
-    return data[d] || { activity: '', activityOther: '', duration: '', intensity: null, notes: '', addl: '' };
-  }
+  const dd = dayData.fitness || {
+    activity: '', activityOther: '', duration: '',
+    intensity: null, notes: '', addl: '',
+  };
 
   function upd(k, v) {
-    const n = { ...data, [day]: { ...getDayData(day), [k]: v } };
-    setData(n);
-    storage.save('fitness6', n);
+    onSave('fitness', { ...dd, [k]: v });
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   }
 
-  const filled = {};
-  DAYS.forEach(d => {
-    const x = data[d];
-    if (x && x.activity) filled[d] = true;
-  });
-
-  const dd = getDayData(day);
   const rate = ACTIVITY_RATE[dd.activity] || 0;
   const burnKcal = rate > 0 && parseFloat(dd.duration) > 0
     ? Math.round((parseFloat(dd.duration) / 60) * rate)
@@ -48,6 +36,20 @@ export default function FitnessSection({ storage, startDate }) {
     cats[a[2]].push(a[0]);
   });
 
+  if (!startDate) {
+    return (
+      <div>
+        <div style={S.blockGold}>SECTION 03 — FITNESS & ACTIVITY TRACKING</div>
+        <div style={S.card}>
+          <div style={S.infoBox}>
+            Set a start date first — use the date picker at the top
+            of the page. Daily entries are keyed to your start date.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div style={S.blockGold}>SECTION 03 — FITNESS & ACTIVITY TRACKING</div>
@@ -55,13 +57,7 @@ export default function FitnessSection({ storage, startDate }) {
         <div style={S.infoBox}>
           Record all physical activity. Select from the dropdown or use Other. Select None if nothing was done. Select Rest for a deliberate recovery day. Calorie burn is estimated automatically from activity type and duration.
         </div>
-        <div style={{ fontSize: '11px', color: '#6A6A6A', marginBottom: '7px' }}>Select a day to log:</div>
-        <div style={S.dayPicker}>
-          {DAYS.map(d => (
-            <DayBtn key={d} day={d} active={d === day} filled={!!filled[d]} onClick={() => setDay(d)} />
-          ))}
-        </div>
-        <div style={S.dayTag}>{formatDayDate(startDate, day)}</div>
+        <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
 
         <Field label="Activity / Workout">
           <select style={S.select} value={dd.activity || ''} onChange={e => upd('activity', e.target.value)}>
@@ -111,7 +107,7 @@ export default function FitnessSection({ storage, startDate }) {
         </div>
 
         <div style={S.addlWrap}>
-          <div style={S.addlLabel}>Additional Information — Day {day}</div>
+          <div style={S.addlLabel}>Additional Information — Day {selectedDay}</div>
           <textarea style={S.textarea} value={dd.addl || ''} onChange={e => upd('addl', e.target.value)} />
         </div>
         <SaveNote show={saved} />

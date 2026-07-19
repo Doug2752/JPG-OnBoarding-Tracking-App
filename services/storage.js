@@ -25,6 +25,29 @@ export function makeStorage(user) {
       } catch {
         return Promise.resolve(def);
       }
+    },
+
+    saveDay(dateISO, dayData) {
+      return this.save('day_' + dateISO, dayData);
+    },
+
+    loadDay(dateISO, def) {
+      return this.load('day_' + dateISO, def || {});
+    },
+
+    addToList(key, dateISO) {
+      // loads list, adds dateISO if not present, saves
+      return this.load(key, []).then(arr => {
+        if (!arr.includes(dateISO)) {
+          arr = [...arr, dateISO];
+          return this.save(key, arr);
+        }
+        return Promise.resolve(arr);
+      });
+    },
+
+    loadList(key) {
+      return this.load(key, []);
     }
 
   };
