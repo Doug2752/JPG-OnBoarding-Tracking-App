@@ -17,6 +17,7 @@ const WORK_OPTIONS = [
   'Shift Work — Night',
   'Remote / Hybrid',
   '12-Hour Shift',
+  'Retired',
   '8-Hour Shift',
   'Day Off',
   'Travel Day',
@@ -215,24 +216,43 @@ export default function TimeLifeSection({ storage, startDate }) {
 
         <div style={S.grid2}>
           <div style={S.field}>
-            <label style={S.label}>Family Time</label>
-            <label style={S.labelSm}>Total time with family throughout the day — enter in hours and minutes</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Hours</div>
-                <input type="number" min="0" max="24" style={S.input} placeholder="0"
-                  value={dd.familyTimeHrs || ''} onChange={e => upd('familyTimeHrs', e.target.value)} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Minutes</div>
-                <input type="number" min="0" max="59" style={S.input} placeholder="0"
-                  value={dd.familyTimeMins || ''} onChange={e => upd('familyTimeMins', e.target.value)} />
-              </div>
+            <label style={S.label}>Relationship Time</label>
+            <label style={S.labelSm}>Total time with others throughout the day — enter in hours and minutes</label>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              margin: '6px 0',
+            }}>
+              <input
+                type="checkbox"
+                id="familyTimeNone"
+                checked={dd.familyTimeNone || false}
+                onChange={e => upd('familyTimeNone', e.target.checked)}
+              />
+              <label
+                htmlFor="familyTimeNone"
+                style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}
+              >None</label>
             </div>
+            {!dd.familyTimeNone && (
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Hours</div>
+                  <input type="number" min="0" max="24" style={S.input} placeholder="0"
+                    value={dd.familyTimeHrs || ''} onChange={e => upd('familyTimeHrs', e.target.value)} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Minutes</div>
+                  <input type="number" min="0" max="59" style={S.input} placeholder="0"
+                    value={dd.familyTimeMins || ''} onChange={e => upd('familyTimeMins', e.target.value)} />
+                </div>
+              </div>
+            )}
           </div>
           <div style={S.field}>
-            <label style={S.label}>PIT — Personal Investment Time</label>
-            <label style={S.labelSm}>Reading, studying, journaling, meditation, deliberate self-development — enter in hours and minutes</label>
+            <label style={S.label}>PIT (Personal Investment Time)</label>
+            <label style={S.labelSm}>Time spent reading, studying, journaling, meditation, or deliberate self-development — enter in hours and minutes</label>
             <div style={{ display: 'flex', gap: '8px' }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Hours</div>

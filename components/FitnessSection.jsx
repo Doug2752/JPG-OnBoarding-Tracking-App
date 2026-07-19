@@ -91,7 +91,7 @@ export default function FitnessSection({ storage, startDate }) {
             <input type="number" min="0" style={S.input} placeholder="e.g. 45"
               value={dd.duration || ''} onChange={e => upd('duration', e.target.value)} />
           </Field>
-          <Field label="Notes (steps if known)">
+          <Field label="Notes (enter None if no workout)">
             <input style={S.input} value={dd.notes || ''} onChange={e => upd('notes', e.target.value)} />
           </Field>
         </div>
