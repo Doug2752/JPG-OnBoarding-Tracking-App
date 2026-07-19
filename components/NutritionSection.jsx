@@ -123,11 +123,17 @@ export default function NutritionSection({
           })}
         </div>
         <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
-        <MealBlock mealKey="am" mealLabel="AM" dayVal={selectedDay} estimates={estimates} estimating={estimating}
+        <MealBlock mealKey="am"
+          mealLabel={<>AM{dd.am && dd.am.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
+          dayVal={selectedDay} estimates={estimates} estimating={estimating}
           getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
-        <MealBlock mealKey="midday" mealLabel="Midday" dayVal={selectedDay} estimates={estimates} estimating={estimating}
+        <MealBlock mealKey="midday"
+          mealLabel={<>Midday{dd.midday && dd.midday.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
+          dayVal={selectedDay} estimates={estimates} estimating={estimating}
           getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
-        <MealBlock mealKey="pm" mealLabel="PM" dayVal={selectedDay} estimates={estimates} estimating={estimating}
+        <MealBlock mealKey="pm"
+          mealLabel={<>PM{dd.pm && dd.pm.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
+          dayVal={selectedDay} estimates={estimates} estimating={estimating}
           getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
 
         <div style={{ marginBottom: '12px' }}>

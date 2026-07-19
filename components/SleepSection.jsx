@@ -160,7 +160,7 @@ export default function SleepSection({
         <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
 
         <div style={{ ...rowStyle, gridTemplateColumns: '1fr 1fr' }}>
-          <SleepFieldCol label="Bedtime" labelSm="Time you got into bed">
+          <SleepFieldCol label={<>Bedtime{dd.bedtime && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Time you got into bed">
             <InputWithToggle
               value={dd.bedtime}
               placeholder="9:30"
@@ -169,7 +169,7 @@ export default function SleepSection({
               onToggle={toggleBed}
             />
           </SleepFieldCol>
-          <SleepFieldCol label="Time to Fall Asleep" labelSm="How long until asleep">
+          <SleepFieldCol label={<>Time to Fall Asleep{dd.fallAsleep && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="How long until asleep">
             <InputWithToggle
               type="number"
               value={dd.fallAsleep}
@@ -182,7 +182,7 @@ export default function SleepSection({
         </div>
 
         <div style={{ ...rowStyle, gridTemplateColumns: '1fr 1fr' }}>
-          <SleepFieldCol label="Wake Time" labelSm="Time you got out of bed">
+          <SleepFieldCol label={<>Wake Time{dd.wakeTime && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Time you got out of bed">
             <InputWithToggle
               value={dd.wakeTime}
               placeholder="5:00"
@@ -211,7 +211,7 @@ export default function SleepSection({
         </div>
 
         <div style={{ ...rowStyle, gridTemplateColumns: '1fr 1fr 1fr' }}>
-          <SleepFieldCol label="Times Up at Night" labelSm="Number of times woken">
+          <SleepFieldCol label={<>Times Up at Night{dd.timesUp && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Number of times woken">
             <input
               type="number"
               min="0"
@@ -220,7 +220,7 @@ export default function SleepSection({
               onChange={e => upd('timesUp', e.target.value)}
             />
           </SleepFieldCol>
-          <SleepFieldCol label="Awake Duration" labelSm="Total time awake across all interruptions">
+          <SleepFieldCol label={<>Awake Duration{dd.durationAwake && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Total time awake across all interruptions">
             <InputWithToggle
               type="number"
               value={dd.durationAwake}
@@ -257,7 +257,7 @@ export default function SleepSection({
           />
         </Field>
 
-        <Field label="Sleep Quality 1–10">
+        <Field label={<>Sleep Quality 1–10{dd.quality && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
           <RatingButtons value={dd.quality} onChange={v => upd('quality', v)} />
         </Field>
 

@@ -131,7 +131,7 @@ export default function TimeLifeSection({
         </Field>
 
         <div style={S.field}>
-          <label style={S.label}>Non-Negotiables</label>
+          <label style={S.label}>Non-Negotiables{(dd.nonNegList || []).length > 0 && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
           <label style={S.labelSm}>
             Personal commitments or standards you held to today. Select None if not yet established. Use Add to log multiple.
           </label>
@@ -186,7 +186,7 @@ export default function TimeLifeSection({
               onChange={e => upd('screenSocial', e.target.value)}
             />
           </Field>
-          <Field label="Screen Time — Other" labelSm="TV, computer, or phone not related to social media">
+          <Field label={<>Screen Time — Other{dd.screenOther && dd.screenOther.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="TV, computer, or phone not related to social media">
             <input
               style={S.input}
               placeholder="e.g. 2 hrs"
@@ -255,7 +255,7 @@ export default function TimeLifeSection({
         </Field>
 
         <div style={S.pmBlock}>
-          <div style={S.pmEyebrow}>PM CHECK-IN — HOW DID I DO TODAY?</div>
+          <div style={S.pmEyebrow}>PM CHECK-IN — HOW DID I DO TODAY?{dd.rating && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</div>
           <div style={{ fontSize: '11px', color: STEEL_LIGHT, marginBottom: '10px' }}>
             Rate your day: 1 = Poor · 10 = Outstanding
           </div>
@@ -274,7 +274,7 @@ export default function TimeLifeSection({
 
         <div style={{ ...S.oneThingBlock, borderColor: oneThingErr ? '#ff0000' : RED }}>
           <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: RED, marginBottom: '4px', letterSpacing: '0.5px' }}>
-            TOMORROW'S ONE THING * <span style={{ fontSize: '10px', fontWeight: '400' }}>(Required)</span>
+            TOMORROW'S ONE THING * <span style={{ fontSize: '10px', fontWeight: '400' }}>(Required)</span>{dd.oneThing && dd.oneThing.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}
           </label>
           <label style={S.labelSm}>
             The single task that — by completing or starting it — makes everything else easier or unnecessary.

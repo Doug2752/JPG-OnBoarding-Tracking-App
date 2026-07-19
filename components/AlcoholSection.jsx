@@ -65,15 +65,15 @@ export default function AlcoholSection({
         <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
           <div style={S.field}>
-            <label style={S.label}>Beer (12 oz drinks)</label>
+            <label style={S.label}>Beer (12 oz drinks){dd.beer && String(dd.beer).trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
             <input type="number" min="0" style={S.input} value={dd.beer || ''} onChange={e => upd('beer', e.target.value)} />
           </div>
           <div style={S.field}>
-            <label style={S.label}>Mixed Drinks</label>
+            <label style={S.label}>Mixed Drinks{dd.mixed && String(dd.mixed).trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
             <input type="number" min="0" style={S.input} value={dd.mixed || ''} onChange={e => upd('mixed', e.target.value)} />
           </div>
           <div style={S.field}>
-            <label style={S.label}>Other / None</label>
+            <label style={S.label}>Other / None{((dd.beer && String(dd.beer).trim()) || (dd.mixed && String(dd.mixed).trim()) || (dd.otherNone && String(dd.otherNone).trim())) && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
             <label style={S.labelSm}>Wine, spirits, or write None</label>
             <input style={S.input} placeholder="None" value={dd.otherNone || ''} onChange={e => upd('otherNone', e.target.value)} />
           </div>

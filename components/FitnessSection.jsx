@@ -81,7 +81,7 @@ export default function FitnessSection({
         </div>
         <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
 
-        <Field label="Activity / Workout">
+        <Field label={<>Activity / Workout{dd.activity && dd.activity !== '' && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
           <select style={S.select} value={dd.activity || ''} onChange={e => upd('activity', e.target.value)}>
             <option value="">Select activity...</option>
             {cats[''] && cats[''].map(a => <option key={a} value={a}>{a}</option>)}
@@ -105,7 +105,7 @@ export default function FitnessSection({
         )}
 
         <div style={S.grid2}>
-          <Field label="Duration (minutes)">
+          <Field label={<>Duration (minutes){dd.activity && dd.activity !== '' && dd.duration && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
             <input type="number" min="0" style={S.input} placeholder="e.g. 45"
               value={dd.duration || ''} onChange={e => upd('duration', e.target.value)} />
           </Field>
@@ -114,7 +114,7 @@ export default function FitnessSection({
           </Field>
         </div>
 
-        <Field label="Intensity 1–10 (RPE)">
+        <Field label={<>Intensity 1–10 (RPE){dd.activity && dd.activity !== '' && dd.intensity && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
           <RatingButtons value={dd.intensity} onChange={v => upd('intensity', v)} />
         </Field>
 
