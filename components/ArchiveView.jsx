@@ -1,6 +1,14 @@
 import React from 'react';
 import { S } from '../utils/styles';
-import { GOLD, GOLD_LIGHT } from '../utils/constants';
+import { GOLD, GOLD_LIGHT, MONTHS } from '../utils/constants';
+
+// Format a YYYY-MM-DD ISO string as "Month D, YYYY".
+// Parsed from parts to avoid timezone shifts.
+function fmtIso(iso) {
+  const [y, m, d] = String(iso).split('-');
+  if (!y || !m || !d) return iso;
+  return MONTHS[parseInt(m, 10) - 1] + ' ' + parseInt(d, 10) + ', ' + y;
+}
 
 const gbtn = (extra = {}) => ({
   padding: '8px 18px',
@@ -89,7 +97,33 @@ export default function ArchiveView({
           }}>
             No completed days yet
           </div>
-        ) : null}
+        ) : (
+          <div style={{
+            maxHeight: 'calc(100vh - 120px)',
+            overflowY: 'auto',
+            padding: 16,
+          }}>
+            {[...dayCompleteDates].sort((a, b) => (a < b ? 1 : a > b ? -1 : 0)).map(iso => (
+              <div key={iso} style={{
+                background: '#fff',
+                border: '1px solid #ddd',
+                borderRadius: 4,
+                padding: '10px 16px',
+                marginBottom: 8,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#222' }}>
+                  {fmtIso(iso)}
+                </span>
+                <span style={{ color: '#ddb94a', fontSize: 12, fontWeight: 700 }}>
+                  ✓ Day Complete
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

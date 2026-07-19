@@ -172,7 +172,7 @@ export default function OBApp() {
         setView={setView}
         onLogout={() => setUser(null)}
         firstName={user}
-        dayCompleteDates={[]}
+        dayCompleteDates={dayCompleteDates}
       />
     );
   }
