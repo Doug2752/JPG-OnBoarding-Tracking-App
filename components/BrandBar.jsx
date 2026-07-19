@@ -144,7 +144,6 @@ export default function BrandBar({
                 letterSpacing: 1,
                 textTransform: 'uppercase',
                 whiteSpace: 'nowrap',
-                fontFamily: "'Lato', 'Arial Black', sans-serif",
               }}>Never Twice</span>
               <span style={{
                 fontSize: 8,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { STEEL_LIGHT, BORDER } from '../utils/constants.js';
 import { S } from '../utils/styles.js';
 import { Field, SaveNote } from './Shared';
@@ -12,17 +12,27 @@ const DEFAULT = {
 export default function ReflectSection({ storage }) {
   const [data, setData] = useState(DEFAULT);
   const [saved, setSaved] = useState(false);
+  const saveTimer = useRef(null);
 
   useEffect(() => {
     storage.load('reflect6', DEFAULT).then(d => d && setData(d));
   }, []);
 
-  function upd(k, v) {
-    const n = { ...data, [k]: v };
-    setData(n);
-    storage.save('reflect6', n);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
+  useEffect(() => {
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
+  }, []);
+
+  function upd(key, val) {
+    const next = { ...data, [key]: val };
+    setData(next);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      storage.save('reflect6', next);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
+    }, 400);
   }
 
   const ta = k => (
