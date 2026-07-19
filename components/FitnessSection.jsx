@@ -5,7 +5,7 @@ import { S } from '../utils/styles.js';
 import { Field, SaveNote, RatingButtons } from './Shared';
 
 export default function FitnessSection({
-  dayData, selectedDay, onSave, startDate, onDaySelect,
+  dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete,
 }) {
   const [saved, setSaved] = useState(false);
 
@@ -82,7 +82,7 @@ export default function FitnessSection({
         <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
 
         <Field label={<>Activity / Workout{dd.activity && dd.activity !== '' && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
-          <select style={S.select} value={dd.activity || ''} onChange={e => upd('activity', e.target.value)}>
+          <select style={S.select} disabled={dayComplete} value={dd.activity || ''} onChange={e => upd('activity', e.target.value)}>
             <option value="">Select activity...</option>
             {cats[''] && cats[''].map(a => <option key={a} value={a}>{a}</option>)}
             {Object.entries(cats).filter(([k]) => k).map(([catName, items]) => (
@@ -106,7 +106,7 @@ export default function FitnessSection({
 
         <div style={S.grid2}>
           <Field label={<>Duration (minutes){dd.activity && dd.activity !== '' && dd.duration && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
-            <input type="number" min="0" style={S.input} placeholder="e.g. 45"
+            <input type="number" min="0" style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined }} readOnly={dayComplete} placeholder="e.g. 45"
               value={dd.duration || ''} onChange={e => upd('duration', e.target.value)} />
           </Field>
           <Field label="Notes (enter None if no workout)">
@@ -115,7 +115,7 @@ export default function FitnessSection({
         </div>
 
         <Field label={<>Intensity 1–10 (RPE){dd.activity && dd.activity !== '' && dd.intensity && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
-          <RatingButtons value={dd.intensity} onChange={v => upd('intensity', v)} />
+          <RatingButtons value={dd.intensity} onChange={v => upd('intensity', v)} disabled={dayComplete} />
         </Field>
 
         <div style={{ background: DARK, borderRadius: '4px', padding: '10px 14px', marginTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

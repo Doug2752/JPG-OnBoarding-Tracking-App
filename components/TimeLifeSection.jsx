@@ -27,7 +27,7 @@ const WORK_OPTIONS = [
 export default function TimeLifeSection({
   dayData, selectedDay, onSave, startDate, onDaySelect,
   dayCompleteDates, onMarkDayComplete,
-  onUnlockDay, isoForDay, isDayComplete,
+  onUnlockDay, isoForDay, isDayComplete, dayComplete,
 }) {
   const [saved, setSaved] = useState(false);
   const [oneThingErr, setOneThingErr] = useState(false);
@@ -145,7 +145,8 @@ export default function TimeLifeSection({
                 {item.cat}{item.detail ? ' — ' + item.detail : ''}
               </span>
               <button
-                style={S.chipX}
+                disabled={dayComplete}
+                style={{ ...S.chipX, opacity: dayComplete ? 0.4 : 1, cursor: dayComplete ? 'not-allowed' : 'pointer' }}
                 onClick={() => {
                   const next = (dd.nonNegList || []).filter((_, idx) => idx !== i);
                   upd('nonNegList', next);
@@ -171,7 +172,7 @@ export default function TimeLifeSection({
               value={dd._nonNegDetail || ''}
               onChange={e => upd('_nonNegDetail', e.target.value)}
             />
-            <button style={{ ...S.copyBtn, whiteSpace: 'nowrap', flexShrink: 0 }} onClick={addNonNeg}>
+            <button disabled={dayComplete} style={{ ...S.copyBtn, whiteSpace: 'nowrap', flexShrink: 0, opacity: dayComplete ? 0.4 : 1, cursor: dayComplete ? 'not-allowed' : 'pointer' }} onClick={addNonNeg}>
               + Add
             </button>
           </div>
@@ -188,7 +189,8 @@ export default function TimeLifeSection({
           </Field>
           <Field label={<>Screen Time — Other{dd.screenOther && dd.screenOther.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="TV, computer, or phone not related to social media">
             <input
-              style={S.input}
+              style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined }}
+              readOnly={dayComplete}
               placeholder="e.g. 2 hrs"
               value={dd.screenOther || ''}
               onChange={e => upd('screenOther', e.target.value)}
@@ -259,7 +261,7 @@ export default function TimeLifeSection({
           <div style={{ fontSize: '11px', color: STEEL_LIGHT, marginBottom: '10px' }}>
             Rate your day: 1 = Poor · 10 = Outstanding
           </div>
-          <RatingButtons value={dd.rating} steel onChange={v => upd('rating', v)} />
+          <RatingButtons value={dd.rating} steel onChange={v => upd('rating', v)} disabled={dayComplete} />
           {dd.rating && (
             <div style={{ marginTop: '12px', display: 'flex', gap: '14px', alignItems: 'center' }}>
               <div>
@@ -280,7 +282,8 @@ export default function TimeLifeSection({
             The single task that — by completing or starting it — makes everything else easier or unnecessary.
           </label>
           <textarea
-            style={{ ...S.textarea, border: '1px solid ' + (oneThingErr ? '#ff0000' : RED), background: '#fff9f9', minHeight: '66px' }}
+            style={{ ...S.textarea, border: '1px solid ' + (oneThingErr ? '#ff0000' : RED), background: dayComplete ? '#f5f5f3' : '#fff9f9', minHeight: '66px' }}
+            readOnly={dayComplete}
             placeholder="My one task for tomorrow..."
             value={dd.oneThing || ''}
             onChange={e => {
@@ -348,7 +351,7 @@ export default function TimeLifeSection({
               ) : (
                 <button
                   onClick={onMarkDayComplete}
-                  disabled={!isDayComplete(dayData)}
+                  disabled={!dayComplete}
                   style={{
                     background: GOLD,
                     color: '#000',
@@ -357,9 +360,8 @@ export default function TimeLifeSection({
                     padding: '10px 28px',
                     fontSize: 13,
                     fontWeight: 700,
-                    opacity: isDayComplete(dayData) ? 1 : 0.4,
-                    cursor: isDayComplete(dayData)
-                      ? 'pointer' : 'not-allowed',
+                    opacity: dayComplete ? 1 : 0.4,
+                    cursor: dayComplete ? 'pointer' : 'not-allowed',
                   }}
                 >Mark Day Complete</button>
               )}

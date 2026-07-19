@@ -28,7 +28,7 @@ async function estimateCalories(text) {
 }
 
 export default function NutritionSection({
-  storage, dayData, selectedDay, onSave, startDate, onDaySelect,
+  storage, dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete,
 }) {
   const [saved, setSaved] = useState(false);
   const [recentSupps, setRecentSupps] = useState([]);
@@ -123,18 +123,20 @@ export default function NutritionSection({
           })}
         </div>
         <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
-        <MealBlock mealKey="am"
-          mealLabel={<>AM{dd.am && dd.am.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
-          dayVal={selectedDay} estimates={estimates} estimating={estimating}
-          getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
-        <MealBlock mealKey="midday"
-          mealLabel={<>Midday{dd.midday && dd.midday.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
-          dayVal={selectedDay} estimates={estimates} estimating={estimating}
-          getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
-        <MealBlock mealKey="pm"
-          mealLabel={<>PM{dd.pm && dd.pm.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
-          dayVal={selectedDay} estimates={estimates} estimating={estimating}
-          getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
+        <div style={{ pointerEvents: dayComplete ? 'none' : 'auto', opacity: dayComplete ? 0.7 : 1 }}>
+          <MealBlock mealKey="am"
+            mealLabel={<>AM{dd.am && dd.am.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
+            dayVal={selectedDay} estimates={estimates} estimating={estimating}
+            getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
+          <MealBlock mealKey="midday"
+            mealLabel={<>Midday{dd.midday && dd.midday.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
+            dayVal={selectedDay} estimates={estimates} estimating={estimating}
+            getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
+          <MealBlock mealKey="pm"
+            mealLabel={<>PM{dd.pm && dd.pm.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
+            dayVal={selectedDay} estimates={estimates} estimating={estimating}
+            getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
+        </div>
 
         <div style={{ marginBottom: '12px' }}>
           {snacks.map((snack, i) => (

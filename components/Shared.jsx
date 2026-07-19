@@ -43,41 +43,48 @@ export function SummaryBtn({ active, onClick }) {
   );
 }
 
-export function RatingButtons({ value, onChange, steel }) {
+export function RatingButtons({ value, onChange, steel, disabled }) {
   return (
-    <div style={S.ratingRow}>
-      {[1,2,3,4,5,6,7,8,9,10].map(n => {
-        const active = value === n;
-        const extra = active
-          ? steel
-            ? { background: STEEL, border: '2px solid ' + STEEL_MID, color: '#fff' }
-            : { background: GOLD, border: '2px solid ' + GOLD_DARK, color: '#fff' }
-          : {};
-        return (
-          <button
-            key={n}
-            style={{ ...S.ratingBtn, ...extra }}
-            onClick={() => onChange(active ? null : n)}
-          >
-            {n}
-          </button>
-        );
-      })}
+    <div style={disabled ? { pointerEvents: 'none', opacity: 0.7 } : undefined}>
+      <div style={S.ratingRow}>
+        {[1,2,3,4,5,6,7,8,9,10].map(n => {
+          const active = value === n;
+          const extra = active
+            ? steel
+              ? { background: STEEL, border: '2px solid ' + STEEL_MID, color: '#fff' }
+              : { background: GOLD, border: '2px solid ' + GOLD_DARK, color: '#fff' }
+            : {};
+          return (
+            <button
+              key={n}
+              style={{ ...S.ratingBtn, ...extra }}
+              onClick={() => onChange(active ? null : n)}
+            >
+              {n}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-export function InputWithToggle({ value, onChange, placeholder, type, unitLabel, onToggle }) {
+export function InputWithToggle({ value, onChange, placeholder, type, unitLabel, onToggle, readOnly }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <input
         type={type || 'text'}
-        style={{ ...S.input, flex: 1 }}
+        style={{ ...S.input, flex: 1, ...(readOnly ? { background: '#f5f5f3', cursor: 'default' } : {}) }}
         placeholder={placeholder}
         value={value || ''}
         onChange={onChange}
+        readOnly={readOnly}
       />
-      <button style={S.unitBtn} onClick={onToggle}>{unitLabel}</button>
+      <button
+        style={{ ...S.unitBtn, ...(readOnly ? { opacity: 0.5, cursor: 'default' } : {}) }}
+        disabled={readOnly}
+        onClick={onToggle}
+      >{unitLabel}</button>
     </div>
   );
 }

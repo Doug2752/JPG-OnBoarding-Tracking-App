@@ -7,7 +7,7 @@ import {
 } from './Shared';
 
 export default function SleepSection({
-  storage, dayData, selectedDay, onSave, startDate, onDaySelect,
+  storage, dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete,
 }) {
   const [saved, setSaved] = useState(false);
   const [manualHrs, setManualHrs] = useState({});
@@ -167,6 +167,7 @@ export default function SleepSection({
               onChange={e => upd('bedtime', e.target.value)}
               unitLabel={bedUnit}
               onToggle={toggleBed}
+              readOnly={dayComplete}
             />
           </SleepFieldCol>
           <SleepFieldCol label={<>Time to Fall Asleep{dd.fallAsleep && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="How long until asleep">
@@ -177,6 +178,7 @@ export default function SleepSection({
               onChange={e => upd('fallAsleep', e.target.value)}
               unitLabel={fallUnit}
               onToggle={toggleFall}
+              readOnly={dayComplete}
             />
           </SleepFieldCol>
         </div>
@@ -189,6 +191,7 @@ export default function SleepSection({
               onChange={e => upd('wakeTime', e.target.value)}
               unitLabel={wakeUnit}
               onToggle={toggleWake}
+              readOnly={dayComplete}
             />
           </SleepFieldCol>
           <SleepFieldCol label="Total Sleep Hours" labelSm="Auto-calculated — or enter manually">
@@ -215,7 +218,8 @@ export default function SleepSection({
             <input
               type="number"
               min="0"
-              style={{ ...inputSm, width: '100%' }}
+              style={{ ...inputSm, width: '100%', background: dayComplete ? '#f5f5f3' : undefined }}
+              readOnly={dayComplete}
               value={dd.timesUp || ''}
               onChange={e => upd('timesUp', e.target.value)}
             />
@@ -228,6 +232,7 @@ export default function SleepSection({
               onChange={e => upd('durationAwake', e.target.value)}
               unitLabel={awakeUnit}
               onToggle={toggleAwake}
+              readOnly={dayComplete}
             />
           </SleepFieldCol>
           <SleepFieldCol label="Sleep Score (1–100)" labelSm="Wearable or app">
@@ -258,7 +263,7 @@ export default function SleepSection({
         </Field>
 
         <Field label={<>Sleep Quality 1–10{dd.quality && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
-          <RatingButtons value={dd.quality} onChange={v => upd('quality', v)} />
+          <RatingButtons value={dd.quality} onChange={v => upd('quality', v)} disabled={dayComplete} />
         </Field>
 
         <div style={S.addlWrap}>
