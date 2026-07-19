@@ -17,6 +17,54 @@ import Header from '../components/Header.jsx';
 import BrandBar from '../components/BrandBar.jsx';
 import ArchiveView from '../components/ArchiveView';
 
+function isDayComplete(dd) {
+  // dd is the dayData object for the selected day
+  // Returns true only when ALL sections pass
+
+  // NUTRITION — AM, Midday, PM must be filled
+  const n = dd.nutrition || {};
+  if (!n.am || !n.midday || !n.pm) return false;
+
+  // ALCOHOL — at least one of beer, mixed,
+  // otherNone must be filled
+  const a = dd.alcohol || {};
+  const alcoholFilled =
+    (a.beer && String(a.beer).trim()) ||
+    (a.mixed && String(a.mixed).trim()) ||
+    (a.otherNone && String(a.otherNone).trim());
+  if (!alcoholFilled) return false;
+
+  // FITNESS — if activity selected, duration
+  // and intensity are required; notes optional
+  const f = dd.fitness || {};
+  if (f.activity && f.activity !== '') {
+    if (!f.duration || !f.intensity) return false;
+  }
+
+  // SLEEP — bedtime, fallAsleep, wakeTime,
+  // timesUp, durationAwake, quality required
+  const sl = dd.sleep || {};
+  if (!sl.bedtime || !sl.fallAsleep ||
+      !sl.wakeTime || !sl.timesUp ||
+      !sl.durationAwake || !sl.quality) {
+    return false;
+  }
+
+  // TIME & LIFE — nonNegList must have at least
+  // one entry; screenOther, rating, oneThing
+  // must be filled
+  const t = dd.timelife || {};
+  if (!t.nonNegList || t.nonNegList.length === 0)
+    return false;
+  if (!t.screenOther || !t.screenOther.trim())
+    return false;
+  if (!t.rating) return false;
+  if (!t.oneThing || !t.oneThing.trim())
+    return false;
+
+  return true;
+}
+
 export default function OBApp() {
   const [user, setUser] = useState(
     () => new URLSearchParams(window.location.search).get('hub_user') ?? null
@@ -85,54 +133,6 @@ export default function OBApp() {
     setDayData(next);
     storage.saveDay(iso, next);
     storage.addToList('obt_arch', iso);
-  }
-
-  function isDayComplete(dd) {
-    // dd is the dayData object for the selected day
-    // Returns true only when ALL sections pass
-
-    // NUTRITION — AM, Midday, PM must be filled
-    const n = dd.nutrition || {};
-    if (!n.am || !n.midday || !n.pm) return false;
-
-    // ALCOHOL — at least one of beer, mixed,
-    // otherNone must be filled
-    const a = dd.alcohol || {};
-    const alcoholFilled =
-      (a.beer && String(a.beer).trim()) ||
-      (a.mixed && String(a.mixed).trim()) ||
-      (a.otherNone && String(a.otherNone).trim());
-    if (!alcoholFilled) return false;
-
-    // FITNESS — if activity selected, duration
-    // and intensity are required; notes optional
-    const f = dd.fitness || {};
-    if (f.activity && f.activity !== '') {
-      if (!f.duration || !f.intensity) return false;
-    }
-
-    // SLEEP — bedtime, fallAsleep, wakeTime,
-    // timesUp, durationAwake, quality required
-    const sl = dd.sleep || {};
-    if (!sl.bedtime || !sl.fallAsleep ||
-        !sl.wakeTime || !sl.timesUp ||
-        !sl.durationAwake || !sl.quality) {
-      return false;
-    }
-
-    // TIME & LIFE — nonNegList must have at least
-    // one entry; screenOther, rating, oneThing
-    // must be filled
-    const t = dd.timelife || {};
-    if (!t.nonNegList || t.nonNegList.length === 0)
-      return false;
-    if (!t.screenOther || !t.screenOther.trim())
-      return false;
-    if (!t.rating) return false;
-    if (!t.oneThing || !t.oneThing.trim())
-      return false;
-
-    return true;
   }
 
   function onMarkDayComplete() {

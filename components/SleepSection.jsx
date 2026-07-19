@@ -10,7 +10,6 @@ export default function SleepSection({
   storage, dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete,
 }) {
   const [saved, setSaved] = useState(false);
-  const [manualHrs, setManualHrs] = useState({});
 
   // Global unit toggles — persist across all days via storage
   const [bedUnit, setBedUnit] = useState('PM');
@@ -19,7 +18,6 @@ export default function SleepSection({
   const [awakeUnit, setAwakeUnit] = useState('min');
 
   useEffect(() => {
-    storage.load('sleepManual6', {}).then(d => d && setManualHrs(d));
     storage.load('sleepUnits6', null).then(u => {
       if (u) {
         if (u.bedUnit) setBedUnit(u.bedUnit);
@@ -64,23 +62,31 @@ export default function SleepSection({
   };
 
   function upd(k, v) {
-    onSave('sleep', { ...dd, [k]: v });
+    const next = { ...dd, [k]: v };
+    onSave('sleep', { ...next, totalHrs: calcTotalHrs(next) });
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   }
 
-  function updManual(v) {
-    const n = { ...manualHrs, [selectedDay]: v };
-    setManualHrs(n);
-    storage.save('sleepManual6', n);
-  }
-
   function timeToMins(timeStr, unit) {
     if (!timeStr) return null;
-    const m = timeStr.match(/^(\d{1,2})(?::(\d{2}))?$/);
-    if (!m) return null;
-    let hr = parseInt(m[1]);
-    const mn = parseInt(m[2] || '0');
+    const str = String(timeStr).trim();
+    let hr, mn;
+    if (str.includes(':')) {
+      const m = str.match(/^(\d{1,2}):(\d{2})$/);
+      if (!m) return null;
+      hr = parseInt(m[1], 10);
+      mn = parseInt(m[2], 10);
+    } else {
+      if (!/^\d+$/.test(str)) return null;
+      if (str.length <= 2) {
+        hr = parseInt(str, 10);
+        mn = 0;
+      } else {
+        hr = parseInt(str.slice(0, -2), 10);
+        mn = parseInt(str.slice(-2), 10);
+      }
+    }
     if (unit === 'PM' && hr !== 12) hr += 12;
     if (unit === 'AM' && hr === 12) hr = 0;
     return hr * 60 + mn;
@@ -103,10 +109,6 @@ export default function SleepSection({
   }
 
   const autoHrs = calcTotalHrs(dd);
-  const displayHrs =
-    manualHrs[selectedDay] !== undefined && manualHrs[selectedDay] !== ''
-      ? manualHrs[selectedDay]
-      : autoHrs > 0 ? autoHrs : '';
 
   const inputSm = { ...S.input, fontSize: '12px', padding: '7px 8px' };
   const rowStyle = { display: 'grid', gap: '10px', marginBottom: '10px' };
@@ -135,6 +137,11 @@ export default function SleepSection({
           Sleep and sleep quality are among the most underrated factors in human performance. This data is critical.
         </div>
 
+        {dayComplete && (
+          <div style={{ background: '#B8860B', color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
+            Day marked complete — unlock to edit
+          </div>
+        )}
         <div style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: 5, marginBottom: 12 }}>
           {Array.from({ length: 14 }, (_, i) => i + 1).map(n => {
             const iso = startPlusDay(startDate, n);
@@ -194,22 +201,19 @@ export default function SleepSection({
               readOnly={dayComplete}
             />
           </SleepFieldCol>
-          <SleepFieldCol label="Total Sleep Hours" labelSm="Auto-calculated — or enter manually">
-            <input
-              type="number"
-              step="0.25"
-              min="0"
-              max="24"
+          <SleepFieldCol label="Total Sleep Hours" labelSm="Auto-calculated">
+            <div
               style={{
                 ...inputSm,
-                background: manualHrs[selectedDay] ? '#fff9e6' : '#f8f8f6',
+                width: '100%',
+                background: '#f0f0f0',
                 fontWeight: '600',
-                width: '100%'
+                borderRadius: 4,
+                border: '1px solid #ccc',
               }}
-              placeholder={autoHrs > 0 ? String(autoHrs) : '0.0'}
-              value={displayHrs}
-              onChange={e => updManual(e.target.value)}
-            />
+            >
+              {autoHrs > 0 ? autoHrs : '—'}
+            </div>
           </SleepFieldCol>
         </div>
 

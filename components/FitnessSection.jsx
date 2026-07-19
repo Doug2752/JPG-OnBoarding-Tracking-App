@@ -57,6 +57,11 @@ export default function FitnessSection({
         <div style={S.infoBox}>
           Record all physical activity. Select from the dropdown or use Other. Select None if nothing was done. Select Rest for a deliberate recovery day. Calorie burn is estimated automatically from activity type and duration.
         </div>
+        {dayComplete && (
+          <div style={{ background: '#B8860B', color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
+            Day marked complete — unlock to edit
+          </div>
+        )}
         <div style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: 5, marginBottom: 12 }}>
           {Array.from({ length: 14 }, (_, i) => i + 1).map(n => {
             const iso = startPlusDay(startDate, n);
