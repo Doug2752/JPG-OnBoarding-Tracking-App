@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { formatDayDate } from '../utils/date.js';
+import { GOLD } from '../utils/constants.js';
+import { formatDayDate, startPlusDay } from '../utils/date.js';
 import { S } from '../utils/styles.js';
 import {
   Field, SaveNote, RatingButtons, InputWithToggle, SleepFieldCol,
 } from './Shared';
 
 export default function SleepSection({
-  storage, dayData, selectedDay, onSave, startDate,
+  storage, dayData, selectedDay, onSave, startDate, onDaySelect,
 }) {
   const [saved, setSaved] = useState(false);
   const [manualHrs, setManualHrs] = useState({});
@@ -134,6 +135,28 @@ export default function SleepSection({
           Sleep and sleep quality are among the most underrated factors in human performance. This data is critical.
         </div>
 
+        <div style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: 5, marginBottom: 12 }}>
+          {Array.from({ length: 14 }, (_, i) => i + 1).map(n => {
+            const iso = startPlusDay(startDate, n);
+            let lbl = '—';
+            if (iso) {
+              const [, m, d] = iso.split('-');
+              const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+              lbl = MON[parseInt(m, 10) - 1] + ' ' + parseInt(d, 10);
+            }
+            const active = n === selectedDay;
+            return (
+              <button key={n} onClick={() => onDaySelect(n)} style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                border: '1.5px solid #000', borderRadius: 4, padding: '5px 8px',
+                cursor: 'pointer', background: active ? GOLD : '#333', color: '#fff', lineHeight: 1.2,
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 700 }}>Day {n}</span>
+                <span style={{ fontSize: 9, fontWeight: 400 }}>{lbl}</span>
+              </button>
+            );
+          })}
+        </div>
         <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
 
         <div style={{ ...rowStyle, gridTemplateColumns: '1fr 1fr' }}>

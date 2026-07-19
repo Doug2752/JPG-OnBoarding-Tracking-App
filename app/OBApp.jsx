@@ -113,6 +113,7 @@ export default function OBApp() {
     dayData,
     selectedDay,
     onSave: saveDayData,
+    onDaySelect: setSelectedDay,
   };
 
   function renderSection() {

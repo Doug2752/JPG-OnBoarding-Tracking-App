@@ -1,6 +1,5 @@
 import React from 'react';
-import { GOLD, DARK, BORDER, MONTHS } from '../utils/constants';
-import { startPlusDay } from '../utils/date';
+import { GOLD, DARK, BORDER } from '../utils/constants';
 
 const LOGO_SRC = '/jpglogo.png';
 
@@ -9,19 +8,7 @@ export default function BrandBar({
   dateOpen, setDateOpen,
   dateInputVal, onDateChange,
   neverTwiceRead, setNeverTwice,
-  selectedDay, onDaySelect,
 }) {
-  const days = Array.from({ length: 14 }, (_, i) => i + 1);
-
-  // "Mon D" from the start date + day offset, or "—" if unset.
-  function dayDateLabel(n) {
-    const iso = startPlusDay(startDate, n);
-    if (!iso) return '—';
-    const [, m, d] = iso.split('-');
-    return MONTHS[parseInt(m, 10) - 1].slice(0, 3)
-      + ' ' + parseInt(d, 10);
-  }
-
   return (
     <div
       style={{
@@ -132,44 +119,6 @@ export default function BrandBar({
                 />
               </div>
             )}
-          </div>
-
-          {/* Day strip */}
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 5,
-            justifyContent: 'center',
-            marginBottom: 10,
-          }}>
-            {days.map(n => {
-              const active = n === selectedDay;
-              return (
-                <button
-                  key={n}
-                  onClick={() => onDaySelect(n)}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    border: '1.5px solid #000',
-                    borderRadius: 4,
-                    padding: '5px 8px',
-                    cursor: 'pointer',
-                    background: active ? GOLD : '#333',
-                    color: active ? '#000' : '#fff',
-                    lineHeight: 1.2,
-                  }}
-                >
-                  <span style={{ fontSize: 11, fontWeight: 700 }}>
-                    Day {n}
-                  </span>
-                  <span style={{ fontSize: 9, fontWeight: 400 }}>
-                    {dayDateLabel(n)}
-                  </span>
-                </button>
-              );
-            })}
           </div>
 
           {/* Never Twice */}
