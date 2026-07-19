@@ -26,6 +26,8 @@ const WORK_OPTIONS = [
 
 export default function TimeLifeSection({
   dayData, selectedDay, onSave, startDate, onDaySelect,
+  dayCompleteDates, onMarkDayComplete,
+  onUnlockDay, isoForDay, isDayComplete,
 }) {
   const [saved, setSaved] = useState(false);
   const [oneThingErr, setOneThingErr] = useState(false);
@@ -318,6 +320,52 @@ export default function TimeLifeSection({
         </div>
 
         <SaveNote show={saved} />
+
+        {(() => {
+          const iso = isoForDay(selectedDay);
+          const isMarkedComplete =
+            iso && dayCompleteDates.includes(iso);
+          return (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginTop: 16,
+            }}>
+              {isMarkedComplete ? (
+                <button
+                  onClick={onUnlockDay}
+                  style={{
+                    background: '#333',
+                    color: '#fff',
+                    border: '3px solid #000',
+                    borderRadius: 6,
+                    padding: '10px 28px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >Unlock Day</button>
+              ) : (
+                <button
+                  onClick={onMarkDayComplete}
+                  disabled={!isDayComplete(dayData)}
+                  style={{
+                    background: GOLD,
+                    color: '#000',
+                    border: '3px solid #000',
+                    borderRadius: 6,
+                    padding: '10px 28px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    opacity: isDayComplete(dayData) ? 1 : 0.4,
+                    cursor: isDayComplete(dayData)
+                      ? 'pointer' : 'not-allowed',
+                  }}
+                >Mark Day Complete</button>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
