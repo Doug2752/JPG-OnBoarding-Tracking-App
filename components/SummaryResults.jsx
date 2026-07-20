@@ -1,246 +1,383 @@
 import React, { useState, useEffect } from 'react';
-import {
-  DAYS,
-  GOLD, GOLD_LIGHT, GOLD_DARK,
-  DARK, CHARCOAL, MID,
-  BORDER, STEEL, GREEN,
-  PERF_BANDS, SLEEP_BANDS,
-  ACTIVITY_RATE
-} from '../utils/constants.js';
-import { S } from '../utils/styles.js';
+import { GOLD, STEEL, BG, BORDER, DARK, MID } from '../utils/constants.js';
+import { startPlusDay } from '../utils/date.js';
 
-// ── BAND TABLE (local — only used in SummaryResults) ──────────
-function BandTable({ bands, title, cols, labels, getCells, activeLabel }) {
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// "2026-07-20" -> "Jul 20". Parsed from parts to avoid timezone shifts.
+function fmtShort(iso) {
+  if (!iso) return '';
+  const [, m, d] = String(iso).split('-');
+  if (!m || !d) return '';
+  return MON[parseInt(m, 10) - 1] + ' ' + parseInt(d, 10);
+}
+
+// Total minutes -> "Xh Ym"
+function hm(totalMins) {
+  const h = Math.floor(totalMins / 60);
+  const m = Math.round(totalMins % 60);
+  return h + 'h ' + m + 'm';
+}
+
+// Combine an hrs/mins field pair into "Xh Ym". Returns null when both are blank.
+function pairToHm(hrs, mins) {
+  const h = String(hrs ?? '').trim();
+  const m = String(mins ?? '').trim();
+  if (!h && !m) return null;
+  return hm((parseFloat(h) || 0) * 60 + (parseFloat(m) || 0));
+}
+
+// Same pair, as raw total minutes. Returns null when both are blank.
+function pairToMins(hrs, mins) {
+  const h = String(hrs ?? '').trim();
+  const m = String(mins ?? '').trim();
+  if (!h && !m) return null;
+  return (parseFloat(h) || 0) * 60 + (parseFloat(m) || 0);
+}
+
+// Sum every calEst6 entry belonging to this day number.
+// NutritionSection writes "{day}_am", "{day}_midday", "{day}_pm"
+// and one key per snack as "{day}_snack0", "{day}_snack1", ...
+function dayCalories(calEst, dayNum) {
+  const pfx = dayNum + '_';
+  let total = 0;
+  Object.keys(calEst || {}).forEach(k => {
+    if (!k.startsWith(pfx)) return;
+    const suffix = k.slice(pfx.length);
+    const isMeal =
+      suffix === 'am' || suffix === 'midday' || suffix === 'pm' ||
+      suffix.startsWith('snack');
+    if (!isMeal) return;
+    const e = calEst[k];
+    if (e && e.cal) total += e.cal;
+  });
+  return total;
+}
+
+const avg = arr =>
+  arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : null;
+
+// Roll one week's worth of day records into the averages block values.
+function weekStats(week, calEst) {
+  const sleepVals = [];
+  const durVals = [];
+  const calVals = [];
+  const pitVals = [];
+  const relVals = [];
+  let activeDays = 0;
+  let screenSocial = '';
+  let screenOther = '';
+
+  week.forEach(({ dayNum, data }) => {
+    const sl = data.sleep || {};
+    const th = parseFloat(sl.totalHrs);
+    if (th > 0) sleepVals.push(th);
+
+    const f = data.fitness || {};
+    if (f.activity && f.activity !== '') {
+      activeDays++;
+      const dur = parseFloat(f.duration);
+      if (dur > 0) durVals.push(dur);
+    }
+
+    const cal = dayCalories(calEst, dayNum);
+    if (cal > 0) calVals.push(cal);
+
+    const t = data.timelife || {};
+    // Days iterate in ascending order, so the last hit is the most recent.
+    if (t.screenSocial && String(t.screenSocial).trim()) {
+      screenSocial = String(t.screenSocial).trim();
+    }
+    if (t.screenOther && String(t.screenOther).trim()) {
+      screenOther = String(t.screenOther).trim();
+    }
+
+    const pit = pairToMins(t.pitHrs, t.pitMins);
+    if (pit !== null) pitVals.push(pit);
+
+    // "None" days are excluded from the relationship-time average entirely.
+    if (!t.familyTimeNone) {
+      const rel = pairToMins(t.familyTimeHrs, t.familyTimeMins);
+      if (rel !== null) relVals.push(rel);
+    }
+  });
+
+  const avgSleep = avg(sleepVals);
+  const avgDur = avg(durVals);
+  const avgCal = avg(calVals);
+  const avgPit = avg(pitVals);
+  const avgRel = avg(relVals);
+
+  return {
+    sleep: avgSleep === null ? '—' : avgSleep.toFixed(1) + ' hrs',
+    activeDays: activeDays + ' of 7 days',
+    duration: avgDur === null ? '—' : Math.round(avgDur) + ' min',
+    calories: avgCal === null ? '—' : Math.round(avgCal).toLocaleString(),
+    screenSocial: screenSocial || '—',
+    screenOther: screenOther || '—',
+    pit: avgPit === null ? '—' : hm(avgPit),
+    rel: avgRel === null ? '—' : hm(avgRel),
+  };
+}
+
+// ── STYLES ────────────────────────────────────────────────────
+const weekHead = bg => ({
+  background: bg,
+  color: '#fff',
+  fontSize: 13,
+  fontWeight: 700,
+  letterSpacing: 2,
+  padding: '11px 16px',
+  borderRadius: '4px 4px 0 0',
+  marginTop: 16,
+});
+
+const weekCard = {
+  background: '#fff',
+  border: '1px solid ' + BORDER,
+  borderTop: 'none',
+  borderRadius: '0 0 4px 4px',
+  padding: 14,
+  marginBottom: 16,
+};
+
+const statGrid = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+  gap: 8,
+  marginBottom: 14,
+};
+
+const statBox = {
+  background: BG,
+  border: '1px solid ' + BORDER,
+  borderRadius: 4,
+  padding: '10px 12px',
+};
+
+const statLbl = {
+  fontSize: 9,
+  letterSpacing: 1,
+  color: MID,
+  fontWeight: 700,
+  marginBottom: 3,
+};
+
+const statVal = {
+  fontSize: 18,
+  fontWeight: 700,
+  color: DARK,
+  lineHeight: 1.2,
+};
+
+const statSub = {
+  fontSize: 9,
+  color: '#999',
+  fontStyle: 'italic',
+  marginTop: 2,
+};
+
+const th = {
+  background: GOLD,
+  color: '#fff',
+  fontSize: '0.72rem',
+  fontWeight: 700,
+  letterSpacing: 0.4,
+  padding: '8px 9px',
+  textAlign: 'left',
+  whiteSpace: 'nowrap',
+};
+
+const td = {
+  fontSize: '0.78rem',
+  color: DARK,
+  padding: '7px 9px',
+  borderBottom: '1px solid ' + BORDER,
+  whiteSpace: 'nowrap',
+};
+
+const Stat = ({ label, value, sub }) => (
+  <div style={statBox}>
+    <div style={statLbl}>{label}</div>
+    <div style={statVal}>{value}</div>
+    {sub && <div style={statSub}>{sub}</div>}
+  </div>
+);
+
+// ── DAY GRID ──────────────────────────────────────────────────
+function DayGrid({ week, calEst }) {
+  const cols = [
+    'Day', 'Sleep Hrs', 'Activity', 'Duration', 'Calories',
+    'Screen Social', 'Screen Other', 'PIT', 'Relationship',
+  ];
+
   return (
-    <div style={{ borderRadius: '6px', overflow: 'hidden', border: '1px solid ' + BORDER, marginBottom: '14px' }}>
-      <div style={{ background: GREEN, padding: '11px 16px', textAlign: 'center', fontWeight: '700', color: '#fff', fontSize: '13px', letterSpacing: '2px' }}>
-        {title}
-      </div>
-      <div style={{ background: '#f0f0f0', display: 'grid', gridTemplateColumns: cols, borderBottom: '1px solid ' + BORDER }}>
-        {labels.map(l => (
-          <div key={l} style={{ padding: '7px 11px', fontSize: '11px', fontWeight: '700', color: MID }}>{l}</div>
-        ))}
-      </div>
-      {bands.map(b => (
-        <div
-          key={b.label}
-          style={{
-            background: b.bg,
-            display: 'grid',
-            gridTemplateColumns: cols,
-            borderBottom: '1px solid rgba(255,255,255,0.12)',
-            outline: activeLabel === b.label ? '3px solid #fff' : 'none',
-            outlineOffset: '-3px'
-          }}
-        >
-          {getCells(b).map((cell, i) => (
-            <div key={i} style={{ padding: '9px 11px', fontSize: '11px', color: '#fff', fontWeight: i === 0 ? '700' : '400', lineHeight: '1.4' }}>
-              {cell}
-            </div>
-          ))}
+    <div style={{ overflowX: 'auto' }}>
+      <table style={{
+        borderCollapse: 'collapse',
+        width: '100%',
+        minWidth: 880,
+      }}>
+        <thead>
+          <tr>
+            {cols.map(c => <th key={c} style={th}>{c}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {week.map(({ dayNum, iso, data }, i) => {
+            const sl = data.sleep || {};
+            const f = data.fitness || {};
+            const t = data.timelife || {};
+
+            const hrs = parseFloat(sl.totalHrs);
+            const sleepCell = hrs > 0 ? hrs.toFixed(1) : '—';
+
+            let actCell = '—';
+            if (f.activity && f.activity !== '') {
+              actCell = f.activity === 'Other — Write In'
+                ? (String(f.activityOther || '').trim() || 'Other — Write In')
+                : f.activity;
+            }
+
+            const dur = parseFloat(f.duration);
+            const durCell = dur > 0 ? dur + ' min' : '—';
+
+            const cal = dayCalories(calEst, dayNum);
+            const calCell = cal > 0 ? cal.toLocaleString() : '—';
+
+            const socialCell = String(t.screenSocial || '').trim() || '—';
+            const otherCell = String(t.screenOther || '').trim() || '—';
+
+            const pitCell = pairToHm(t.pitHrs, t.pitMins) || '—';
+
+            let relCell = '—';
+            if (t.familyTimeNone) relCell = 'None';
+            else relCell = pairToHm(t.familyTimeHrs, t.familyTimeMins) || '—';
+
+            return (
+              <tr key={dayNum} style={{ background: i % 2 === 0 ? '#fff' : BG }}>
+                <td style={td}>
+                  <div style={{ fontWeight: 700 }}>Day {dayNum}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#999' }}>
+                    {fmtShort(iso)}
+                  </div>
+                </td>
+                <td style={td}>{sleepCell}</td>
+                <td style={{ ...td, whiteSpace: 'normal', minWidth: 130 }}>{actCell}</td>
+                <td style={td}>{durCell}</td>
+                <td style={td}>{calCell}</td>
+                <td style={td}>{socialCell}</td>
+                <td style={td}>{otherCell}</td>
+                <td style={td}>{pitCell}</td>
+                <td style={td}>{relCell}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ── WEEK SECTION ──────────────────────────────────────────────
+function WeekSection({ title, bg, week, calEst }) {
+  const s = weekStats(week, calEst);
+  return (
+    <div>
+      <div style={weekHead(bg)}>{title}</div>
+      <div style={weekCard}>
+        <div style={statGrid}>
+          <Stat label="AVG SLEEP HOURS" value={s.sleep} />
+          <Stat label="DAYS ACTIVE" value={s.activeDays} />
+          <Stat label="AVG DURATION" value={s.duration} sub="Active days only" />
+          <Stat label="AVG DAILY CALORIES" value={s.calories} />
+          <Stat label="SCREEN TIME — SOCIAL" value={s.screenSocial} sub="Most recent entry" />
+          <Stat label="SCREEN TIME — OTHER" value={s.screenOther} sub="Most recent entry" />
+          <Stat label="AVG PIT TIME" value={s.pit} />
+          <Stat label="AVG RELATIONSHIP TIME" value={s.rel} />
         </div>
-      ))}
-      <div style={{ padding: '9px 13px', fontSize: '10px', color: '#666', fontStyle: 'italic', background: '#fafafa', borderTop: '1px solid ' + BORDER, lineHeight: '1.6' }}>
-        This chart reflects your self-assessment only. It will be reviewed with your coach to build your Phase 2 plan.
+        <DayGrid week={week} calEst={calEst} />
       </div>
     </div>
   );
 }
 
 // ── SUMMARY RESULTS ───────────────────────────────────────────
-export default function SummaryResults({ storage }) {
-  const [tlData, setTl] = useState({});
-  const [slData, setSl] = useState({});
-  const [fitData, setFit] = useState({});
-  const [calEst, setCal] = useState({});
-  const [manualHrs, setManualHrs] = useState({});
-  const [units, setUnits] = useState({ bedUnit: 'PM', wakeUnit: 'AM', fallUnit: 'min', awakeUnit: 'min' });
+export default function SummaryResults({ storage, startDate }) {
+  const [days, setDays] = useState([]);
+  const [calEst, setCalEst] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    storage.load('timelife6', {}).then(d => d && setTl(d));
-    storage.load('sleep6', {}).then(d => d && setSl(d));
-    storage.load('fitness6', {}).then(d => d && setFit(d));
-    storage.load('calEst6', {}).then(d => d && setCal(d));
-    storage.load('sleepManual6', {}).then(d => d && setManualHrs(d));
-    storage.load('sleepUnits6', null).then(u => u && setUnits(u));
-  });
+    if (!startDate || !storage) {
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
 
-  // ── Performance score ──────────────────────────────────────
-  let totalScore = 0, daysRated = 0;
-  DAYS.forEach(d => {
-    const dd = tlData[d];
-    if (dd && dd.rating) { totalScore += dd.rating; daysRated++; }
-  });
-  const perfBand = totalScore > 0
-    ? PERF_BANDS.find(b => totalScore >= b.min && totalScore <= b.max) || PERF_BANDS[3]
-    : null;
-
-  // ── Sleep helpers ──────────────────────────────────────────
-  function toMins(val, unit) {
-    const n = parseFloat(val) || 0;
-    return unit === 'hrs' ? n * 60 : n;
-  }
-
-  function calcHrs(sd) {
-    if (!sd || !sd.bedtime || !sd.wakeTime) return 0;
-    const bm = sd.bedtime.match(/^(\d{1,2})(?::(\d{2}))?$/);
-    const wm = sd.wakeTime.match(/^(\d{1,2})(?::(\d{2}))?$/);
-    if (!bm || !wm) return 0;
-    let bh = parseInt(bm[1]), bmin = parseInt(bm[2] || '0');
-    let wh = parseInt(wm[1]), wmin = parseInt(wm[2] || '0');
-    if (units.bedUnit === 'PM' && bh !== 12) bh += 12;
-    if (units.bedUnit === 'AM' && bh === 12) bh = 0;
-    if (units.wakeUnit === 'PM' && wh !== 12) wh += 12;
-    if (units.wakeUnit === 'AM' && wh === 12) wh = 0;
-    let diff = wh * 60 + wmin - (bh * 60 + bmin);
-    if (diff <= 0) diff += 1440;
-    return Math.max(0, Math.round((diff - toMins(sd.fallAsleep, units.fallUnit) - toMins(sd.durationAwake, units.awakeUnit)) / 60 * 4) / 4);
-  }
-
-  // ── Sleep totals ───────────────────────────────────────────
-  let totalHrs = 0, totalUp = 0, totQ = 0, qCount = 0, totalAwake = 0;
-  DAYS.forEach(d => {
-    const sd = slData[d];
-    if (!sd) return;
-    const hrs = manualHrs[d] !== undefined && manualHrs[d] !== ''
-      ? parseFloat(manualHrs[d]) || 0
-      : calcHrs(sd);
-    totalHrs += hrs;
-    if (sd.timesUp) totalUp += parseInt(sd.timesUp) || 0;
-    if (sd.quality) { totQ += sd.quality; qCount++; }
-    if (sd.durationAwake) totalAwake += toMins(sd.durationAwake, units.awakeUnit);
-  });
-
-  const avgQ = qCount > 0 ? (totQ / qCount).toFixed(1) + ' / 10' : '—';
-  const sleepBand = totalHrs > 0
-    ? SLEEP_BANDS.find(b => totalHrs >= b.minHrs) || SLEEP_BANDS[SLEEP_BANDS.length - 1]
-    : null;
-
-  // ── Calorie totals ─────────────────────────────────────────
-  let totalCalIn = 0;
-  DAYS.forEach(d => {
-    ['am', 'midday', 'pm'].forEach(m => {
-      const e = calEst[d + '_' + m];
-      if (e) totalCalIn += e.cal || 0;
+    const nums = Array.from({ length: 14 }, (_, i) => i + 1);
+    const loads = nums.map(dayNum => {
+      const iso = startPlusDay(startDate, dayNum);
+      if (!iso) return Promise.resolve({ dayNum, iso: null, data: {} });
+      return storage.loadDay(iso, {}).then(d => ({
+        dayNum, iso, data: d || {},
+      }));
     });
-  });
 
-  let totalBurn = 0;
-  DAYS.forEach(d => {
-    const fd = fitData[d];
-    if (!fd || !fd.activity) return;
-    const rate = ACTIVITY_RATE[fd.activity] || 0;
-    const dur = parseFloat(fd.duration) || 0;
-    if (rate > 0 && dur > 0) totalBurn += Math.round(dur / 60 * rate);
-  });
+    Promise.all([storage.load('calEst6', {}), Promise.all(loads)])
+      .then(([cal, rows]) => {
+        if (cancelled) return;
+        setCalEst(cal || {});
+        setDays(rows);
+        setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, []);
+
+  if (!startDate) {
+    return (
+      <div style={{
+        padding: 40,
+        textAlign: 'center',
+        color: MID,
+        fontSize: 14,
+      }}>
+        Set a start date in the Client Info tab to view Summary Results.
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div style={{
+        padding: 40,
+        textAlign: 'center',
+        color: MID,
+        fontSize: 13,
+      }}>
+        Loading…
+      </div>
+    );
+  }
+
+  const week1 = days.filter(d => d.dayNum <= 7);
+  const week2 = days.filter(d => d.dayNum >= 8);
 
   return (
     <div>
-      {/* ── APPENDIX A — Performance Score ── */}
-      <div style={S.blockGold}>APPENDIX A — PERFORMANCE SCORE SUMMARY</div>
-      <div style={S.card}>
-
-        {/* Day grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '12px' }}>
-          {DAYS.map(d => {
-            const dd = tlData[d];
-            const r = dd && dd.rating ? dd.rating : null;
-            return (
-              <div key={d} style={{
-                background: r ? GOLD_LIGHT : '#f0f0f0',
-                border: '1px solid ' + (r ? GOLD : BORDER),
-                borderRadius: '4px', padding: '6px 2px', textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '9px', color: '#888', marginBottom: '1px' }}>D{d}</div>
-                <div style={{ fontSize: '16px', fontWeight: '700', color: r ? GOLD_DARK : '#ccc' }}>
-                  {r || '—'}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Total score block */}
-        <div style={{ background: DARK, borderRadius: '6px', padding: '16px', textAlign: 'center', marginBottom: '14px' }}>
-          <div style={{ fontSize: '10px', color: '#aaa', letterSpacing: '2px', marginBottom: '4px' }}>14-DAY TOTAL</div>
-          <div style={{ fontSize: '50px', fontWeight: '700', color: GOLD, lineHeight: '1' }}>{totalScore}</div>
-          <div style={{ fontSize: '11px', color: '#888', marginTop: '5px' }}>
-            / 140 possible · {daysRated} of 14 days rated
-          </div>
-          {perfBand && (
-            <div style={{ marginTop: '9px', display: 'inline-block', background: perfBand.bg, borderRadius: '4px', padding: '5px 14px', fontSize: '12px', fontWeight: '700', color: '#fff' }}>
-              {perfBand.label}
-            </div>
-          )}
-        </div>
-
-        {/* Performance band table */}
-        <BandTable
-          bands={PERF_BANDS}
-          title="PERFORMANCE BAND CHART"
-          cols="1fr 75px 85px 2fr"
-          labels={['Performance Band', 'Daily Avg', '14-Day Total', 'Description']}
-          getCells={b => [b.label, b.avg, b.min + '–' + b.max, b.desc]}
-          activeLabel={perfBand?.label}
-        />
-
-        {/* Calorie summary */}
-        <div style={{ ...S.blockCharcoal, borderRadius: '4px 4px 0 0', marginTop: '6px' }}>
-          ESTIMATED CALORIE SUMMARY — 14 DAYS
-        </div>
-        <div style={{ background: '#f8f8f6', border: '1px solid ' + BORDER, borderTop: 'none', borderRadius: '0 0 4px 4px', padding: '14px', marginBottom: '14px' }}>
-          <div style={S.grid2}>
-            <div style={{ background: GOLD, borderRadius: '6px', padding: '12px', textAlign: 'center' }}>
-              <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)', letterSpacing: '1px', marginBottom: '4px' }}>ESTIMATED INTAKE</div>
-              <div style={{ fontSize: '26px', fontWeight: '700', color: '#fff' }}>{totalCalIn.toLocaleString()}</div>
-              <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>kcal over 14 days</div>
-            </div>
-            <div style={{ background: STEEL, borderRadius: '6px', padding: '12px', textAlign: 'center' }}>
-              <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)', letterSpacing: '1px', marginBottom: '4px' }}>ESTIMATED BURN</div>
-              <div style={{ fontSize: '26px', fontWeight: '700', color: '#fff' }}>{totalBurn.toLocaleString()}</div>
-              <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>kcal over 14 days</div>
-            </div>
-          </div>
-          <div style={{ fontSize: '10px', color: '#999', fontStyle: 'italic', marginTop: '10px', lineHeight: '1.6' }}>
-            Calorie values are AI-generated estimates. For general awareness only.
-          </div>
-        </div>
-      </div>
-
-      {/* ── APPENDIX B — Sleep Score ── */}
-      <div style={S.blockGreen}>APPENDIX B — SLEEP SCORE SUMMARY</div>
-      <div style={S.card}>
-        <div style={S.totalsBar}>
-          <div style={S.totalsBarHdr}>14-Day Sleep Totals</div>
-          <div style={S.totalsBarBody}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px' }}>
-              {[
-                ['Total Hours', totalHrs.toFixed(1) + ' hrs'],
-                ['Times Up', totalUp + ' times'],
-                ['Total Awake', Math.round(totalAwake) + ' min'],
-                ['Avg Quality', avgQ]
-              ].map(([l, v]) => (
-                <div key={l} style={S.totalsCell}>
-                  <div style={S.totalsCellVal}>{v}</div>
-                  <div style={S.totalsCellLbl}>{l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div style={{ marginTop: '14px' }}>
-          <BandTable
-            bands={SLEEP_BANDS}
-            title="SLEEP BAND CHART"
-            cols="130px 1fr 2fr"
-            labels={['14-Day Total Hours', 'Recovery Level', 'Description']}
-            getCells={b => [b.minHrs === 0 ? '< 56 hrs' : '≥ ' + b.minHrs + ' hrs', b.label, b.desc]}
-            activeLabel={sleepBand?.label}
-          />
-        </div>
-      </div>
+      <WeekSection
+        title="WEEK 1 — DAYS 1–7"
+        bg={GOLD}
+        week={week1}
+        calEst={calEst}
+      />
+      <WeekSection
+        title="WEEK 2 — DAYS 8–14"
+        bg={STEEL}
+        week={week2}
+        calEst={calEst}
+      />
     </div>
   );
 }
-

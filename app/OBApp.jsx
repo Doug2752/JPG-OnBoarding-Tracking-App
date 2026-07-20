@@ -259,7 +259,7 @@ export default function OBApp() {
         onReflectSubmit={onReflectSubmit}
       />
     );
-    if (section === 'results') return <SummaryResults storage={storage} />;
+    if (section === 'results') return <SummaryResults storage={storage} startDate={startDate} />;
     return null;
   }
 
