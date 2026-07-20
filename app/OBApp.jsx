@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { makeStorage } from '../services/storage';
 import { S } from '../utils/styles';
-import { GOLD, DARK, BG, MONTHS } from '../utils/constants';
-import { parseDateStr, startPlusDay } from '../utils/date';
+import { GOLD, DARK, BG } from '../utils/constants';
+import { startPlusDay, todayISO } from '../utils/date';
 import Login from '../components/Login.jsx';
 import InstructionsPanel from '../components/InstructionsPanel.jsx';
 import ClientInfo from '../components/ClientInfo.jsx';
@@ -16,6 +16,20 @@ import SummaryResults from '../components/SummaryResults.jsx';
 import Header from '../components/Header.jsx';
 import BrandBar from '../components/BrandBar.jsx';
 import ArchiveView from '../components/ArchiveView';
+import CoverPage from '../components/CoverPage.jsx';
+
+// Client Info counts as filled only when all eleven required fields
+// carry a non-empty value. goal2, goal3 and additional are optional.
+const CI_REQUIRED = [
+  'fullName','dateStarted','phoneEmail','occupation','primaryGoal',
+  'nonNeg','hobbies','fitnessActivity','eatingHabits','sleepPatterns',
+  'injuries'
+];
+
+function isClientInfoFilled(ci) {
+  return CI_REQUIRED.every(k => ci && typeof ci[k] === 'string'
+    && ci[k].trim().length > 0);
+}
 
 function isDayComplete(dd) {
   // dd is the dayData object for the selected day
@@ -69,11 +83,11 @@ export default function OBApp() {
   const [user, setUser] = useState(
     () => new URLSearchParams(window.location.search).get('hub_user') ?? null
   );
-  const [section, setSection] = useState('info');
+  const [section, setSection] = useState('nutrition');
   const [view, setView] = useState('today');
   const [showInstr, setShowInstr] = useState(false);
   const [startDate, setStartDate] = useState('');
-  const [dateOpen, setDateOpen] = useState(false);
+  const [clientInfoFilled, setClientInfoFilled] = useState(false);
   const [neverTwiceRead, setNeverTwiceRead] = useState(false);
   const [selectedDay, setSelectedDay] = useState(1);
   const [dayData, setDayData] = useState({});
@@ -82,38 +96,39 @@ export default function OBApp() {
   const [reflectSubmissions, setReflectSubmissions] = useState([]);
   const [reflectPopup, setReflectPopup] = useState(null);
   const [popupSeen, setPopupSeen] = useState({ w1: false, w2: false });
+  const [showCover, setShowCover] = useState(false);
 
   const storage = user ? makeStorage(user) : null;
 
   useEffect(() => {
     if (!storage) return;
-    storage.load('clientInfo', {}).then(d => {
+    const pClient = storage.load('clientInfo', {}).then(d => {
       if (d && d.dateStarted) setStartDate(d.dateStarted);
+      setClientInfoFilled(isClientInfoFilled(d));
     });
-    storage.load('neverTwiceRead', false).then(v => setNeverTwiceRead(v));
-    storage.loadList('obt_day_complete').then(
+    const pNever = storage.load('neverTwiceRead', false).then(
+      v => setNeverTwiceRead(v)
+    );
+    const pDays = storage.loadList('obt_day_complete').then(
       arr => setDayCompleteDates(arr || [])
     );
-    storage.load('reflect_submissions', []).then(
+    const pSubs = storage.load('reflect_submissions', []).then(
       arr => setReflectSubmissions(arr || [])
     );
-    storage.load('reflect_popup_seen', { w1: false, w2: false }).then(
+    const pSeen = storage.load('reflect_popup_seen', { w1: false, w2: false }).then(
       v => setPopupSeen(v || { w1: false, w2: false })
     );
-    storage.load('instrSeen6', false).then(seen => {
+    const pInstr = storage.load('instrSeen6', false).then(seen => {
       if (!seen) {
         setShowInstr(true);
         storage.save('instrSeen6', true);
       }
     });
+    // Cover shows once per session, only after the loads above have landed
+    // so the day count and status line render with real values.
+    Promise.all([pClient, pNever, pDays, pSubs, pSeen, pInstr])
+      .then(() => setShowCover(true));
   }, [user]);
-
-  // Format a stored start date as "Month D, YYYY" for the picker button
-  function fmtStart(s) {
-    const d = parseDateStr(s);
-    if (!d) return 'Set Start Date';
-    return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
-  }
 
   function setNeverTwice(v) {
     setNeverTwiceRead(v);
@@ -207,13 +222,40 @@ export default function OBApp() {
     loadDayData(selectedDay);
   }, [selectedDay, startDate]);
 
-  const dateInputVal = (() => {
-    if (!startDate) return '';
-    const [m, d, y] = startDate.split('/');
-    return (m && d && y) ? `${y}-${m}-${d}` : '';
-  })();
-
   if (!user) return <Login onLogin={setUser} />;
+
+  if (user && showCover) {
+    return (
+      <CoverPage
+        user={user}
+        startDate={startDate}
+        dayCompleteDates={dayCompleteDates}
+        clientInfoFilled={clientInfoFilled}
+        onClientInfo={() => { setShowCover(false); setSection('info'); }}
+        onEnter={() => {
+          // First entry with no start date stamps today as Day 1.
+          // resolvedStart is used locally because setStartDate is async.
+          let resolvedStart = startDate;
+          if (!resolvedStart) {
+            const today = todayISO();
+            const [y, m, d] = today.split('-');
+            resolvedStart = m + '/' + d + '/' + y;
+            setStartDate(resolvedStart);
+            storage.load('clientInfo', {}).then(ci =>
+              storage.save('clientInfo', { ...ci, dateStarted: resolvedStart })
+            );
+          }
+          let dayNum = 1;
+          for (let n = 1; n <= 14; n++) {
+            if (startPlusDay(resolvedStart, n) === todayISO()) { dayNum = n; break; }
+            if (n === 14) dayNum = 14;
+          }
+          setShowCover(false);
+          setSection(!clientInfoFilled && dayNum === 1 ? 'info' : 'nutrition');
+        }}
+      />
+    );
+  }
 
   if (view === 'archive') {
     return (
@@ -245,7 +287,13 @@ export default function OBApp() {
   };
 
   function renderSection() {
-    if (section === 'info') return <ClientInfo storage={storage} />;
+    if (section === 'info') return (
+      <ClientInfo
+        storage={storage}
+        onDateStarted={v => setStartDate(v)}
+        onFillChange={v => setClientInfoFilled(v)}
+      />
+    );
     if (section === 'nutrition') return <NutritionSection {...dayProps} />;
     if (section === 'alcohol') return <AlcoholSection {...dayProps} />;
     if (section === 'fitness') return <FitnessSection {...dayProps} />;
@@ -281,27 +329,8 @@ export default function OBApp() {
       />
 
       <BrandBar
-        startDate={startDate}
-        fmtStart={fmtStart}
-        dateOpen={dateOpen}
-        setDateOpen={setDateOpen}
-        dateInputVal={dateInputVal}
-        onDateChange={e => {
-          const raw = e.target.value;
-          if (!raw) return;
-          const [y, m, d] = raw.split('-');
-          const fmt = `${m}/${d}/${y}`;
-          setStartDate(fmt);
-          setDateOpen(false);
-          storage.load('clientInfo', {}).then(
-            ci => storage.save('clientInfo',
-              { ...ci, dateStarted: fmt })
-          );
-        }}
         neverTwiceRead={neverTwiceRead}
         setNeverTwice={setNeverTwice}
-        selectedDay={selectedDay}
-        onDaySelect={setSelectedDay}
       />
 
       <div style={{

@@ -2,7 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { S } from '../utils/styles.js';
 import { Field, SaveNote } from './Shared';
 
-export default function ClientInfo({ storage }) {
+// Mirrors CI_REQUIRED in app/OBApp.jsx — kept in sync manually,
+// ClientInfo cannot import from OBApp.
+const CI_REQUIRED = [
+  'fullName','dateStarted','phoneEmail','occupation','primaryGoal',
+  'nonNeg','hobbies','fitnessActivity','eatingHabits','sleepPatterns',
+  'injuries'
+];
+
+function isClientInfoFilled(ci) {
+  return CI_REQUIRED.every(k => ci && typeof ci[k] === 'string'
+    && ci[k].trim().length > 0);
+}
+
+// MM/DD/YYYY, checked for calendar validity as well as shape.
+// new Date(y, m, 0) yields the last day of month m, so leap years
+// resolve correctly without a special case.
+function isValidDate(str) {
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return false;
+  const [m, d, y] = str.split('/').map(Number);
+  if (m < 1 || m > 12) return false;
+  if (d < 1) return false;
+  const daysInMonth = new Date(y, m, 0).getDate();
+  if (d > daysInMonth) return false;
+  return true;
+}
+
+const checkStyle = {
+  color: '#B8860B',
+  fontWeight: 700,
+  marginLeft: 6,
+  fontSize: '1rem',
+};
+
+export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
   const def = {
     fullName: '', dateStarted: '', phoneEmail: '', occupation: '',
     primaryGoal: '', goal2: '', goal3: '', nonNeg: '', hobbies: '',
@@ -12,6 +45,7 @@ export default function ClientInfo({ storage }) {
 
   const [data, setData] = useState(def);
   const [saved, setSaved] = useState(false);
+  const [dateError, setDateError] = useState(false);
 
   useEffect(() => {
     storage.load('clientInfo', def).then(d => d && setData(d));
@@ -20,10 +54,33 @@ export default function ClientInfo({ storage }) {
   function upd(k, v) {
     const n = { ...data, [k]: v };
     setData(n);
+
+    // A malformed start date stays on screen but is never persisted —
+    // the day-number system reads dateStarted and cannot parse garbage.
+    if (k === 'dateStarted') {
+      const t = v.trim();
+      if (t && !isValidDate(t)) {
+        setDateError(true);
+        return;
+      }
+      setDateError(false);
+      // Keep OBApp's startDate in step — the day-number system reads it.
+      if (onDateStarted && t) onDateStarted(t);
+    }
+
     storage.save('clientInfo', n);
+    if (onFillChange) onFillChange(isClientInfoFilled(n));
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   }
+
+  // Gold check appears once a required field carries a value.
+  const lbl = (text, k) => (
+    <>
+      {text}
+      {String(data[k] || '').trim() && <span style={checkStyle}>✓</span>}
+    </>
+  );
 
   const inp = k => (
     <input style={S.input} value={data[k] || ''} onChange={e => upd(k, e.target.value)} />
@@ -45,20 +102,38 @@ export default function ClientInfo({ storage }) {
           Complete this section once at the start of your 14-day period. Be specific — vague answers produce ambiguity which may taint the results.
         </div>
         <div style={S.grid2}>
-          <Field label="Full Name">{inp('fullName')}</Field>
-          <Field label="Date Started (MM/DD/YYYY)">{inp('dateStarted')}</Field>
+          <Field label={lbl('Full Name', 'fullName')}>{inp('fullName')}</Field>
+          <Field label={lbl('Date Started (MM/DD/YYYY)', 'dateStarted')}>
+            <input
+              style={{
+                ...S.input,
+                border: dateError ? '2px solid #B02020' : S.input.border,
+              }}
+              value={data.dateStarted || ''}
+              onChange={e => upd('dateStarted', e.target.value)}
+            />
+            {dateError && (
+              <div style={{
+                fontSize: '0.78rem',
+                color: '#B02020',
+                marginTop: 4,
+              }}>
+                Please use MM/DD/YYYY format (e.g. 07/20/2026)
+              </div>
+            )}
+          </Field>
         </div>
-        <Field label="Phone / Email">{inp('phoneEmail')}</Field>
-        <Field label="Occupation & Work Schedule">{ta('occupation', 3)}</Field>
-        <Field label="Goal 1 — Primary Goal: why are you here?">{ta('primaryGoal', 3)}</Field>
+        <Field label={lbl('Phone / Email', 'phoneEmail')}>{inp('phoneEmail')}</Field>
+        <Field label={lbl('Occupation & Work Schedule', 'occupation')}>{ta('occupation', 3)}</Field>
+        <Field label={lbl('Goal 1 — Primary Goal: why are you here?', 'primaryGoal')}>{ta('primaryGoal', 3)}</Field>
         <Field label="Goal 2">{ta('goal2', 2)}</Field>
         <Field label="Goal 3">{ta('goal3', 2)}</Field>
-        <Field label="Current Non-Negotiables">{ta('nonNeg', 2)}</Field>
-        <Field label="Hobbies & Free Time">{ta('hobbies', 2)}</Field>
-        <Field label="Current Fitness Activity">{ta('fitnessActivity', 2)}</Field>
-        <Field label="Current Eating Habits — describe a typical day">{ta('eatingHabits', 3)}</Field>
-        <Field label="Sleep — typical bedtime, wake time, quality">{ta('sleepPatterns', 2)}</Field>
-        <Field label="Injuries, Medical Conditions, or Physical Limitations">{ta('injuries', 2)}</Field>
+        <Field label={lbl('Current Non-Negotiables', 'nonNeg')}>{ta('nonNeg', 2)}</Field>
+        <Field label={lbl('Hobbies & Free Time', 'hobbies')}>{ta('hobbies', 2)}</Field>
+        <Field label={lbl('Current Fitness Activity', 'fitnessActivity')}>{ta('fitnessActivity', 2)}</Field>
+        <Field label={lbl('Current Eating Habits — describe a typical day', 'eatingHabits')}>{ta('eatingHabits', 3)}</Field>
+        <Field label={lbl('Sleep — typical bedtime, wake time, quality', 'sleepPatterns')}>{ta('sleepPatterns', 2)}</Field>
+        <Field label={lbl('Injuries, Medical Conditions, or Physical Limitations', 'injuries')}>{ta('injuries', 2)}</Field>
         <div style={S.addlWrap}>
           <div style={S.addlLabel}>Additional Information</div>
           {ta('additional', 4)}

@@ -1,12 +1,9 @@
 import React from 'react';
-import { GOLD, DARK, BORDER } from '../utils/constants';
+import { GOLD, DARK } from '../utils/constants';
 
 const LOGO_SRC = '/jpglogo.png';
 
 export default function BrandBar({
-  startDate, fmtStart,
-  dateOpen, setDateOpen,
-  dateInputVal, onDateChange,
   neverTwiceRead, setNeverTwice,
 }) {
   return (
@@ -16,7 +13,6 @@ export default function BrandBar({
         borderBottom: `4px solid ${GOLD}`,
         padding: '18px 20px',
       }}
-      onClick={() => setDateOpen(false)}
     >
       <div style={{
         maxWidth: 900,
@@ -57,68 +53,6 @@ export default function BrandBar({
               letterSpacing: 0.5,
               marginTop: 3,
             }}>OnBoarding & Tracking</div>
-          </div>
-
-          {/* Start date picker */}
-          <div
-            style={{
-              position: 'relative',
-              display: 'inline-block',
-              marginBottom: 10,
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setDateOpen(o => !o)}
-              style={{
-                background: '#fff',
-                border: `1px solid ${GOLD}`,
-                borderRadius: 5,
-                padding: '4px 14px',
-                fontSize: 12,
-                fontWeight: 600,
-                color: DARK,
-                cursor: 'pointer',
-                letterSpacing: 0.3,
-              }}
-            >
-              {startDate
-                ? fmtStart(startDate)
-                : 'Set Start Date'}
-              <span style={{
-                marginLeft: 8,
-                fontSize: 16,
-                color: GOLD,
-                lineHeight: 1,
-              }}>▾</span>
-            </button>
-            {dateOpen && (
-              <div style={{
-                position: 'absolute',
-                top: '110%',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: '#fff',
-                border: `1px solid ${BORDER}`,
-                borderRadius: 8,
-                boxShadow:
-                  '0 4px 20px rgba(0,0,0,0.15)',
-                padding: 12,
-                minWidth: 260,
-                zIndex: 200,
-              }}>
-                <input
-                  type="date"
-                  value={dateInputVal}
-                  onChange={onDateChange}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    marginBottom: 8,
-                  }}
-                />
-              </div>
-            )}
           </div>
 
           {/* Never Twice */}
