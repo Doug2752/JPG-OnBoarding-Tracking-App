@@ -31,8 +31,7 @@ export default function AlcoholSection({
         <div style={S.blockGold}>SECTION 02 — ALCOHOL TRACKING</div>
         <div style={S.card}>
           <div style={S.infoBox}>
-            Set a start date first — use the date picker at the top
-            of the page. Daily entries are keyed to your start date.
+            Your start date has not been set yet. Return to the Home screen and tap Start Today's Entry to begin, or enter your start date on the Client Info page.
           </div>
         </div>
       </div>
