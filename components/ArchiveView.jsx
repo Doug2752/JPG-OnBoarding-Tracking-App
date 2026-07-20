@@ -1,6 +1,6 @@
 import React from 'react';
 import { S } from '../utils/styles';
-import { GOLD, GOLD_LIGHT, MONTHS } from '../utils/constants';
+import { GOLD, GOLD_LIGHT, STEEL, MONTHS } from '../utils/constants';
 
 // Format a YYYY-MM-DD ISO string as "Month D, YYYY".
 // Parsed from parts to avoid timezone shifts.
@@ -24,8 +24,28 @@ const gbtn = (extra = {}) => ({
   ...extra,
 });
 
+const sectionHead = {
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: 0.5,
+  color: '#666',
+  margin: '20px 0 8px',
+};
+
+const rowStyle = {
+  background: '#fff',
+  border: '1px solid #ddd',
+  borderRadius: 4,
+  padding: '10px 16px',
+  marginBottom: 8,
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+};
+
 export default function ArchiveView({
   view, setView, onLogout, firstName, dayCompleteDates = [],
+  reflectSubmissions = [],
 }) {
   return (
     <div style={S.app}>
@@ -88,6 +108,7 @@ export default function ArchiveView({
         maxWidth: 900,
         margin: '0 auto',
       }}>
+        <div style={sectionHead}>DAYS COMPLETE</div>
         {dayCompleteDates.length === 0 ? (
           <div style={{
             padding: 40,
@@ -98,22 +119,10 @@ export default function ArchiveView({
             No completed days yet
           </div>
         ) : (
-          <div style={{
-            maxHeight: 'calc(100vh - 120px)',
-            overflowY: 'auto',
-            padding: 16,
-          }}>
-            {[...dayCompleteDates].sort((a, b) => (a < b ? 1 : a > b ? -1 : 0)).map(iso => (
-              <div key={iso} style={{
-                background: '#fff',
-                border: '1px solid #ddd',
-                borderRadius: 4,
-                padding: '10px 16px',
-                marginBottom: 8,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
+          [...dayCompleteDates]
+            .sort((a, b) => (a < b ? 1 : a > b ? -1 : 0))
+            .map(iso => (
+              <div key={iso} style={rowStyle}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#222' }}>
                   {fmtIso(iso)}
                 </span>
@@ -121,8 +130,35 @@ export default function ArchiveView({
                   ✓ Day Complete
                 </span>
               </div>
-            ))}
+            ))
+        )}
+
+        <div style={sectionHead}>REFLECTIONS SUBMITTED</div>
+        {reflectSubmissions.length === 0 ? (
+          <div style={{
+            padding: 40,
+            textAlign: 'center',
+            color: '#666',
+            fontSize: 14,
+          }}>
+            No reflections submitted yet.
           </div>
+        ) : (
+          [...reflectSubmissions]
+            .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+            .map(r => (
+              <div key={'w' + r.week + '_' + r.date} style={rowStyle}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#222' }}>
+                  Week {r.week} Reflection
+                  <span style={{ color: '#666', fontWeight: 400, marginLeft: 8 }}>
+                    {fmtIso(r.date)}
+                  </span>
+                </span>
+                <span style={{ color: STEEL, fontSize: 12, fontWeight: 700 }}>
+                  ✓ Submitted
+                </span>
+              </div>
+            ))
         )}
       </div>
     </div>

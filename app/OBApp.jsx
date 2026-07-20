@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStorage } from '../services/storage';
 import { S } from '../utils/styles';
-import { GOLD, MONTHS } from '../utils/constants';
+import { GOLD, DARK, BG, MONTHS } from '../utils/constants';
 import { parseDateStr, startPlusDay } from '../utils/date';
 import Login from '../components/Login.jsx';
 import InstructionsPanel from '../components/InstructionsPanel.jsx';
@@ -79,6 +79,9 @@ export default function OBApp() {
   const [dayData, setDayData] = useState({});
   const [dayCompleteDates, setDayCompleteDates] = useState([]);
   const [attempted, setAttempted] = useState(false);
+  const [reflectSubmissions, setReflectSubmissions] = useState([]);
+  const [reflectPopup, setReflectPopup] = useState(null);
+  const [popupSeen, setPopupSeen] = useState({ w1: false, w2: false });
 
   const storage = user ? makeStorage(user) : null;
 
@@ -90,6 +93,12 @@ export default function OBApp() {
     storage.load('neverTwiceRead', false).then(v => setNeverTwiceRead(v));
     storage.loadList('obt_day_complete').then(
       arr => setDayCompleteDates(arr || [])
+    );
+    storage.load('reflect_submissions', []).then(
+      arr => setReflectSubmissions(arr || [])
+    );
+    storage.load('reflect_popup_seen', { w1: false, w2: false }).then(
+      v => setPopupSeen(v || { w1: false, w2: false })
     );
     storage.load('instrSeen6', false).then(seen => {
       if (!seen) {
@@ -159,6 +168,41 @@ export default function OBApp() {
     if (storage) storage.save('obt_day_complete', filtered);
   }
 
+  function onReflectSubmit(week, dateISO) {
+    const next = [...reflectSubmissions, { week, date: dateISO }];
+    setReflectSubmissions(next);
+    if (storage) storage.save('reflect_submissions', next);
+  }
+
+  // Mark a week's popup seen so it never shows again, then close it.
+  function dismissReflectPopup(week, goToReflect) {
+    const next = { ...popupSeen, ['w' + week]: true };
+    setPopupSeen(next);
+    if (storage) storage.save('reflect_popup_seen', next);
+    setReflectPopup(null);
+    if (goToReflect) setSection('reflect');
+  }
+
+  // Fire the reflection popup when Day 7 / Day 14 is marked complete.
+  // Day 7 is startDate + 6 days; Day 14 is startDate + 13 days.
+  useEffect(() => {
+    if (!startDate) return;
+    const w1Done = reflectSubmissions.some(r => r.week === 1);
+    const w2Done = reflectSubmissions.some(r => r.week === 2);
+    const day14 = startPlusDay(startDate, 14);
+    if (day14 && dayCompleteDates.includes(day14) && !w2Done && !popupSeen.w2) {
+      setReflectPopup(2);
+      return;
+    }
+    const day7 = startPlusDay(startDate, 7);
+    if (day7 && dayCompleteDates.includes(day7) && !w1Done && !popupSeen.w1) {
+      setReflectPopup(1);
+      return;
+    }
+    // Authoritative — clears a popup opened before popup_seen finished loading.
+    setReflectPopup(null);
+  }, [dayCompleteDates, startDate, reflectSubmissions, popupSeen]);
+
   useEffect(() => {
     loadDayData(selectedDay);
   }, [selectedDay, startDate]);
@@ -179,6 +223,7 @@ export default function OBApp() {
         onLogout={() => setUser(null)}
         firstName={user}
         dayCompleteDates={dayCompleteDates}
+        reflectSubmissions={reflectSubmissions}
       />
     );
   }
@@ -206,7 +251,14 @@ export default function OBApp() {
     if (section === 'fitness') return <FitnessSection {...dayProps} />;
     if (section === 'sleep') return <SleepSection {...dayProps} />;
     if (section === 'timelife') return <TimeLifeSection {...dayProps} />;
-    if (section === 'reflect') return <ReflectSection storage={storage} />;
+    if (section === 'reflect') return (
+      <ReflectSection
+        storage={storage}
+        dayCompleteDates={dayCompleteDates}
+        reflectSubmissions={reflectSubmissions}
+        onReflectSubmit={onReflectSubmit}
+      />
+    );
     if (section === 'results') return <SummaryResults storage={storage} />;
     return null;
   }
@@ -293,6 +345,77 @@ export default function OBApp() {
 
       {showInstr && (
         <InstructionsPanel onClose={() => setShowInstr(false)} />
+      )}
+
+      {reflectPopup !== null && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.65)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 500,
+        }}>
+          <div style={{
+            background: BG,
+            border: `2px solid ${GOLD}`,
+            borderRadius: 6,
+            padding: '24px 28px',
+            maxWidth: 420,
+            width: '90%',
+            boxShadow: '0 6px 24px rgba(0,0,0,0.5)',
+          }}>
+            <div style={{
+              fontSize: 14,
+              fontWeight: 700,
+              letterSpacing: 0.5,
+              color: DARK,
+              marginBottom: 10,
+            }}>
+              WEEK {reflectPopup} REFLECTION
+            </div>
+            <div style={{
+              fontSize: 13,
+              color: DARK,
+              lineHeight: 1.5,
+              marginBottom: 20,
+            }}>
+              You have completed Day {reflectPopup === 1 ? 7 : 14}. Time to
+              complete your Week {reflectPopup} Reflection.
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={() => dismissReflectPopup(reflectPopup, true)}
+                style={{
+                  padding: '9px 20px',
+                  borderRadius: 5,
+                  border: '1.5px solid #000',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: 0.5,
+                  background: '#ddb94a',
+                  color: '#000',
+                }}
+              >Go to Reflect</button>
+              <button
+                onClick={() => dismissReflectPopup(reflectPopup, false)}
+                style={{
+                  padding: '9px 20px',
+                  borderRadius: 5,
+                  border: '1px solid #bbb',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: 0.5,
+                  background: '#e0e0e0',
+                  color: DARK,
+                }}
+              >Dismiss</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Content */}
