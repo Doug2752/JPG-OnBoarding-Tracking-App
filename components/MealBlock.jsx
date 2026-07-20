@@ -2,7 +2,7 @@ import React from 'react';
 import { GOLD, BORDER } from '../utils/constants.js';
 import { S } from '../utils/styles.js';
 
-export default function MealBlock({ mealKey, mealLabel, dayVal, estimates, estimating, getVal, onUpd, onEstimate }) {
+export default function MealBlock({ mealKey, mealLabel, dayVal, estimates, estimating, getVal, onUpd, onEstimate, error }) {
   const estKey = dayVal + '_' + mealKey;
   const est = estimates[estKey];
   const isLoading = estimating[estKey];
@@ -30,13 +30,16 @@ export default function MealBlock({ mealKey, mealLabel, dayVal, estimates, estim
         Describe food and drink. Press Return to calculate calories.
       </div>
       <textarea
-        style={S.textarea}
+        style={error ? { ...S.textarea, border: '2px solid #cc0000' } : S.textarea}
         placeholder={placeholder}
         value={getVal(mealKey)}
         onChange={e => onUpd(mealKey, e.target.value)}
         onBlur={e => onEstimate(mealKey, e.target.value)}
         onKeyDown={handleKey}
       />
+      {error && (
+        <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
+      )}
       {isLoading && (
         <div style={{ ...S.calEst, color: '#aaa' }}>⏳ Estimating calories...</div>
       )}

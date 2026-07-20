@@ -27,10 +27,9 @@ const WORK_OPTIONS = [
 export default function TimeLifeSection({
   dayData, selectedDay, onSave, startDate, onDaySelect,
   dayCompleteDates, onMarkDayComplete,
-  onUnlockDay, isoForDay, isDayComplete, dayComplete,
+  onUnlockDay, isoForDay, isDayComplete, dayComplete, attempted,
 }) {
   const [saved, setSaved] = useState(false);
-  const [oneThingErr, setOneThingErr] = useState(false);
 
   const dd = dayData.timelife || {
     workHours: '', nonNegList: [], _nonNegPending: '',
@@ -39,6 +38,37 @@ export default function TimeLifeSection({
     pitHrs: '', pitMins: '', mood: '', rating: null,
     oneThing: '', addl: '',
   };
+
+  const oneThingMissing = attempted && (!dd.oneThing || !dd.oneThing.trim());
+  const nonNegMissing = attempted && (!dd.nonNegList || dd.nonNegList.length === 0);
+  const screenOtherMissing = attempted && (!dd.screenOther || !dd.screenOther.trim());
+  const ratingMissing = attempted && !dd.rating;
+
+  const n = dayData.nutrition || {};
+  const nutritionMissing = attempted && (!n.am || !n.midday || !n.pm);
+  const a = dayData.alcohol || {};
+  const alcoholMissing = attempted && !(
+    (a.beer && String(a.beer).trim()) ||
+    (a.mixed && String(a.mixed).trim()) ||
+    (a.otherNone && String(a.otherNone).trim())
+  );
+  const f = dayData.fitness || {};
+  const fitnessMissing = attempted && f.activity && f.activity !== '' && (!f.duration || !f.intensity);
+  const sl = dayData.sleep || {};
+  const sleepMissing = attempted && (
+    !sl.bedtime || !sl.fallAsleep || !sl.wakeTime ||
+    !sl.timesUp || !sl.durationAwake || !sl.quality
+  );
+
+  const errorLines = [];
+  if (nutritionMissing) errorLines.push('Nutrition — AM, Midday, and PM meals required');
+  if (alcoholMissing) errorLines.push('Alcohol — at least one field required');
+  if (fitnessMissing) errorLines.push('Fitness — Duration and Intensity required when activity selected');
+  if (sleepMissing) errorLines.push('Sleep — all time and quality fields required');
+  if (nonNegMissing) errorLines.push('Time & Life — at least one Non-Negotiable required');
+  if (screenOtherMissing) errorLines.push('Time & Life — Screen Time Other required');
+  if (ratingMissing) errorLines.push('Time & Life — PM Check-In rating required');
+  if (oneThingMissing) errorLines.push("Time & Life — Tomorrow's One Thing required");
 
   function upd(k, v) {
     onSave('timelife', { ...dd, [k]: v });
@@ -157,7 +187,7 @@ export default function TimeLifeSection({
           ))}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
             <select
-              style={{ ...S.select, flex: '0 0 100px' }}
+              style={{ ...S.select, flex: '0 0 100px', border: nonNegMissing ? '2px solid #cc0000' : undefined }}
               value={dd._nonNegPending || ''}
               disabled={dayComplete}
               onChange={e => {
@@ -179,6 +209,9 @@ export default function TimeLifeSection({
               ))}
             </select>
           </div>
+          {nonNegMissing && (
+            <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
+          )}
         </div>
 
         <div style={S.grid2}>
@@ -192,12 +225,15 @@ export default function TimeLifeSection({
           </Field>
           <Field label={<>Screen Time — Other{dd.screenOther && dd.screenOther.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="TV, computer, or phone not related to social media">
             <input
-              style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined }}
+              style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: screenOtherMissing ? '2px solid #cc0000' : undefined }}
               readOnly={dayComplete}
               placeholder="e.g. 2 hrs"
               value={dd.screenOther || ''}
               onChange={e => upd('screenOther', e.target.value)}
             />
+            {screenOtherMissing && (
+              <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
+            )}
           </Field>
         </div>
 
@@ -264,7 +300,12 @@ export default function TimeLifeSection({
           <div style={{ fontSize: '11px', color: STEEL_LIGHT, marginBottom: '10px' }}>
             Rate your day: 1 = Poor · 10 = Outstanding
           </div>
-          <RatingButtons value={dd.rating} steel onChange={v => upd('rating', v)} disabled={dayComplete} />
+          <div style={ratingMissing ? { border: '2px solid #cc0000', borderRadius: 4 } : undefined}>
+            <RatingButtons value={dd.rating} steel onChange={v => upd('rating', v)} disabled={dayComplete} />
+          </div>
+          {ratingMissing && (
+            <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
+          )}
           {dd.rating && (
             <div style={{ marginTop: '12px', display: 'flex', gap: '14px', alignItems: 'center' }}>
               <div>
@@ -277,7 +318,7 @@ export default function TimeLifeSection({
           )}
         </div>
 
-        <div style={{ ...S.oneThingBlock, borderColor: oneThingErr ? '#ff0000' : RED }}>
+        <div style={{ ...S.oneThingBlock, borderColor: oneThingMissing ? '#ff0000' : RED }}>
           <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: RED, marginBottom: '4px', letterSpacing: '0.5px' }}>
             TOMORROW'S ONE THING * <span style={{ fontSize: '10px', fontWeight: '400' }}>(Required)</span>{dd.oneThing && dd.oneThing.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}
           </label>
@@ -285,16 +326,13 @@ export default function TimeLifeSection({
             The single task that — by completing or starting it — makes everything else easier or unnecessary.
           </label>
           <textarea
-            style={{ ...S.textarea, border: '1px solid ' + (oneThingErr ? '#ff0000' : RED), background: dayComplete ? '#f5f5f3' : '#fff9f9', minHeight: '66px' }}
+            style={{ ...S.textarea, border: '1px solid ' + (oneThingMissing ? '#ff0000' : RED), background: dayComplete ? '#f5f5f3' : '#fff9f9', minHeight: '66px' }}
             readOnly={dayComplete}
             placeholder="My one task for tomorrow..."
             value={dd.oneThing || ''}
-            onChange={e => {
-              upd('oneThing', e.target.value);
-              if (e.target.value) setOneThingErr(false);
-            }}
+            onChange={e => upd('oneThing', e.target.value)}
           />
-          {oneThingErr && (
+          {oneThingMissing && (
             <div style={{ color: RED, fontSize: '11px', marginTop: '4px' }}>
               ⚠ Tomorrow's One Thing is required to complete this day's entry.
             </div>
@@ -307,6 +345,19 @@ export default function TimeLifeSection({
         </div>
 
         <SaveNote show={saved} />
+
+        {attempted && errorLines.length > 0 && (
+          <div style={{ background: '#fff3f3', border: '2px solid #cc0000', borderRadius: 6, padding: 12, marginBottom: 16 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#cc0000', marginBottom: 8 }}>
+              ⚠ Complete the following before marking day complete
+            </div>
+            {errorLines.map((line, i) => (
+              <div key={i} style={{ fontSize: 11, color: '#cc0000', marginBottom: 4 }}>
+                • {line}
+              </div>
+            ))}
+          </div>
+        )}
 
         {(() => {
           const iso = isoForDay(selectedDay);
@@ -335,7 +386,6 @@ export default function TimeLifeSection({
               ) : (
                 <button
                   onClick={onMarkDayComplete}
-                  disabled={!dayComplete}
                   style={{
                     background: GOLD,
                     color: '#000',
@@ -344,8 +394,8 @@ export default function TimeLifeSection({
                     padding: '10px 28px',
                     fontSize: 13,
                     fontWeight: 700,
-                    opacity: dayComplete ? 1 : 0.4,
-                    cursor: dayComplete ? 'pointer' : 'not-allowed',
+                    opacity: 1,
+                    cursor: 'pointer',
                   }}
                 >Mark Day Complete</button>
               )}

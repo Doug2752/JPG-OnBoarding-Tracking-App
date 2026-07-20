@@ -7,7 +7,7 @@ import {
 } from './Shared';
 
 export default function SleepSection({
-  storage, dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete,
+  storage, dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete, attempted,
 }) {
   const [saved, setSaved] = useState(false);
 
@@ -110,6 +110,16 @@ export default function SleepSection({
 
   const autoHrs = calcTotalHrs(dd);
 
+  const bedtimeMissing = attempted && !dd.bedtime;
+  const fallAsleepMissing = attempted && !dd.fallAsleep;
+  const wakeTimeMissing = attempted && !dd.wakeTime;
+  const timesUpMissing = attempted && !dd.timesUp;
+  const durationAwakeMissing = attempted && !dd.durationAwake;
+  const qualityMissing = attempted && !dd.quality;
+
+  const reqBorder = { border: '2px solid #cc0000', borderRadius: 4 };
+  const reqMsg = { color: '#cc0000', fontSize: 11, marginTop: 4 };
+
   const inputSm = { ...S.input, fontSize: '12px', padding: '7px 8px' };
   const rowStyle = { display: 'grid', gap: '10px', marginBottom: '10px' };
 
@@ -168,38 +178,47 @@ export default function SleepSection({
 
         <div style={{ ...rowStyle, gridTemplateColumns: '1fr 1fr' }}>
           <SleepFieldCol label={<>Bedtime{dd.bedtime && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Time you got into bed">
-            <InputWithToggle
-              value={dd.bedtime}
-              placeholder="9:30"
-              onChange={e => upd('bedtime', e.target.value)}
-              unitLabel={bedUnit}
-              onToggle={toggleBed}
-              readOnly={dayComplete}
-            />
+            <div style={bedtimeMissing ? reqBorder : undefined}>
+              <InputWithToggle
+                value={dd.bedtime}
+                placeholder="9:30"
+                onChange={e => upd('bedtime', e.target.value)}
+                unitLabel={bedUnit}
+                onToggle={toggleBed}
+                readOnly={dayComplete}
+              />
+            </div>
+            {bedtimeMissing && <div style={reqMsg}>Required</div>}
           </SleepFieldCol>
           <SleepFieldCol label={<>Time to Fall Asleep{dd.fallAsleep && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="How long until asleep">
-            <InputWithToggle
-              type="number"
-              value={dd.fallAsleep}
-              placeholder="15"
-              onChange={e => upd('fallAsleep', e.target.value)}
-              unitLabel={fallUnit}
-              onToggle={toggleFall}
-              readOnly={dayComplete}
-            />
+            <div style={fallAsleepMissing ? reqBorder : undefined}>
+              <InputWithToggle
+                type="number"
+                value={dd.fallAsleep}
+                placeholder="15"
+                onChange={e => upd('fallAsleep', e.target.value)}
+                unitLabel={fallUnit}
+                onToggle={toggleFall}
+                readOnly={dayComplete}
+              />
+            </div>
+            {fallAsleepMissing && <div style={reqMsg}>Required</div>}
           </SleepFieldCol>
         </div>
 
         <div style={{ ...rowStyle, gridTemplateColumns: '1fr 1fr' }}>
           <SleepFieldCol label={<>Wake Time{dd.wakeTime && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Time you got out of bed">
-            <InputWithToggle
-              value={dd.wakeTime}
-              placeholder="5:00"
-              onChange={e => upd('wakeTime', e.target.value)}
-              unitLabel={wakeUnit}
-              onToggle={toggleWake}
-              readOnly={dayComplete}
-            />
+            <div style={wakeTimeMissing ? reqBorder : undefined}>
+              <InputWithToggle
+                value={dd.wakeTime}
+                placeholder="5:00"
+                onChange={e => upd('wakeTime', e.target.value)}
+                unitLabel={wakeUnit}
+                onToggle={toggleWake}
+                readOnly={dayComplete}
+              />
+            </div>
+            {wakeTimeMissing && <div style={reqMsg}>Required</div>}
           </SleepFieldCol>
           <SleepFieldCol label="Total Sleep Hours" labelSm="Auto-calculated">
             <div
@@ -222,22 +241,26 @@ export default function SleepSection({
             <input
               type="number"
               min="0"
-              style={{ ...inputSm, width: '100%', background: dayComplete ? '#f5f5f3' : undefined }}
+              style={{ ...inputSm, width: '100%', background: dayComplete ? '#f5f5f3' : undefined, border: timesUpMissing ? '2px solid #cc0000' : undefined }}
               readOnly={dayComplete}
               value={dd.timesUp || ''}
               onChange={e => upd('timesUp', e.target.value)}
             />
+            {timesUpMissing && <div style={reqMsg}>Required</div>}
           </SleepFieldCol>
           <SleepFieldCol label={<>Awake Duration{dd.durationAwake && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Total time awake across all interruptions">
-            <InputWithToggle
-              type="number"
-              value={dd.durationAwake}
-              placeholder="0"
-              onChange={e => upd('durationAwake', e.target.value)}
-              unitLabel={awakeUnit}
-              onToggle={toggleAwake}
-              readOnly={dayComplete}
-            />
+            <div style={durationAwakeMissing ? reqBorder : undefined}>
+              <InputWithToggle
+                type="number"
+                value={dd.durationAwake}
+                placeholder="0"
+                onChange={e => upd('durationAwake', e.target.value)}
+                unitLabel={awakeUnit}
+                onToggle={toggleAwake}
+                readOnly={dayComplete}
+              />
+            </div>
+            {durationAwakeMissing && <div style={reqMsg}>Required</div>}
           </SleepFieldCol>
           <SleepFieldCol label="Sleep Score (1–100)" labelSm="Wearable or app">
             <input
@@ -267,7 +290,10 @@ export default function SleepSection({
         </Field>
 
         <Field label={<>Sleep Quality 1–10{dd.quality && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
-          <RatingButtons value={dd.quality} onChange={v => upd('quality', v)} disabled={dayComplete} />
+          <div style={qualityMissing ? reqBorder : undefined}>
+            <RatingButtons value={dd.quality} onChange={v => upd('quality', v)} disabled={dayComplete} />
+          </div>
+          {qualityMissing && <div style={reqMsg}>Required</div>}
         </Field>
 
         <div style={S.addlWrap}>

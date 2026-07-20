@@ -78,6 +78,7 @@ export default function OBApp() {
   const [selectedDay, setSelectedDay] = useState(1);
   const [dayData, setDayData] = useState({});
   const [dayCompleteDates, setDayCompleteDates] = useState([]);
+  const [attempted, setAttempted] = useState(false);
 
   const storage = user ? makeStorage(user) : null;
 
@@ -136,7 +137,11 @@ export default function OBApp() {
   }
 
   function onMarkDayComplete() {
-    if (!isDayComplete(dayData)) return;
+    if (!isDayComplete(dayData)) {
+      setAttempted(true);
+      return;
+    }
+    setAttempted(false);
     const iso = isoForDay(selectedDay);
     if (!iso) return;
     if (!dayCompleteDates.includes(iso)) {
@@ -150,6 +155,7 @@ export default function OBApp() {
     if (!iso) return;
     const filtered = dayCompleteDates.filter(d => d !== iso);
     setDayCompleteDates(filtered);
+    setAttempted(false);
     if (storage) storage.save('obt_day_complete', filtered);
   }
 
@@ -190,6 +196,7 @@ export default function OBApp() {
     onMarkDayComplete,
     onUnlockDay,
     isoForDay,
+    attempted,
   };
 
   function renderSection() {

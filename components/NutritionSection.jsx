@@ -28,7 +28,7 @@ async function estimateCalories(text) {
 }
 
 export default function NutritionSection({
-  storage, dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete,
+  storage, dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete, attempted,
 }) {
   const [saved, setSaved] = useState(false);
   const [recentSupps, setRecentSupps] = useState([]);
@@ -132,15 +132,18 @@ export default function NutritionSection({
           <MealBlock mealKey="am"
             mealLabel={<>AM{dd.am && dd.am.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
             dayVal={selectedDay} estimates={estimates} estimating={estimating}
-            getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
+            getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate}
+            error={attempted && !dd.am} />
           <MealBlock mealKey="midday"
             mealLabel={<>Midday{dd.midday && dd.midday.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
             dayVal={selectedDay} estimates={estimates} estimating={estimating}
-            getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
+            getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate}
+            error={attempted && !dd.midday} />
           <MealBlock mealKey="pm"
             mealLabel={<>PM{dd.pm && dd.pm.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
             dayVal={selectedDay} estimates={estimates} estimating={estimating}
-            getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate} />
+            getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate}
+            error={attempted && !dd.pm} />
         </div>
 
         <div style={{ marginBottom: '12px' }}>
