@@ -43,9 +43,10 @@ function isDayComplete(dd) {
   // otherNone must be filled
   const a = dd.alcohol || {};
   const alcoholFilled =
+    a.alcoholNone === true ||
     (a.beer && String(a.beer).trim()) ||
     (a.mixed && String(a.mixed).trim()) ||
-    (a.otherNone && String(a.otherNone).trim());
+    (a.otherAlc && String(a.otherAlc).trim());
   if (!alcoholFilled) return false;
 
   // FITNESS — if activity selected, duration
@@ -70,7 +71,9 @@ function isDayComplete(dd) {
   const t = dd.timelife || {};
   if (!t.nonNegList || t.nonNegList.length === 0)
     return false;
-  if (!t.screenOther || !t.screenOther.trim())
+  if (!t.screenSocialNone && (!t.screenSocial || !t.screenSocial.trim()))
+    return false;
+  if (!t.screenOtherNone && (!t.screenOther || !t.screenOther.trim()))
     return false;
   if (!t.rating) return false;
   if (!t.oneThing || !t.oneThing.trim())

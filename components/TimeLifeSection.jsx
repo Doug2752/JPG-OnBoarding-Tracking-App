@@ -30,15 +30,16 @@ export default function TimeLifeSection({
 
   const dd = dayData.timelife || {
     workSchedule: '', workHoursNum: '', nonNegList: [], _nonNegPending: '',
-    screenSocial: '', screenOther: '',
+    screenSocial: '', screenSocialNone: false, screenOther: '', screenOtherNone: false,
     familyTimeNone: false, familyTimeHrs: '', familyTimeMins: '',
-    pitHrs: '', pitMins: '', mood: '', rating: null,
+    pitHrs: '', pitMins: '', pitNone: false, mood: '', rating: null,
     oneThing: '', addl: '',
   };
 
   const oneThingMissing = attempted && (!dd.oneThing || !dd.oneThing.trim());
   const nonNegMissing = attempted && (!dd.nonNegList || dd.nonNegList.length === 0);
-  const screenOtherMissing = attempted && (!dd.screenOther || !dd.screenOther.trim());
+  const screenSocialMissing = attempted && !dd.screenSocialNone && (!dd.screenSocial || !dd.screenSocial.trim());
+  const screenOtherMissing = attempted && !dd.screenOtherNone && (!dd.screenOther || !dd.screenOther.trim());
   const ratingMissing = attempted && !dd.rating;
   const workHoursMissing = attempted && dd.workSchedule !== 'Retired' && !dd.workHoursNum && dd.workHoursNum !== 0;
 
@@ -46,9 +47,10 @@ export default function TimeLifeSection({
   const nutritionMissing = attempted && (!n.am || !n.midday || !n.pm);
   const a = dayData.alcohol || {};
   const alcoholMissing = attempted && !(
+    a.alcoholNone === true ||
     (a.beer && String(a.beer).trim()) ||
     (a.mixed && String(a.mixed).trim()) ||
-    (a.otherNone && String(a.otherNone).trim())
+    (a.otherAlc && String(a.otherAlc).trim())
   );
   const f = dayData.fitness || {};
   const fitnessMissing = attempted && f.activity && f.activity !== '' && f.activity !== 'None' && f.activity !== 'Rest' && (!f.duration || !f.intensity);
@@ -64,6 +66,7 @@ export default function TimeLifeSection({
   if (fitnessMissing) errorLines.push('Fitness — Duration and Intensity required when activity selected (not required for None or Rest)');
   if (sleepMissing) errorLines.push('Sleep — all time and quality fields required');
   if (nonNegMissing) errorLines.push('Time & Life — at least one Non-Negotiable required');
+  if (screenSocialMissing) errorLines.push('Time & Life — Screen Time Social Media required');
   if (screenOtherMissing) errorLines.push('Time & Life — Screen Time Other required');
   if (ratingMissing) errorLines.push('Time & Life — PM Check-In rating required');
   if (oneThingMissing) errorLines.push("Time & Life — Tomorrow's One Thing required");
@@ -232,49 +235,77 @@ export default function TimeLifeSection({
         </div>
 
         <div style={S.grid2}>
-          <Field label="Screen Time — Social Media" labelSm="Time scrolling social media platforms">
-            <input
-              style={S.input}
-              placeholder="e.g. 1 hr 30 min"
-              value={dd.screenSocial || ''}
-              onChange={e => upd('screenSocial', e.target.value)}
-            />
-          </Field>
-          <Field label={<>Screen Time — Other{dd.screenOther && dd.screenOther.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="TV, computer, or phone not related to social media">
-            <input
-              style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: screenOtherMissing ? '2px solid #cc0000' : undefined }}
-              readOnly={dayComplete}
-              placeholder="e.g. 2 hrs"
-              value={dd.screenOther || ''}
-              onChange={e => upd('screenOther', e.target.value)}
-            />
-            {screenOtherMissing && (
-              <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
+          <div style={S.field}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <label style={{ ...S.label, flex: '0 0 220px' }}>Screen Time — Social Media</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <input
+                  type="checkbox"
+                  id="screenSocialNone"
+                  checked={dd.screenSocialNone || false}
+                  disabled={dayComplete}
+                  onChange={e => upd('screenSocialNone', e.target.checked)}
+                />
+                <label htmlFor="screenSocialNone" style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}>None</label>
+              </div>
+            </div>
+            <label style={S.labelSm}>Time scrolling social media platforms</label>
+            {!dd.screenSocialNone && (
+              <input
+                style={{ ...S.input, border: screenSocialMissing ? '2px solid #cc0000' : undefined }}
+                placeholder="e.g. 1 hr 30 min"
+                value={dd.screenSocial || ''}
+                onChange={e => upd('screenSocial', e.target.value)}
+              />
             )}
-          </Field>
+          </div>
+          <div style={S.field}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <label style={{ ...S.label, flex: '0 0 220px' }}>Screen Time — Other{dd.screenOther && dd.screenOther.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <input
+                  type="checkbox"
+                  id="screenOtherNone"
+                  checked={dd.screenOtherNone || false}
+                  disabled={dayComplete}
+                  onChange={e => upd('screenOtherNone', e.target.checked)}
+                />
+                <label htmlFor="screenOtherNone" style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}>None</label>
+              </div>
+            </div>
+            <label style={S.labelSm}>TV, computer, or phone not related to social media</label>
+            {!dd.screenOtherNone && (
+              <>
+                <input
+                  style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: screenOtherMissing ? '2px solid #cc0000' : undefined }}
+                  readOnly={dayComplete}
+                  placeholder="e.g. 2 hrs"
+                  value={dd.screenOther || ''}
+                  onChange={e => upd('screenOther', e.target.value)}
+                />
+                {screenOtherMissing && (
+                  <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
         <div style={S.grid2}>
           <div style={S.field}>
-            <label style={S.label}>Relationship Time</label>
-            <label style={S.labelSm}>Total time with others throughout the day — enter in hours and minutes</label>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              margin: '6px 0',
-            }}>
-              <input
-                type="checkbox"
-                id="familyTimeNone"
-                checked={dd.familyTimeNone || false}
-                onChange={e => upd('familyTimeNone', e.target.checked)}
-              />
-              <label
-                htmlFor="familyTimeNone"
-                style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}
-              >None</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <label style={{ ...S.label, flex: '0 0 220px' }}>Relationship Time</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <input
+                  type="checkbox"
+                  id="familyTimeNone"
+                  checked={dd.familyTimeNone || false}
+                  onChange={e => upd('familyTimeNone', e.target.checked)}
+                />
+                <label htmlFor="familyTimeNone" style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}>None</label>
+              </div>
             </div>
+            <label style={S.labelSm}>Total time with others throughout the day — enter in hours and minutes</label>
             {!dd.familyTimeNone && (
               <div style={{ display: 'flex', gap: '8px' }}>
                 <div style={{ flex: 1 }}>
@@ -291,20 +322,33 @@ export default function TimeLifeSection({
             )}
           </div>
           <div style={S.field}>
-            <label style={S.label}>PIT (Personal Investment Time)</label>
-            <label style={S.labelSm}>Time spent reading, studying, journaling, meditation, or deliberate self-development — enter in hours and minutes</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Hours</div>
-                <input type="number" min="0" max="24" style={S.input} placeholder="0"
-                  value={dd.pitHrs || ''} onChange={e => upd('pitHrs', e.target.value)} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Minutes</div>
-                <input type="number" min="0" max="59" style={S.input} placeholder="0"
-                  value={dd.pitMins || ''} onChange={e => upd('pitMins', e.target.value)} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <label style={{ ...S.label, flex: '0 0 220px' }}>PIT (Personal Investment Time)</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <input
+                  type="checkbox"
+                  id="pitNone"
+                  checked={dd.pitNone || false}
+                  onChange={e => upd('pitNone', e.target.checked)}
+                />
+                <label htmlFor="pitNone" style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}>None</label>
               </div>
             </div>
+            <label style={S.labelSm}>Time spent reading, studying, journaling, meditation, or deliberate self-development — enter in hours and minutes</label>
+            {!dd.pitNone && (
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Hours</div>
+                  <input type="number" min="0" max="24" style={S.input} placeholder="0"
+                    value={dd.pitHrs || ''} onChange={e => upd('pitHrs', e.target.value)} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Minutes</div>
+                  <input type="number" min="0" max="59" style={S.input} placeholder="0"
+                    value={dd.pitMins || ''} onChange={e => upd('pitMins', e.target.value)} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

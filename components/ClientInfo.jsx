@@ -37,7 +37,7 @@ const checkStyle = {
 
 export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
   const def = {
-    fullName: '', dateStarted: '', phone: '', email: '', occupation: '',
+    fullName: '', preferredName: '', dateStarted: '', phone: '', email: '', occupation: '',
     primaryGoal: '', goal2: '', goal3: '', nonNeg: '', hobbies: '',
     fitnessActivity: '', eatingHabits: '', sleepPatterns: '',
     injuries: '', additional: '',
@@ -102,7 +102,7 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
           Complete this section once at the start of your 14-day period. Be specific — vague answers produce ambiguity which may taint the results.
         </div>
         <div style={S.grid2}>
-          <Field label={lbl('Full Name', 'fullName')}>{inp('fullName')}</Field>
+          <Field label={lbl('Full Name (first and last)', 'fullName')}>{inp('fullName')}</Field>
           <Field label={lbl('Date Started (MM/DD/YYYY)', 'dateStarted')}>
             <input
               style={{
@@ -123,6 +123,7 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
             )}
           </Field>
         </div>
+        <Field label="Preferred Name">{inp('preferredName')}</Field>
         <div style={{ display: 'flex', gap: 12 }}>
           <div style={{ flex: 1 }}><Field label={lbl('Phone', 'phone')}>{inp('phone')}</Field></div>
           <div style={{ flex: 1 }}><Field label={lbl('Email', 'email')}>{inp('email')}</Field></div>

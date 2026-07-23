@@ -10,13 +10,14 @@ export default function AlcoholSection({
   const [saved, setSaved] = useState(false);
 
   const dd = dayData.alcohol || {
-    beer: '', mixed: '', otherNone: false, notes: '', addl: '',
+    beer: '', mixed: '', otherAlc: '', alcoholNone: false, notes: '', addl: '',
   };
 
   const alcoholMissing = attempted && !(
+    dd.alcoholNone === true ||
     (dd.beer && String(dd.beer).trim()) ||
     (dd.mixed && String(dd.mixed).trim()) ||
-    (dd.otherNone && String(dd.otherNone).trim())
+    (dd.otherAlc && String(dd.otherAlc).trim())
   );
 
   function upd(k, v) {
@@ -72,7 +73,19 @@ export default function AlcoholSection({
             );
           })}
         </div>
-        <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <input
+              type="checkbox"
+              id="alcoholNone"
+              checked={dd.alcoholNone || false}
+              disabled={dayComplete}
+              onChange={e => upd('alcoholNone', e.target.checked)}
+            />
+            <label htmlFor="alcoholNone" style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}>None</label>
+          </div>
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
           <div style={S.field}>
             <label style={S.label}>Beer (12 oz drinks){dd.beer && String(dd.beer).trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
@@ -83,9 +96,9 @@ export default function AlcoholSection({
             <input type="number" min="0" style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: alcoholMissing ? '2px solid #cc0000' : undefined }} readOnly={dayComplete} value={dd.mixed || ''} onChange={e => upd('mixed', e.target.value)} />
           </div>
           <div style={S.field}>
-            <label style={S.label}>Other / None{((dd.beer && String(dd.beer).trim()) || (dd.mixed && String(dd.mixed).trim()) || (dd.otherNone && String(dd.otherNone).trim())) && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
-            <label style={S.labelSm}>Wine, spirits, or write None</label>
-            <input style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: alcoholMissing ? '2px solid #cc0000' : undefined }} readOnly={dayComplete} placeholder="None" value={dd.otherNone || ''} onChange={e => upd('otherNone', e.target.value)} />
+            <label style={S.label}>Other{dd.otherAlc && String(dd.otherAlc).trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
+            <label style={S.labelSm}>Wine, spirits, cocktails — describe and quantity</label>
+            <input style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: alcoholMissing ? '2px solid #cc0000' : undefined }} readOnly={dayComplete} placeholder="Describe..." value={dd.otherAlc || ''} onChange={e => upd('otherAlc', e.target.value)} />
           </div>
         </div>
         {alcoholMissing && (
