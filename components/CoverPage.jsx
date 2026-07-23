@@ -105,6 +105,10 @@ export default function CoverPage({
         flexDirection: 'column',
         alignItems: 'center',
         gap: 0,
+        border: '6px solid #000',
+        margin: '16px',
+        padding: '24px',
+        boxSizing: 'border-box',
       }}>
 
         {/* 1 — Logo. multiply blend drops the file's white background
