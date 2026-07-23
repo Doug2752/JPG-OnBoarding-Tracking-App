@@ -21,7 +21,7 @@ import CoverPage from '../components/CoverPage.jsx';
 // Client Info counts as filled only when all eleven required fields
 // carry a non-empty value. goal2, goal3 and additional are optional.
 const CI_REQUIRED = [
-  'fullName','dateStarted','phoneEmail','occupation','primaryGoal',
+  'fullName','dateStarted','phone','email','occupation','primaryGoal',
   'nonNeg','hobbies','fitnessActivity','eatingHabits','sleepPatterns',
   'injuries'
 ];
