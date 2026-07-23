@@ -10,18 +10,15 @@ import { S } from '../utils/styles.js';
 import { Field, SaveNote, RatingButtons } from './Shared';
 
 const WORK_OPTIONS = [
-  '',
-  'Work from Home',
-  'Office-Based',
-  'Shift Work — Day',
-  'Shift Work — Night',
-  'Remote / Hybrid',
-  '12-Hour Shift',
-  'Retired',
-  '8-Hour Shift',
-  'Day Off',
-  'Travel Day',
-  'Other'
+  { value: 'Retired', label: 'Retired' },
+  { value: 'Work from Home', label: 'Work from Home' },
+  { value: 'Office-Based', label: 'Office-Based' },
+  { value: 'Shift Work — Day', label: 'Shift Work — Day' },
+  { value: 'Shift Work — Night', label: 'Shift Work — Night' },
+  { value: 'Remote / Hybrid', label: 'Remote / Hybrid' },
+  { value: 'Day Off', label: 'Day Off' },
+  { value: 'Travel Day', label: 'Travel Day' },
+  { value: 'Other', label: 'Other' }
 ];
 
 export default function TimeLifeSection({
@@ -32,7 +29,7 @@ export default function TimeLifeSection({
   const [saved, setSaved] = useState(false);
 
   const dd = dayData.timelife || {
-    workHours: '', nonNegList: [], _nonNegPending: '',
+    workSchedule: '', workHoursNum: '', nonNegList: [], _nonNegPending: '',
     screenSocial: '', screenOther: '',
     familyTimeNone: false, familyTimeHrs: '', familyTimeMins: '',
     pitHrs: '', pitMins: '', mood: '', rating: null,
@@ -43,6 +40,7 @@ export default function TimeLifeSection({
   const nonNegMissing = attempted && (!dd.nonNegList || dd.nonNegList.length === 0);
   const screenOtherMissing = attempted && (!dd.screenOther || !dd.screenOther.trim());
   const ratingMissing = attempted && !dd.rating;
+  const workHoursMissing = attempted && dd.workSchedule !== 'Retired' && !dd.workHoursNum && dd.workHoursNum !== 0;
 
   const n = dayData.nutrition || {};
   const nutritionMissing = attempted && (!n.am || !n.midday || !n.pm);
@@ -63,12 +61,13 @@ export default function TimeLifeSection({
   const errorLines = [];
   if (nutritionMissing) errorLines.push('Nutrition — AM, Midday, and PM meals required');
   if (alcoholMissing) errorLines.push('Alcohol — at least one field required');
-  if (fitnessMissing) errorLines.push('Fitness — Duration and Intensity required when activity selected');
+  if (fitnessMissing) errorLines.push('Fitness — Duration and Intensity required when activity selected (not required for None or Rest)');
   if (sleepMissing) errorLines.push('Sleep — all time and quality fields required');
   if (nonNegMissing) errorLines.push('Time & Life — at least one Non-Negotiable required');
   if (screenOtherMissing) errorLines.push('Time & Life — Screen Time Other required');
   if (ratingMissing) errorLines.push('Time & Life — PM Check-In rating required');
   if (oneThingMissing) errorLines.push("Time & Life — Tomorrow's One Thing required");
+  if (workHoursMissing) errorLines.push('Time & Life — Work Hours required');
 
   function upd(k, v) {
     onSave('timelife', { ...dd, [k]: v });
@@ -128,25 +127,44 @@ export default function TimeLifeSection({
         </div>
         <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
 
-        <Field label="Work Hours & Schedule">
+        <Field label="Work Schedule">
           <select
             style={S.select}
-            value={WORK_OPTIONS.includes(dd.workHours) ? dd.workHours : ''}
-            onChange={e => upd('workHours', e.target.value)}
+            value={WORK_OPTIONS.some(o => o.value === dd.workSchedule) ? dd.workSchedule : ''}
+            onChange={e => upd('workSchedule', e.target.value)}
           >
+            <option value="">Select work schedule...</option>
             {WORK_OPTIONS.map(o => (
-              <option key={o} value={o}>{o || 'Select work schedule...'}</option>
+              <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
-          {(!WORK_OPTIONS.includes(dd.workHours) || dd.workHours === 'Other') && (
+          {(dd.workSchedule && !WORK_OPTIONS.some(o => o.value === dd.workSchedule) || dd.workSchedule === 'Other') && (
             <input
               style={{ ...S.input, marginTop: '5px', fontSize: '12px' }}
               placeholder="Describe schedule..."
-              value={dd.workHours === 'Other' ? '' : dd.workHours || ''}
-              onChange={e => upd('workHours', e.target.value)}
+              value={dd.workSchedule === 'Other' ? '' : dd.workSchedule || ''}
+              onChange={e => upd('workSchedule', e.target.value)}
             />
           )}
         </Field>
+
+        {dd.workSchedule !== 'Retired' && (
+          <Field label="Work Hours — hours worked today">
+            <input
+              type="number"
+              min="0"
+              max="24"
+              step="0.5"
+              style={{ ...S.input, border: workHoursMissing ? '2px solid #cc0000' : undefined }}
+              placeholder="e.g. 8"
+              value={dd.workHoursNum ?? ''}
+              onChange={e => upd('workHoursNum', e.target.value)}
+            />
+            {workHoursMissing && (
+              <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Work Hours is required.</div>
+            )}
+          </Field>
+        )}
 
         <div style={S.field}>
           <label style={S.label}>Non-Negotiables{(dd.nonNegList || []).length > 0 && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>

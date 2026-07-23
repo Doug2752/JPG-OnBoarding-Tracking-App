@@ -51,7 +51,7 @@ function isDayComplete(dd) {
   // FITNESS — if activity selected, duration
   // and intensity are required; notes optional
   const f = dd.fitness || {};
-  if (f.activity && f.activity !== '') {
+  if (f.activity && f.activity !== '' && f.activity !== 'None' && f.activity !== 'Rest') {
     if (!f.duration || !f.intensity) return false;
   }
 
@@ -75,6 +75,12 @@ function isDayComplete(dd) {
   if (!t.rating) return false;
   if (!t.oneThing || !t.oneThing.trim())
     return false;
+
+  // WORK HOURS — required unless schedule is Retired
+  const workSchedule = t.workSchedule || '';
+  if (workSchedule !== 'Retired') {
+    if (!t.workHoursNum && t.workHoursNum !== 0) return false;
+  }
 
   return true;
 }

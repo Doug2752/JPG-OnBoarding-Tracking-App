@@ -125,7 +125,7 @@ export default function FitnessSection({
         )}
 
         {activitySet && (
-          <Field label={<>Intensity 1–10 (RPE){dd.intensity && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
+          <Field label={<>Intensity 1–10 (RPE) — 10 = Most Intense{dd.intensity && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
             <div style={intensityMissing ? { border: '2px solid #cc0000', borderRadius: 4 } : undefined}>
               <RatingButtons value={dd.intensity} onChange={v => upd('intensity', v)} disabled={dayComplete} />
             </div>
