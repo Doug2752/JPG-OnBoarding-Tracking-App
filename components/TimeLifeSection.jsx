@@ -53,7 +53,7 @@ export default function TimeLifeSection({
     (a.otherNone && String(a.otherNone).trim())
   );
   const f = dayData.fitness || {};
-  const fitnessMissing = attempted && f.activity && f.activity !== '' && (!f.duration || !f.intensity);
+  const fitnessMissing = attempted && f.activity && f.activity !== '' && f.activity !== 'None' && f.activity !== 'Rest' && (!f.duration || !f.intensity);
   const sl = dayData.sleep || {};
   const sleepMissing = attempted && (
     !sl.bedtime || !sl.fallAsleep || !sl.wakeTime ||
@@ -151,7 +151,7 @@ export default function TimeLifeSection({
         <div style={S.field}>
           <label style={S.label}>Non-Negotiables{(dd.nonNegList || []).length > 0 && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
           <label style={S.labelSm}>
-            Personal commitments or standards you held to today. Select None if not yet established. Use Add to log multiple.
+            Personal commitments or standards you held to today. Select None if not yet established. Use Select Category to log multiple.
           </label>
           {(dd.nonNegList || []).map((item, i) => (
             <div key={i} style={{
@@ -186,7 +186,7 @@ export default function TimeLifeSection({
           ))}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
             <select
-              style={{ ...S.select, flex: '0 0 100px', border: nonNegMissing ? '2px solid #cc0000' : undefined }}
+              style={{ ...S.select, flex: '0 0 160px', border: nonNegMissing ? '2px solid #cc0000' : undefined }}
               value={dd._nonNegPending || ''}
               disabled={dayComplete}
               onChange={e => {

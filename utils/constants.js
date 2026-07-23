@@ -34,6 +34,7 @@ export const MONTHS = ['January','February','March','April','May','June','July',
 
 // ── ACTIVITIES ────────────────────────────────────────────────
 export const ACTIVITIES = [
+  ['None', 0, ''],
   ['Rest', 0, ''],
   ['Running — Outdoor', 600, 'Cardiovascular'],
   ['Running — Treadmill', 580, 'Cardiovascular'],

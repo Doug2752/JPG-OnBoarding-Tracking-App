@@ -288,7 +288,7 @@ export default function SleepSection({
           />
         </Field>
 
-        <Field label={<>Sleep Quality 1–10{dd.quality && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
+        <Field label={<>Sleep Quality 1–10 — 10 = Great{dd.quality && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
           <div style={qualityMissing ? reqBorder : undefined}>
             <RatingButtons value={dd.quality} onChange={v => upd('quality', v)} disabled={dayComplete} />
           </div>
