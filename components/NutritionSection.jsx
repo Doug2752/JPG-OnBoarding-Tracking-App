@@ -28,17 +28,38 @@ async function estimateCalories(text) {
 }
 
 export default function NutritionSection({
-  storage, dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete, attempted,
+  storage, dayData, selectedDay, onSave, startDate, onDaySelect, dayComplete, attempted, isoForDay,
 }) {
   const [saved, setSaved] = useState(false);
   const [recentSupps, setRecentSupps] = useState([]);
   const [estimates, setEstimates] = useState({});
   const [estimating, setEstimating] = useState({});
+  const [priorSuppsAvailable, setPriorSuppsAvailable] = useState(false);
 
   useEffect(() => {
     storage.load('recentSupps6', []).then(d => d && setRecentSupps(d));
     storage.load('calEst6', {}).then(d => d && setEstimates(d));
   }, []);
+
+  async function getPriorDaySuppLog() {
+    if (!isoForDay || !storage) return null;
+    for (let n = selectedDay - 1; n >= 1; n--) {
+      const iso = isoForDay(n);
+      if (!iso) continue;
+      const data = await storage.loadDay(iso, {});
+      const log = data && data.nutrition && data.nutrition.suppLog;
+      if (log && log.length > 0) return log;
+    }
+    return null;
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    getPriorDaySuppLog().then(result => {
+      if (!cancelled) setPriorSuppsAvailable(result !== null);
+    });
+    return () => { cancelled = true; };
+  }, [selectedDay]);
 
   const dd = dayData.nutrition || {
     am: '', midday: '', pm: '', snacks: [], suppLog: [], addl: '',
@@ -181,6 +202,26 @@ export default function NutritionSection({
           <div style={{ fontSize: '10px', color: '#888', marginBottom: '8px', fontStyle: 'italic' }}>
             Include name and dosage for each (e.g. Vitamin D3 — 5,000 IU)
           </div>
+          <button
+            disabled={!priorSuppsAvailable}
+            style={{
+              marginBottom: '8px',
+              padding: '7px 14px',
+              fontSize: '11px',
+              fontWeight: 700,
+              borderRadius: 4,
+              border: '1.5px solid #000',
+              cursor: priorSuppsAvailable ? 'pointer' : 'not-allowed',
+              background: priorSuppsAvailable ? '#ddb94a' : '#ccc',
+              color: priorSuppsAvailable ? '#000' : '#888',
+            }}
+            onClick={async () => {
+              const result = await getPriorDaySuppLog();
+              if (result) upd('suppLog', result);
+            }}
+          >
+            Use Same Supplements as Prior Day
+          </button>
           <SuppAdder
             suppLog={dd.suppLog || []}
             onUpdSupps={log => upd('suppLog', log)}
