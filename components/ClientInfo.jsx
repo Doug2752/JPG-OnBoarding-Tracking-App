@@ -5,7 +5,7 @@ import { Field, SaveNote } from './Shared';
 // Mirrors CI_REQUIRED in app/OBApp.jsx — kept in sync manually,
 // ClientInfo cannot import from OBApp.
 const CI_REQUIRED = [
-  'fullName','dateStarted','phoneEmail','occupation','primaryGoal',
+  'fullName','dateStarted','phone','email','occupation','primaryGoal',
   'nonNeg','hobbies','fitnessActivity','eatingHabits','sleepPatterns',
   'injuries'
 ];
@@ -37,7 +37,7 @@ const checkStyle = {
 
 export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
   const def = {
-    fullName: '', dateStarted: '', phoneEmail: '', occupation: '',
+    fullName: '', dateStarted: '', phone: '', email: '', occupation: '',
     primaryGoal: '', goal2: '', goal3: '', nonNeg: '', hobbies: '',
     fitnessActivity: '', eatingHabits: '', sleepPatterns: '',
     injuries: '', additional: '',
@@ -123,16 +123,19 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
             )}
           </Field>
         </div>
-        <Field label={lbl('Phone / Email', 'phoneEmail')}>{inp('phoneEmail')}</Field>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <div style={{ flex: 1 }}><Field label={lbl('Phone', 'phone')}>{inp('phone')}</Field></div>
+          <div style={{ flex: 1 }}><Field label={lbl('Email', 'email')}>{inp('email')}</Field></div>
+        </div>
         <Field label={lbl('Occupation & Work Schedule', 'occupation')}>{ta('occupation', 3)}</Field>
-        <Field label={lbl('Goal 1 — Primary Goal: why are you here?', 'primaryGoal')}>{ta('primaryGoal', 3)}</Field>
-        <Field label="Goal 2">{ta('goal2', 2)}</Field>
-        <Field label="Goal 3">{ta('goal3', 2)}</Field>
-        <Field label={lbl('Current Non-Negotiables', 'nonNeg')}>{ta('nonNeg', 2)}</Field>
+        <Field label={lbl('Desired Outcome 1 — Primary Goal: why are you here?', 'primaryGoal')}>{ta('primaryGoal', 3)}</Field>
+        <Field label="Desired Outcome 2">{ta('goal2', 2)}</Field>
+        <Field label="Desired Outcome 3">{ta('goal3', 2)}</Field>
+        <Field label={lbl('Current Non-Negotiables — important activities', 'nonNeg')}>{ta('nonNeg', 2)}</Field>
         <Field label={lbl('Hobbies & Free Time', 'hobbies')}>{ta('hobbies', 2)}</Field>
-        <Field label={lbl('Current Fitness Activity', 'fitnessActivity')}>{ta('fitnessActivity', 2)}</Field>
+        <Field label={lbl('Current Fitness Activity — write None if no current fitness', 'fitnessActivity')}>{ta('fitnessActivity', 2)}</Field>
         <Field label={lbl('Current Eating Habits — describe a typical day', 'eatingHabits')}>{ta('eatingHabits', 3)}</Field>
-        <Field label={lbl('Sleep — typical bedtime, wake time, quality', 'sleepPatterns')}>{ta('sleepPatterns', 2)}</Field>
+        <Field label={lbl('Sleep — typical bedtime, wake time, quality, 1–10 scale, 10 = Great', 'sleepPatterns')}>{ta('sleepPatterns', 2)}</Field>
         <Field label={lbl('Injuries, Medical Conditions, or Physical Limitations', 'injuries')}>{ta('injuries', 2)}</Field>
         <div style={S.addlWrap}>
           <div style={S.addlLabel}>Additional Information</div>
