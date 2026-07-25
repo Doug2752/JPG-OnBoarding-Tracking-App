@@ -39,8 +39,7 @@ function isDayComplete(dd) {
   const n = dd.nutrition || {};
   if (!n.am || !n.midday || !n.pm) return false;
 
-  // ALCOHOL — at least one of beer, mixed,
-  // otherNone must be filled
+  // ALCOHOL — alcoholNone checked OR beer, mixed, or otherAlc filled
   const a = dd.alcohol || {};
   const alcoholFilled =
     a.alcoholNone === true ||
@@ -67,8 +66,8 @@ function isDayComplete(dd) {
   }
 
   // TIME & LIFE — nonNegList must have at least
-  // one entry; screenOther, rating, oneThing
-  // must be filled
+  // one entry; screenSocial, screenOther, rating,
+  // oneThing must be filled
   const t = dd.timelife || {};
   if (!t.nonNegList || t.nonNegList.length === 0)
     return false;
@@ -394,13 +393,10 @@ if (n === null) return;
   return (
     <div style={S.app}>
       <Header
-        section={section}
-        setSection={setSection}
         onInstructions={() => setShowInstr(i => !i)}
         showInstr={showInstr}
         onLogout={() => setUser(null)}
         firstName={user}
-        streak={0}
         view={view}
         setView={setView}
         daysComplete={dayCompleteDates.length}

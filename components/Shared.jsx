@@ -1,6 +1,6 @@
 import React from 'react';
 import { S } from '../utils/styles';
-import { GOLD, GOLD_DARK, GOLD_LIGHT, STEEL, STEEL_MID, MID } from '../utils/constants';
+import { GOLD, GOLD_DARK, GOLD_LIGHT, STEEL, STEEL_MID } from '../utils/constants';
 
 export function Field({ label, labelSm, children }) {
   return (
@@ -14,33 +14,6 @@ export function Field({ label, labelSm, children }) {
 
 export function SaveNote({ show }) {
   return show ? <div style={S.saveNote}>Saved.</div> : null;
-}
-
-export function DayBtn({ day, active, filled, onClick }) {
-  const extra = active
-    ? { background: GOLD, border: '2px solid ' + GOLD_DARK, color: '#fff' }
-    : filled
-    ? { background: GOLD_LIGHT, border: '2px solid ' + GOLD, color: GOLD_DARK }
-    : {};
-  return (
-    <button style={{ ...S.ratingBtn, ...extra }} onClick={onClick}>
-      {day}
-    </button>
-  );
-}
-
-export function SummaryBtn({ active, onClick }) {
-  const extra = active
-    ? { background: GOLD, border: '2px solid ' + GOLD_DARK, color: '#fff' }
-    : { background: '#f0f0f0', border: '2px solid #ccc', color: MID };
-  return (
-    <button
-      style={{ ...S.ratingBtn, width: 'auto', padding: '0 8px', fontSize: '9px', ...extra }}
-      onClick={onClick}
-    >
-      Sum
-    </button>
-  );
 }
 
 export function RatingButtons({ value, onChange, steel, disabled, activeColor = GOLD, activeBorderColor = GOLD_DARK }) {

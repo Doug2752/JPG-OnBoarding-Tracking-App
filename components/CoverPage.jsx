@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { GOLD, DARK } from '../utils/constants.js';
 import { startPlusDay, todayISO } from '../utils/date.js';
-
-const PATCH_SRC = '/LIMITLESS_Tier_4_Patch.png';
 
 const QUOTES = [
   { text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.", author: "Aristotle" },
@@ -56,15 +54,13 @@ export default function CoverPage({
   user, startDate, dayCompleteDates = [], onEnter,
   clientInfoFilled, onClientInfo,
 }) {
-  // Falls back to a styled placeholder until the patch art is added to /public.
-  const [patchOk, setPatchOk] = useState(true);
-
   // Pull in Rajdhani for the cover typography.
   useEffect(() => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap';
     document.head.appendChild(link);
+    return () => { if (link.parentNode) link.parentNode.removeChild(link); };
   }, []);
 
   const firstName = user

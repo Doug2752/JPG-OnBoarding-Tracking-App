@@ -239,7 +239,7 @@ export default function SleepSection({
           </SleepFieldCol>
         </div>
 
-        <div style={{ ...rowStyle, gridTemplateColumns: '1fr 1fr 1fr' }}>
+        <div style={{ ...rowStyle, gridTemplateColumns: timesUpIsZero ? '1fr 1fr' : '1fr 1fr 1fr' }}>
           <SleepFieldCol label={<>Times Up at Night{dd.timesUp && <span style={{ color: GREEN, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Number of times woken">
             <input
               type="number"

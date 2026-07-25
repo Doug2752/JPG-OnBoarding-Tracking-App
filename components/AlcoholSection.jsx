@@ -44,7 +44,7 @@ export default function AlcoholSection({
       <div style={S.blockPurple}>SECTION 02 — ALCOHOL TRACKING</div>
       <div style={S.card}>
         <div style={S.infoBoxPurple}>
-          Track all alcohol consumed each day. If no alcohol was consumed, write None in the Other / None field. Do not leave any day blank.
+          Track all alcohol consumed each day. If no alcohol was consumed, check the None box. Do not leave any day blank.
         </div>
         {dayComplete && (
           <div style={{ background: PURPLE, color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>

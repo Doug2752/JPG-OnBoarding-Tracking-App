@@ -6,10 +6,6 @@ export const USERS = {
   Test: 'JPG2026'
 };
 
-// ── LOGO PATHS ────────────────────────────────────────────────
-export const LOGO_LIGHT = 'jpglogo.png';
-export const LOGO_DARK  = 'jpglogo.png';
-
 // ── COLORS ────────────────────────────────────────────────────
 export const GOLD        = '#B8860B';
 export const GOLD_DARK   = '#7A6010';
