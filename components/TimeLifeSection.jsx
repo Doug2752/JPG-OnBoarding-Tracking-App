@@ -239,7 +239,7 @@ export default function TimeLifeSection({
         <div style={S.grid2}>
           <div style={S.field}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <label style={{ ...S.label, flex: '0 0 220px' }}>Screen Time — Social Media</label>
+              <label style={{ ...S.label, flex: '0 0 220px' }}>Screen Time — Social Media{(dd.screenSocialNone || dd.screenSocialHrs || dd.screenSocialMins) && <span style={{ color: STEEL, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <input
                   type="checkbox"
@@ -270,7 +270,7 @@ export default function TimeLifeSection({
           </div>
           <div style={S.field}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <label style={{ ...S.label, flex: '0 0 220px' }}>Screen Time — Other{dd.screenOther && dd.screenOther.trim() && <span style={{ color: STEEL, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
+              <label style={{ ...S.label, flex: '0 0 220px' }}>Screen Time — Other{(dd.screenOtherNone || dd.screenOtherHrs || dd.screenOtherMins) && <span style={{ color: STEEL, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <input
                   type="checkbox"
@@ -308,7 +308,7 @@ export default function TimeLifeSection({
           </div>
         </div>
 
-        <div style={S.grid2}>
+        <div style={{ ...S.grid2, alignItems: 'start' }}>
           <div style={S.field}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <label style={{ ...S.label, flex: '0 0 220px' }}>Relationship Time</label>
@@ -323,7 +323,7 @@ export default function TimeLifeSection({
                 <label htmlFor="familyTimeNone" style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}>None</label>
               </div>
             </div>
-            <label style={S.labelSm}>Total time with others throughout the day — enter in hours and minutes</label>
+            <label style={{ ...S.labelSm, minHeight: '30px', display: 'block' }}>Total time with others throughout the day — enter in hours and minutes</label>
             {!dd.familyTimeNone && (
               <div style={{ display: 'flex', gap: '8px' }}>
                 <div style={{ flex: 1 }}>
@@ -353,7 +353,7 @@ export default function TimeLifeSection({
                 <label htmlFor="pitNone" style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}>None</label>
               </div>
             </div>
-            <label style={S.labelSm}>Time spent reading, studying, journaling, meditation, or deliberate self-development — enter in hours and minutes</label>
+            <label style={{ ...S.labelSm, minHeight: '30px', display: 'block' }}>Time spent reading, studying, journaling, meditation, or deliberate self-development — enter in hours and minutes</label>
             {!dd.pitNone && (
               <div style={{ display: 'flex', gap: '8px' }}>
                 <div style={{ flex: 1 }}>

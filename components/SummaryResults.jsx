@@ -67,6 +67,8 @@ function weekStats(week, calEst) {
   let activeDays = 0;
   let screenSocial = '';
   let screenOther = '';
+  let screenSocialNone = false;
+  let screenOtherNone = false;
 
   week.forEach(({ dayNum, data }) => {
     const sl = data.sleep || {};
@@ -85,11 +87,19 @@ function weekStats(week, calEst) {
 
     const t = data.timelife || {};
     // Days iterate in ascending order, so the last hit is the most recent.
-    if (t.screenSocial && String(t.screenSocial).trim()) {
-      screenSocial = String(t.screenSocial).trim();
+    if (t.screenSocialNone) {
+      screenSocial = 'None';
+    } else if (t.screenSocialHrs || t.screenSocialMins) {
+      const h = t.screenSocialHrs || 0;
+      const m = t.screenSocialMins || 0;
+      screenSocial = `${h}h ${m}m`;
     }
-    if (t.screenOther && String(t.screenOther).trim()) {
-      screenOther = String(t.screenOther).trim();
+    if (t.screenOtherNone) {
+      screenOther = 'None';
+    } else if (t.screenOtherHrs || t.screenOtherMins) {
+      const h = t.screenOtherHrs || 0;
+      const m = t.screenOtherMins || 0;
+      screenOther = `${h}h ${m}m`;
     }
 
     const pit = pairToMins(t.pitHrs, t.pitMins);
@@ -245,8 +255,8 @@ function DayGrid({ week, calEst }) {
             const cal = dayCalories(calEst, dayNum);
             const calCell = cal > 0 ? cal.toLocaleString() : '—';
 
-            const socialCell = String(t.screenSocial || '').trim() || '—';
-            const otherCell = String(t.screenOther || '').trim() || '—';
+            const socialCell = t.screenSocialNone ? 'None' : (t.screenSocialHrs || t.screenSocialMins) ? `${t.screenSocialHrs || 0}h ${t.screenSocialMins || 0}m` : '—';
+            const otherCell = t.screenOtherNone ? 'None' : (t.screenOtherHrs || t.screenOtherMins) ? `${t.screenOtherHrs || 0}h ${t.screenOtherMins || 0}m` : '—';
 
             const pitCell = pairToHm(t.pitHrs, t.pitMins) || '—';
 
