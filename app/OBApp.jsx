@@ -104,6 +104,7 @@ export default function OBApp() {
   const [dayCompleteDates, setDayCompleteDates] = useState([]);
   const [attempted, setAttempted] = useState(false);
   const [reflectSubmissions, setReflectSubmissions] = useState([]);
+  const [coachSubmissions, setCoachSubmissions] = useState({ w1Sent: false, w2Sent: false });
   const [reflectPopup, setReflectPopup] = useState(null);
   const [popupSeen, setPopupSeen] = useState({ w1: false, w2: false });
   const [showCover, setShowCover] = useState(false);
@@ -128,6 +129,9 @@ export default function OBApp() {
     const pSeen = storage.load('reflect_popup_seen', { w1: false, w2: false }).then(
       v => setPopupSeen(v || { w1: false, w2: false })
     );
+    const pCoach = storage.load('coach_submissions', { w1Sent: false, w2Sent: false }).then(
+      v => setCoachSubmissions(v || { w1Sent: false, w2Sent: false })
+    );
     const pInstr = storage.load('instrSeen6', false).then(seen => {
       if (!seen) {
         setShowInstr(true);
@@ -136,7 +140,7 @@ export default function OBApp() {
     });
     // Cover shows once per session, only after the loads above have landed
     // so the day count and status line render with real values.
-    Promise.all([pClient, pNever, pDays, pSubs, pSeen, pInstr])
+    Promise.all([pClient, pNever, pDays, pSubs, pSeen, pCoach, pInstr])
       .then(() => setShowCover(true));
   }, [user]);
 
@@ -211,6 +215,37 @@ if (n === null) return;
     setDayCompleteDates(filtered);
     setAttempted(false);
     if (storage) storage.save('obt_day_complete', filtered);
+  }
+
+  async function onSubmitToCoach(week) {
+    const ci = await storage.load('clientInfo', {});
+    const reflect = await storage.load('reflect6', {});
+    const startDay = week === 1 ? 1 : 8;
+    const endDay = week === 1 ? 7 : 14;
+    const days = [];
+    for (let n = startDay; n <= endDay; n++) {
+      const iso = startPlusDay(startDate, n);
+      if (iso) {
+        const data = await storage.loadDay(iso, {});
+        days.push({ day: n, iso, data });
+      }
+    }
+    const reflectKeys = week === 1
+      ? ['w1_well', 'w1_challenge', 'w1_energy', 'w1_different']
+      : ['w2_well', 'w2_challenge', 'w2_energy', 'w2_different'];
+    const reflectData = {};
+    reflectKeys.forEach(k => reflectData[k] = reflect[k] || '');
+    const payload = {
+      week,
+      submittedAt: todayISO(),
+      clientInfo: ci,
+      days,
+      reflection: reflectData,
+    };
+    console.log('[OBT] Submit to Coach — Week', week, JSON.stringify(payload, null, 2));
+    const next = { ...coachSubmissions, [`w${week}Sent`]: true };
+    setCoachSubmissions(next);
+    await storage.save('coach_submissions', next);
   }
 
   function onReflectSubmit(week, dateISO) {
@@ -330,7 +365,20 @@ if (n === null) return;
     if (section === 'alcohol') return <AlcoholSection {...dayProps} />;
     if (section === 'fitness') return <FitnessSection {...dayProps} />;
     if (section === 'sleep') return <SleepSection {...dayProps} />;
-    if (section === 'timelife') return <TimeLifeSection {...dayProps} />;
+    if (section === 'timelife') {
+      const w1Submitted = reflectSubmissions.some(r => r.week === 1);
+      const w2Submitted = reflectSubmissions.some(r => r.week === 2);
+      return (
+        <TimeLifeSection
+          {...dayProps}
+          w1Submitted={w1Submitted}
+          w2Submitted={w2Submitted}
+          w1Sent={coachSubmissions.w1Sent}
+          w2Sent={coachSubmissions.w2Sent}
+          onSubmitToCoach={onSubmitToCoach}
+        />
+      );
+    }
     if (section === 'reflect') return (
       <ReflectSection
         storage={storage}
@@ -381,7 +429,7 @@ if (n === null) return;
           { id: 'fitness',   label: 'Fitness' },
           { id: 'sleep',     label: 'Sleep' },
           { id: 'timelife',  label: 'Time & Life' },
-          { id: 'reflect',   label: 'Reflect' },
+          { id: 'reflect',   label: 'Reflection' },
           { id: 'results',   label: 'Summary Results' },
         ].map(t => (
           <button

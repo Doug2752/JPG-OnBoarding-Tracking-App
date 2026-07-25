@@ -25,6 +25,7 @@ export default function TimeLifeSection({
   dayData, selectedDay, onSave, startDate, onDaySelect,
   dayCompleteDates, onMarkDayComplete,
   onUnlockDay, isoForDay, isDayComplete, dayComplete, attempted,
+  w1Submitted, w2Submitted, w1Sent, w2Sent, onSubmitToCoach,
 }) {
   const [saved, setSaved] = useState(false);
 
@@ -474,6 +475,76 @@ export default function TimeLifeSection({
                   }}
                 >Mark Day Complete</button>
               )}
+            </div>
+          );
+        })()}
+
+        {(() => {
+          const daysUntilW1 = Math.max(0, 7 - selectedDay);
+          const daysUntilW2 = Math.max(0, 14 - selectedDay);
+          const greyStrip = {
+            background: '#f0f0f0', border: '1px solid #ccc', borderRadius: 6,
+            padding: '12px 16px', marginTop: 20, textAlign: 'center',
+          };
+          const goldStrip = {
+            background: GOLD, border: '2px solid #000', borderRadius: 6,
+            padding: '12px 16px', marginTop: 20,
+          };
+          const goldLabel = { fontSize: 12, fontWeight: 700, color: '#000', marginBottom: 8 };
+          const goldBtn = {
+            background: '#000', color: GOLD, border: 'none', borderRadius: 4,
+            padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+          };
+
+          // STATE 1 — both weeks sent
+          if (w2Sent) {
+            return (
+              <div style={{ ...greyStrip, fontSize: 13, color: '#666', fontWeight: 600 }}>
+                ✓ Week 1 and Week 2 submitted to coach
+              </div>
+            );
+          }
+          // STATE 2 — Week 2 reflection submitted, not yet sent
+          if (w2Submitted && !w2Sent) {
+            return (
+              <div style={goldStrip}>
+                <div style={goldLabel}>WEEK 2 REFLECTION SUBMITTED</div>
+                <button style={goldBtn} onClick={() => onSubmitToCoach(2)}>
+                  Submit Week 2 to Coach
+                </button>
+              </div>
+            );
+          }
+          // STATE 3 — Week 1 sent, Week 2 reflection not yet submitted
+          if (w1Sent && !w2Submitted) {
+            return (
+              <div style={{ ...greyStrip, fontSize: 12, color: '#888' }}>
+                <div style={{ fontWeight: 700 }}>✓ Week 1 submitted to coach</div>
+                <div>
+                  {daysUntilW2 > 0
+                    ? `${daysUntilW2} days until final submission — complete days 8–14 and Week 2 reflection to submit`
+                    : 'Complete days 8–14 and Week 2 reflection to submit'}
+                </div>
+              </div>
+            );
+          }
+          // STATE 4 — Week 1 reflection submitted, not yet sent
+          if (w1Submitted && !w1Sent) {
+            return (
+              <div style={goldStrip}>
+                <div style={goldLabel}>WEEK 1 REFLECTION SUBMITTED</div>
+                <button style={goldBtn} onClick={() => onSubmitToCoach(1)}>
+                  Submit Week 1 to Coach
+                </button>
+              </div>
+            );
+          }
+          // STATE 5 — default, neither week submitted yet
+          return (
+            <div style={{ ...greyStrip, fontSize: 12, color: '#888' }}>
+              {daysUntilW1 > 0
+                ? `${daysUntilW1} days until first submission — complete days 1–7 and Week 1 reflection to submit`
+                : 'Complete days 1–7 and Week 1 reflection to submit'}
             </div>
           );
         })()}
