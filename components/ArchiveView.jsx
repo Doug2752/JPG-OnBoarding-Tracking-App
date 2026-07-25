@@ -45,7 +45,7 @@ const rowStyle = {
 
 export default function ArchiveView({
   view, setView, onLogout, firstName, dayCompleteDates = [],
-  reflectSubmissions = [],
+  reflectSubmissions = [], onViewDay, onViewReflect,
 }) {
   return (
     <div style={S.app}>
@@ -122,7 +122,7 @@ export default function ArchiveView({
           [...dayCompleteDates]
             .sort((a, b) => (a < b ? 1 : a > b ? -1 : 0))
             .map(iso => (
-              <div key={iso} style={rowStyle}>
+              <div key={iso} style={{ ...rowStyle, cursor: 'pointer' }} onClick={() => onViewDay(iso)}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#222' }}>
                   {fmtIso(iso)}
                 </span>
@@ -147,7 +147,7 @@ export default function ArchiveView({
           [...reflectSubmissions]
             .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
             .map(r => (
-              <div key={'w' + r.week + '_' + r.date} style={rowStyle}>
+              <div key={'w' + r.week + '_' + r.date} style={{ ...rowStyle, cursor: 'pointer' }} onClick={() => onViewReflect(r.week)}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#222' }}>
                   Week {r.week} Reflection
                   <span style={{ color: '#666', fontWeight: 400, marginLeft: 8 }}>

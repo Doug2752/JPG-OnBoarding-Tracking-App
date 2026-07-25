@@ -151,6 +151,26 @@ export default function OBApp() {
     return startPlusDay(startDate, dayNum);
   }
 
+  function dayForIso(iso) {
+    for (let n = 1; n <= 14; n++) {
+      if (isoForDay(n) === iso) return n;
+    }
+    return null;
+  }
+
+  function onViewDay(iso) {
+    const n = dayForIso(iso);
+if (n === null) return;
+    setSelectedDay(n);
+    setView('today');
+  }
+
+  function onViewReflect(week) {
+    setSelectedDay(week === 1 ? 7 : 14);
+    setSection('reflect');
+    setView('today');
+  }
+
   function loadDayData(dayNum) {
     const iso = isoForDay(dayNum);
     if (!iso || !storage) {
@@ -275,6 +295,8 @@ export default function OBApp() {
         firstName={user}
         dayCompleteDates={dayCompleteDates}
         reflectSubmissions={reflectSubmissions}
+        onViewDay={onViewDay}
+        onViewReflect={onViewReflect}
       />
     );
   }
