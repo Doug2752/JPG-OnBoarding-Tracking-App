@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   NON_NEG_CATS,
   GOLD, GOLD_LIGHT, GOLD_DARK,
-  STEEL, STEEL_MID, STEEL_LIGHT,
+  STEEL, STEEL_LIGHT,
   RED
 } from '../utils/constants.js';
 import { formatDayDate, startPlusDay } from '../utils/date.js';
