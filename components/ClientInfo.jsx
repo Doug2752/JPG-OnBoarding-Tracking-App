@@ -82,6 +82,13 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
     </>
   );
 
+  const formatPhone = (val) => {
+    const digits = val.replace(/\D/g, '').slice(0, 10);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  };
+
   const inp = k => (
     <input style={S.input} value={data[k] || ''} onChange={e => upd(k, e.target.value)} />
   );
@@ -125,8 +132,12 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
         </div>
         <Field label="Preferred Name">{inp('preferredName')}</Field>
         <div style={{ display: 'flex', gap: 12 }}>
-          <div style={{ flex: 1 }}><Field label={lbl('Phone', 'phone')}>{inp('phone')}</Field></div>
-          <div style={{ flex: 1 }}><Field label={lbl('Email', 'email')}>{inp('email')}</Field></div>
+          <div style={{ flex: 1 }}><Field label={lbl('Phone', 'phone')}>
+            <input style={S.input} type="text" placeholder="(555) 555-5555" value={data.phone || ''} onChange={e => upd('phone', formatPhone(e.target.value))} />
+          </Field></div>
+          <div style={{ flex: 1 }}><Field label={lbl('Email', 'email')}>
+            <input style={S.input} type="email" placeholder="name@example.com" value={data.email || ''} onChange={e => upd('email', e.target.value)} />
+          </Field></div>
         </div>
         <Field label={lbl('Occupation & Work Schedule', 'occupation')}>{ta('occupation', 3)}</Field>
         <Field label={lbl('Desired Outcome 1 — Primary Goal: why are you here?', 'primaryGoal')}>{ta('primaryGoal', 3)}</Field>
