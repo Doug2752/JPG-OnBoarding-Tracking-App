@@ -43,21 +43,24 @@ export function SummaryBtn({ active, onClick }) {
   );
 }
 
-export function RatingButtons({ value, onChange, steel, disabled }) {
+export function RatingButtons({ value, onChange, steel, disabled, activeColor = GOLD, activeBorderColor = GOLD_DARK }) {
   return (
     <div style={disabled ? { pointerEvents: 'none', opacity: 0.7 } : undefined}>
       <div style={S.ratingRow}>
         {[1,2,3,4,5,6,7,8,9,10].map(n => {
           const active = value === n;
+          const steelBase = steel
+            ? { background: 'transparent', border: '2px solid rgba(255,255,255,0.5)', color: '#fff' }
+            : {};
           const extra = active
             ? steel
-              ? { background: STEEL, border: '2px solid ' + STEEL_MID, color: '#fff' }
-              : { background: GOLD, border: '2px solid ' + GOLD_DARK, color: '#fff' }
+              ? { background: 'rgba(255,255,255,0.25)', border: '2px solid #fff', color: '#fff' }
+              : { background: activeColor, border: '2px solid ' + activeBorderColor, color: '#fff' }
             : {};
           return (
             <button
               key={n}
-              style={{ ...S.ratingBtn, ...extra }}
+              style={{ ...S.ratingBtn, ...steelBase, ...extra }}
               onClick={() => onChange(active ? null : n)}
             >
               {n}
@@ -69,7 +72,7 @@ export function RatingButtons({ value, onChange, steel, disabled }) {
   );
 }
 
-export function InputWithToggle({ value, onChange, placeholder, type, unitLabel, onToggle, readOnly }) {
+export function InputWithToggle({ value, onChange, placeholder, type, unitLabel, onToggle, readOnly, unitColor = GOLD }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <input
@@ -81,7 +84,7 @@ export function InputWithToggle({ value, onChange, placeholder, type, unitLabel,
         readOnly={readOnly}
       />
       <button
-        style={{ ...S.unitBtn, ...(readOnly ? { opacity: 0.5, cursor: 'default' } : {}) }}
+        style={{ ...S.unitBtn, border: '1px solid ' + unitColor, color: unitColor, ...(readOnly ? { opacity: 0.5, cursor: 'default' } : {}) }}
         disabled={readOnly}
         onClick={onToggle}
       >{unitLabel}</button>

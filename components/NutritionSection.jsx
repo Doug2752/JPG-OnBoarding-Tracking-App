@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GOLD } from '../utils/constants.js';
+import { BURGUNDY } from '../utils/constants.js';
 import { formatDayDate, startPlusDay } from '../utils/date.js';
 import { S } from '../utils/styles.js';
 import { SaveNote } from './Shared';
@@ -103,9 +103,9 @@ export default function NutritionSection({
   if (!startDate) {
     return (
       <div>
-        <div style={S.blockGold}>SECTION 01 — NUTRITION TRACKING</div>
+        <div style={S.blockBurgundy}>SECTION 01 — NUTRITION TRACKING</div>
         <div style={S.card}>
-          <div style={S.infoBox}>
+          <div style={S.infoBoxBurgundy}>
             Your start date has not been set yet. Return to the Home screen and tap Start Today's Entry to begin, or enter your start date on the Client Info page.
           </div>
         </div>
@@ -115,13 +115,13 @@ export default function NutritionSection({
 
   return (
     <div>
-      <div style={S.blockGold}>SECTION 01 — NUTRITION TRACKING</div>
+      <div style={S.blockBurgundy}>SECTION 01 — NUTRITION TRACKING</div>
       <div style={S.card}>
-        <div style={S.infoBox}>
+        <div style={S.infoBoxBurgundy}>
           Record everything you eat and drink — AM, Midday, PM. Press Return in any field to calculate calories. Use Add Snack for anything eaten between meals. Each snack generates its own estimate and contributes to the daily total.
         </div>
         {dayComplete && (
-          <div style={{ background: '#B8860B', color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
+          <div style={{ background: BURGUNDY, color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
             Day marked complete — unlock to edit
           </div>
         )}
@@ -139,7 +139,7 @@ export default function NutritionSection({
               <button key={n} onClick={() => onDaySelect(n)} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 border: '1.5px solid #000', borderRadius: 4, padding: '5px 8px',
-                cursor: 'pointer', background: active ? GOLD : '#333', color: '#fff', lineHeight: 1.2,
+                cursor: 'pointer', background: active ? BURGUNDY : '#333', color: '#fff', lineHeight: 1.2,
               }}>
                 <span style={{ fontSize: 11, fontWeight: 700 }}>Day {n}</span>
                 <span style={{ fontSize: 9, fontWeight: 400 }}>{lbl}</span>
@@ -147,20 +147,20 @@ export default function NutritionSection({
             );
           })}
         </div>
-        <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
+        <div style={S.dayTagBurgundy}>{formatDayDate(startDate, selectedDay)}</div>
         <div style={{ pointerEvents: dayComplete ? 'none' : 'auto', opacity: dayComplete ? 0.7 : 1 }}>
           <MealBlock mealKey="am"
-            mealLabel={<>AM{dd.am && dd.am.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
+            mealLabel={<>AM{dd.am && dd.am.trim() && <span style={{ color: BURGUNDY, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
             dayVal={selectedDay} estimates={estimates} estimating={estimating}
             getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate}
             error={attempted && !dd.am} />
           <MealBlock mealKey="midday"
-            mealLabel={<>Midday{dd.midday && dd.midday.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
+            mealLabel={<>Midday{dd.midday && dd.midday.trim() && <span style={{ color: BURGUNDY, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
             dayVal={selectedDay} estimates={estimates} estimating={estimating}
             getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate}
             error={attempted && !dd.midday} />
           <MealBlock mealKey="pm"
-            mealLabel={<>PM{dd.pm && dd.pm.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
+            mealLabel={<>PM{dd.pm && dd.pm.trim() && <span style={{ color: BURGUNDY, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
             dayVal={selectedDay} estimates={estimates} estimating={estimating}
             getVal={k => dd[k] || ''} onUpd={upd} onEstimate={runEstimate}
             error={attempted && !dd.pm} />
@@ -181,7 +181,7 @@ export default function NutritionSection({
             />
           ))}
           {snacks.length < 10 && (
-            <button style={{ ...S.copyBtn, fontSize: '11px' }} onClick={() => upd('snacks', [...snacks, ''])}>
+            <button style={{ ...S.copyBtnBurgundy, fontSize: '11px' }} onClick={() => upd('snacks', [...snacks, ''])}>
               + Add Snack
             </button>
           )}
@@ -212,8 +212,8 @@ export default function NutritionSection({
               borderRadius: 4,
               border: '1.5px solid #000',
               cursor: priorSuppsAvailable ? 'pointer' : 'not-allowed',
-              background: priorSuppsAvailable ? '#ddb94a' : '#ccc',
-              color: priorSuppsAvailable ? '#000' : '#888',
+              background: priorSuppsAvailable ? BURGUNDY : '#ccc',
+              color: priorSuppsAvailable ? '#fff' : '#888',
             }}
             onClick={async () => {
               const result = await getPriorDaySuppLog();

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GOLD } from '../utils/constants.js';
+import { PURPLE } from '../utils/constants.js';
 import { formatDayDate, startPlusDay } from '../utils/date.js';
 import { S } from '../utils/styles.js';
 import { Field, SaveNote } from './Shared';
@@ -29,9 +29,9 @@ export default function AlcoholSection({
   if (!startDate) {
     return (
       <div>
-        <div style={S.blockGold}>SECTION 02 — ALCOHOL TRACKING</div>
+        <div style={S.blockPurple}>SECTION 02 — ALCOHOL TRACKING</div>
         <div style={S.card}>
-          <div style={S.infoBox}>
+          <div style={S.infoBoxPurple}>
             Your start date has not been set yet. Return to the Home screen and tap Start Today's Entry to begin, or enter your start date on the Client Info page.
           </div>
         </div>
@@ -41,13 +41,13 @@ export default function AlcoholSection({
 
   return (
     <div>
-      <div style={S.blockGold}>SECTION 02 — ALCOHOL TRACKING</div>
+      <div style={S.blockPurple}>SECTION 02 — ALCOHOL TRACKING</div>
       <div style={S.card}>
-        <div style={S.infoBox}>
+        <div style={S.infoBoxPurple}>
           Track all alcohol consumed each day. If no alcohol was consumed, write None in the Other / None field. Do not leave any day blank.
         </div>
         {dayComplete && (
-          <div style={{ background: '#B8860B', color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
+          <div style={{ background: PURPLE, color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
             Day marked complete — unlock to edit
           </div>
         )}
@@ -65,7 +65,7 @@ export default function AlcoholSection({
               <button key={n} onClick={() => onDaySelect(n)} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 border: '1.5px solid #000', borderRadius: 4, padding: '5px 8px',
-                cursor: 'pointer', background: active ? GOLD : '#333', color: '#fff', lineHeight: 1.2,
+                cursor: 'pointer', background: active ? PURPLE : '#333', color: '#fff', lineHeight: 1.2,
               }}>
                 <span style={{ fontSize: 11, fontWeight: 700 }}>Day {n}</span>
                 <span style={{ fontSize: 9, fontWeight: 400 }}>{lbl}</span>
@@ -74,11 +74,12 @@ export default function AlcoholSection({
           })}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
+          <div style={S.dayTagPurple}>{formatDayDate(startDate, selectedDay)}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <input
               type="checkbox"
               id="alcoholNone"
+              style={{ accentColor: '#4A3575' }}
               checked={dd.alcoholNone || false}
               disabled={dayComplete}
               onChange={e => upd('alcoholNone', e.target.checked)}
@@ -88,15 +89,15 @@ export default function AlcoholSection({
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
           <div style={S.field}>
-            <label style={S.label}>Beer (12 oz drinks){dd.beer && String(dd.beer).trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
+            <label style={S.label}>Beer (12 oz drinks){dd.beer && String(dd.beer).trim() && <span style={{ color: PURPLE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
             <input type="number" min="0" style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: alcoholMissing ? '2px solid #cc0000' : undefined }} readOnly={dayComplete} value={dd.beer || ''} onChange={e => upd('beer', e.target.value)} />
           </div>
           <div style={S.field}>
-            <label style={S.label}>Mixed Drinks{dd.mixed && String(dd.mixed).trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
+            <label style={S.label}>Mixed Drinks{dd.mixed && String(dd.mixed).trim() && <span style={{ color: PURPLE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
             <input type="number" min="0" style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: alcoholMissing ? '2px solid #cc0000' : undefined }} readOnly={dayComplete} value={dd.mixed || ''} onChange={e => upd('mixed', e.target.value)} />
           </div>
           <div style={S.field}>
-            <label style={S.label}>Other{dd.otherAlc && String(dd.otherAlc).trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
+            <label style={S.label}>Other{dd.otherAlc && String(dd.otherAlc).trim() && <span style={{ color: PURPLE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
             <label style={S.labelSm}>Wine, spirits, cocktails — describe and quantity</label>
             <input style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: alcoholMissing ? '2px solid #cc0000' : undefined }} readOnly={dayComplete} placeholder="Describe..." value={dd.otherAlc || ''} onChange={e => upd('otherAlc', e.target.value)} />
           </div>

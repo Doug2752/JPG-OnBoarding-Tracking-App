@@ -345,7 +345,7 @@ if (n === null) return;
     onSave: saveDayData,
     onDaySelect: setSelectedDay,
     isDayComplete,
-    dayComplete: isDayComplete(dayData),
+    dayComplete: dayCompleteDates.includes(isoForDay(selectedDay) || ''),
     dayCompleteDates,
     onMarkDayComplete,
     onUnlockDay,

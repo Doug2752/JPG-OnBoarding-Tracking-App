@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SUPPLEMENTS, GOLD, GOLD_LIGHT, GOLD_DARK, STEEL, GREEN } from '../utils/constants.js';
+import { SUPPLEMENTS, BURGUNDY, STEEL, GREEN } from '../utils/constants.js';
 import { S } from '../utils/styles.js';
 import { Field } from './Shared';
 
@@ -45,7 +45,7 @@ export default function SuppAdder({ suppLog, onUpdSupps, recentSupps, onUpdateRe
   }
 
   const MEALS = ['AM', 'Midday', 'PM'];
-  const mc = { AM: GOLD, Midday: STEEL, PM: GREEN };
+  const mc = { AM: BURGUNDY, Midday: STEEL, PM: GREEN };
 
   return (
     <div>
@@ -61,9 +61,9 @@ export default function SuppAdder({ suppLog, onUpdSupps, recentSupps, onUpdateRe
               {items.map((e, i) => {
                 const ri = suppLog.indexOf(e);
                 return (
-                  <span key={i} style={S.chip}>
+                  <span key={i} style={S.chipBurgundy}>
                     {e.name}{e.dosage ? ' — ' + e.dosage : ''}
-                    <button style={S.chipX} onClick={() => removeSupp(ri)}>×</button>
+                    <button style={S.chipXBurgundy} onClick={() => removeSupp(ri)}>×</button>
                   </span>
                 );
               })}
@@ -73,8 +73,8 @@ export default function SuppAdder({ suppLog, onUpdSupps, recentSupps, onUpdateRe
       })}
 
       {selected && (
-        <div style={{ background: GOLD_LIGHT, border: '1px solid ' + GOLD, borderRadius: '4px', padding: '10px 12px', marginBottom: '8px' }}>
-          <div style={{ fontSize: '11px', fontWeight: '700', color: GOLD_DARK, marginBottom: '8px' }}>
+        <div style={{ background: '#f5eef1', border: '1px solid ' + BURGUNDY, borderRadius: '4px', padding: '10px 12px', marginBottom: '8px' }}>
+          <div style={{ fontSize: '11px', fontWeight: '700', color: BURGUNDY, marginBottom: '8px' }}>
             Adding: {selected}
           </div>
           <div style={S.grid3}>
@@ -88,7 +88,7 @@ export default function SuppAdder({ suppLog, onUpdSupps, recentSupps, onUpdateRe
             </Field>
             <Field label=" ">
               <button
-                style={{ ...S.copyBtn, width: '100%', background: GOLD, color: '#fff', border: 'none', marginTop: '14px' }}
+                style={{ ...S.copyBtn, width: '100%', background: BURGUNDY, color: '#fff', border: 'none', marginTop: '14px' }}
                 onClick={confirmAdd}
               >
                 Add ✓
@@ -104,7 +104,7 @@ export default function SuppAdder({ suppLog, onUpdSupps, recentSupps, onUpdateRe
         </div>
       )}
 
-      <button style={{ ...S.copyBtn, marginBottom: '6px' }} onClick={() => setOpen(!open)}>
+      <button style={{ ...S.copyBtnBurgundy, marginBottom: '6px' }} onClick={() => setOpen(!open)}>
         {open ? '▲ Close' : '＋ Add Supplement'}
       </button>
 
@@ -119,9 +119,9 @@ export default function SuppAdder({ suppLog, onUpdSupps, recentSupps, onUpdateRe
           <div style={S.suppPanel}>
             {!q && recentSupps.length > 0 && (
               <div>
-                <div style={S.suppRecent}>★ Recent</div>
+                <div style={S.suppRecentBurgundy}>★ Recent</div>
                 {recentSupps.map(s => (
-                  <div key={s} style={S.suppRecentItem} onClick={() => addSupp(s)}>{s}</div>
+                  <div key={s} style={S.suppRecentItemBurgundy} onClick={() => addSupp(s)}>{s}</div>
                 ))}
               </div>
             )}

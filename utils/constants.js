@@ -25,6 +25,9 @@ export const STEEL_LIGHT = '#E8EEF2';
 export const GREEN       = '#2E5A4B';
 export const GREEN_LIGHT = '#E8F2EE';
 export const RED         = '#B02020';
+export const BURGUNDY    = '#7B3055';
+export const PURPLE      = '#4A3575';
+export const ORANGE      = '#7A4418';
 
 // ── DAYS ──────────────────────────────────────────────────────
 export const DAYS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];

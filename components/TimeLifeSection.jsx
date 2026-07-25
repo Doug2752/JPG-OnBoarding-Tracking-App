@@ -104,7 +104,7 @@ export default function TimeLifeSection({
         </div>
 
         {dayComplete && (
-          <div style={{ background: '#B8860B', color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
+          <div style={{ background: STEEL, color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
             Day marked complete — unlock to edit
           </div>
         )}
@@ -122,7 +122,7 @@ export default function TimeLifeSection({
               <button key={n} onClick={() => onDaySelect(n)} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 border: '1.5px solid #000', borderRadius: 4, padding: '5px 8px',
-                cursor: 'pointer', background: active ? GOLD : '#333', color: '#fff', lineHeight: 1.2,
+                cursor: 'pointer', background: active ? STEEL : '#333', color: '#fff', lineHeight: 1.2,
               }}>
                 <span style={{ fontSize: 11, fontWeight: 700 }}>Day {n}</span>
                 <span style={{ fontSize: 9, fontWeight: 400 }}>{lbl}</span>
@@ -130,7 +130,7 @@ export default function TimeLifeSection({
             );
           })}
         </div>
-        <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
+        <div style={S.dayTagSteel}>{formatDayDate(startDate, selectedDay)}</div>
 
         <Field label="Work Schedule">
           <select
@@ -172,17 +172,17 @@ export default function TimeLifeSection({
         )}
 
         <div style={S.field}>
-          <label style={S.label}>Non-Negotiables{(dd.nonNegList || []).length > 0 && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
+          <label style={S.label}>Non-Negotiables{(dd.nonNegList || []).length > 0 && <span style={{ color: STEEL, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
           <label style={S.labelSm}>
             Personal commitments or standards you held to today. Select None if not yet established. Use Select Category to log multiple.
           </label>
           {(dd.nonNegList || []).map((item, i) => (
             <div key={i} style={{
               display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px',
-              background: GOLD_LIGHT, border: '1px solid ' + GOLD,
+              background: STEEL_LIGHT, border: '1px solid ' + STEEL,
               borderRadius: '4px', padding: '6px 10px'
             }}>
-              <span style={{ fontSize: '11px', fontWeight: '600', color: GOLD_DARK, flex: '0 0 auto' }}>
+              <span style={{ fontSize: '11px', fontWeight: '600', color: STEEL, flex: '0 0 auto' }}>
                 {item.cat}
               </span>
               <input
@@ -244,6 +244,7 @@ export default function TimeLifeSection({
                 <input
                   type="checkbox"
                   id="screenSocialNone"
+                  style={{ accentColor: STEEL }}
                   checked={dd.screenSocialNone || false}
                   disabled={dayComplete}
                   onChange={e => upd('screenSocialNone', e.target.checked)}
@@ -269,11 +270,12 @@ export default function TimeLifeSection({
           </div>
           <div style={S.field}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <label style={{ ...S.label, flex: '0 0 220px' }}>Screen Time — Other{dd.screenOther && dd.screenOther.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
+              <label style={{ ...S.label, flex: '0 0 220px' }}>Screen Time — Other{dd.screenOther && dd.screenOther.trim() && <span style={{ color: STEEL, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <input
                   type="checkbox"
                   id="screenOtherNone"
+                  style={{ accentColor: STEEL }}
                   checked={dd.screenOtherNone || false}
                   disabled={dayComplete}
                   onChange={e => upd('screenOtherNone', e.target.checked)}
@@ -314,6 +316,7 @@ export default function TimeLifeSection({
                 <input
                   type="checkbox"
                   id="familyTimeNone"
+                  style={{ accentColor: STEEL }}
                   checked={dd.familyTimeNone || false}
                   onChange={e => upd('familyTimeNone', e.target.checked)}
                 />
@@ -343,6 +346,7 @@ export default function TimeLifeSection({
                 <input
                   type="checkbox"
                   id="pitNone"
+                  style={{ accentColor: STEEL }}
                   checked={dd.pitNone || false}
                   onChange={e => upd('pitNone', e.target.checked)}
                 />
@@ -372,7 +376,7 @@ export default function TimeLifeSection({
         </Field>
 
         <div style={S.pmBlock}>
-          <div style={S.pmEyebrow}>PM CHECK-IN — HOW DID I DO TODAY?{dd.rating && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</div>
+          <div style={S.pmEyebrow}>PM CHECK-IN — HOW DID I DO TODAY?{dd.rating && <span style={{ color: STEEL, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</div>
           <div style={{ fontSize: '11px', color: STEEL_LIGHT, marginBottom: '10px' }}>
             Rate your day: 1 = Poor · 10 = Outstanding
           </div>
@@ -385,8 +389,8 @@ export default function TimeLifeSection({
           {dd.rating && (
             <div style={{ marginTop: '12px', display: 'flex', gap: '14px', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: '9px', color: '#aaa', letterSpacing: '1px', marginBottom: '2px' }}>TODAY</div>
-                <div style={{ ...S.pmTotBox, fontSize: '20px', fontWeight: '700', color: '#fff' }}>
+                <div style={{ fontSize: '9px', color: '#fff', letterSpacing: '1px', marginBottom: '2px' }}>TODAY</div>
+                <div style={{ ...S.pmTotBox, fontSize: '20px', fontWeight: '700', color: '#fff', border: '1px solid #fff' }}>
                   {dd.rating} / 10
                 </div>
               </div>
@@ -396,7 +400,7 @@ export default function TimeLifeSection({
 
         <div style={{ ...S.oneThingBlock, borderColor: oneThingMissing ? '#ff0000' : RED }}>
           <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: RED, marginBottom: '4px', letterSpacing: '0.5px' }}>
-            TOMORROW'S ONE THING * <span style={{ fontSize: '10px', fontWeight: '400' }}>(Required)</span>{dd.oneThing && dd.oneThing.trim() && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}
+            TOMORROW'S ONE THING * <span style={{ fontSize: '10px', fontWeight: '400' }}>(Required)</span>{dd.oneThing && dd.oneThing.trim() && <span style={{ color: STEEL, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}
           </label>
           <label style={S.labelSm}>
             The single task that — by completing or starting it — makes everything else easier or unnecessary.

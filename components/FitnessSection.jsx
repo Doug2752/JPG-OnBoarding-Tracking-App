@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ACTIVITIES, ACTIVITY_RATE, DARK, GOLD } from '../utils/constants.js';
+import { ACTIVITIES, ACTIVITY_RATE, DARK, ORANGE } from '../utils/constants.js';
 import { formatDayDate, startPlusDay } from '../utils/date.js';
 import { S } from '../utils/styles.js';
 import { Field, SaveNote, RatingButtons } from './Shared';
@@ -43,7 +43,7 @@ export default function FitnessSection({
   if (!startDate) {
     return (
       <div>
-        <div style={S.blockGold}>SECTION 03 — FITNESS & ACTIVITY TRACKING</div>
+        <div style={S.blockOrange}>SECTION 03 — FITNESS & ACTIVITY TRACKING</div>
         <div style={S.card}>
           <div style={S.infoBox}>
             Your start date has not been set yet. Return to the Home screen and tap Start Today's Entry to begin, or enter your start date on the Client Info page.
@@ -55,10 +55,10 @@ export default function FitnessSection({
 
   return (
     <div>
-      <div style={S.blockGold}>SECTION 03 — FITNESS & ACTIVITY TRACKING</div>
+      <div style={S.blockOrange}>SECTION 03 — FITNESS & ACTIVITY TRACKING</div>
       <div style={S.card}>
         {dayComplete && (
-          <div style={{ background: '#B8860B', color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
+          <div style={{ background: ORANGE, color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center', padding: 4, borderRadius: 4, marginBottom: 8 }}>
             Day marked complete — unlock to edit
           </div>
         )}
@@ -76,7 +76,7 @@ export default function FitnessSection({
               <button key={n} onClick={() => onDaySelect(n)} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 border: '1.5px solid #000', borderRadius: 4, padding: '5px 8px',
-                cursor: 'pointer', background: active ? GOLD : '#333', color: '#fff', lineHeight: 1.2,
+                cursor: 'pointer', background: active ? ORANGE : '#333', color: '#fff', lineHeight: 1.2,
               }}>
                 <span style={{ fontSize: 11, fontWeight: 700 }}>Day {n}</span>
                 <span style={{ fontSize: 9, fontWeight: 400 }}>{lbl}</span>
@@ -84,9 +84,9 @@ export default function FitnessSection({
             );
           })}
         </div>
-        <div style={S.dayTag}>{formatDayDate(startDate, selectedDay)}</div>
+        <div style={S.dayTagOrange}>{formatDayDate(startDate, selectedDay)}</div>
 
-        <Field label={<>Activity / Workout{dd.activity && dd.activity !== '' && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
+        <Field label={<>Activity / Workout{dd.activity && dd.activity !== '' && <span style={{ color: ORANGE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
           <select style={S.select} disabled={dayComplete} value={dd.activity || ''} onChange={e => upd('activity', e.target.value)}>
             <option value="">Select activity...</option>
             {cats[''] && cats[''].map(a => <option key={a} value={a}>{a}</option>)}
@@ -111,7 +111,7 @@ export default function FitnessSection({
 
         {activitySet && (
           <div style={S.grid2}>
-            <Field label={<>Duration (minutes){dd.duration && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
+            <Field label={<>Duration (minutes){dd.duration && <span style={{ color: ORANGE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
               <input type="number" min="0" style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: durationMissing ? '2px solid #cc0000' : undefined }} readOnly={dayComplete} placeholder="e.g. 45"
                 value={dd.duration || ''} onChange={e => upd('duration', e.target.value)} />
               {durationMissing && (
@@ -125,9 +125,9 @@ export default function FitnessSection({
         )}
 
         {activitySet && (
-          <Field label={<>Intensity 1–10 (RPE) — 10 = Most Intense{dd.intensity && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
+          <Field label={<>Intensity 1–10 (RPE) — 10 = Most Intense{dd.intensity && <span style={{ color: ORANGE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
             <div style={intensityMissing ? { border: '2px solid #cc0000', borderRadius: 4 } : undefined}>
-              <RatingButtons value={dd.intensity} onChange={v => upd('intensity', v)} disabled={dayComplete} />
+              <RatingButtons value={dd.intensity} onChange={v => upd('intensity', v)} disabled={dayComplete} activeColor={ORANGE} activeBorderColor={ORANGE} />
             </div>
             {intensityMissing && (
               <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
