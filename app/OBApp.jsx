@@ -59,9 +59,10 @@ function isDayComplete(dd) {
   // SLEEP — bedtime, fallAsleep, wakeTime,
   // timesUp, durationAwake, quality required
   const sl = dd.sleep || {};
+  const timesUpIsZero = sl.timesUp === '0' || sl.timesUp === 0;
   if (!sl.bedtime || !sl.fallAsleep ||
       !sl.wakeTime || !sl.timesUp ||
-      !sl.durationAwake || !sl.quality) {
+      (!timesUpIsZero && !sl.durationAwake) || !sl.quality) {
     return false;
   }
 
@@ -71,9 +72,9 @@ function isDayComplete(dd) {
   const t = dd.timelife || {};
   if (!t.nonNegList || t.nonNegList.length === 0)
     return false;
-  if (!t.screenSocialNone && (!t.screenSocial || !t.screenSocial.trim()))
+  if (!t.screenSocialNone && !t.screenSocialHrs && !t.screenSocialMins)
     return false;
-  if (!t.screenOtherNone && (!t.screenOther || !t.screenOther.trim()))
+  if (!t.screenOtherNone && !t.screenOtherHrs && !t.screenOtherMins)
     return false;
   if (!t.rating) return false;
   if (!t.oneThing || !t.oneThing.trim())

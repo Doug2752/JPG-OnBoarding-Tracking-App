@@ -30,7 +30,8 @@ export default function TimeLifeSection({
 
   const dd = dayData.timelife || {
     workSchedule: '', workHoursNum: '', nonNegList: [], _nonNegPending: '',
-    screenSocial: '', screenSocialNone: false, screenOther: '', screenOtherNone: false,
+    screenSocialHrs: '', screenSocialMins: '', screenSocialNone: false,
+    screenOtherHrs: '', screenOtherMins: '', screenOtherNone: false,
     familyTimeNone: false, familyTimeHrs: '', familyTimeMins: '',
     pitHrs: '', pitMins: '', pitNone: false, mood: '', rating: null,
     oneThing: '', addl: '',
@@ -38,8 +39,8 @@ export default function TimeLifeSection({
 
   const oneThingMissing = attempted && (!dd.oneThing || !dd.oneThing.trim());
   const nonNegMissing = attempted && (!dd.nonNegList || dd.nonNegList.length === 0);
-  const screenSocialMissing = attempted && !dd.screenSocialNone && (!dd.screenSocial || !dd.screenSocial.trim());
-  const screenOtherMissing = attempted && !dd.screenOtherNone && (!dd.screenOther || !dd.screenOther.trim());
+  const screenSocialMissing = attempted && !dd.screenSocialNone && !dd.screenSocialHrs && !dd.screenSocialMins;
+  const screenOtherMissing = attempted && !dd.screenOtherNone && !dd.screenOtherHrs && !dd.screenOtherMins;
   const ratingMissing = attempted && !dd.rating;
   const workHoursMissing = attempted && dd.workSchedule !== 'Retired' && !dd.workHoursNum && dd.workHoursNum !== 0;
 
@@ -251,12 +252,18 @@ export default function TimeLifeSection({
             </div>
             <label style={S.labelSm}>Time scrolling social media platforms</label>
             {!dd.screenSocialNone && (
-              <input
-                style={{ ...S.input, border: screenSocialMissing ? '2px solid #cc0000' : undefined }}
-                placeholder="e.g. 1 hr 30 min"
-                value={dd.screenSocial || ''}
-                onChange={e => upd('screenSocial', e.target.value)}
-              />
+              <div style={{ display: 'flex', gap: '8px', border: screenSocialMissing ? '2px solid #cc0000' : undefined }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Hours</div>
+                  <input type="number" min="0" max="24" style={S.input} placeholder="0"
+                    value={dd.screenSocialHrs || ''} onChange={e => upd('screenSocialHrs', e.target.value)} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Minutes</div>
+                  <input type="number" min="0" max="59" style={S.input} placeholder="0"
+                    value={dd.screenSocialMins || ''} onChange={e => upd('screenSocialMins', e.target.value)} />
+                </div>
+              </div>
             )}
           </div>
           <div style={S.field}>
@@ -276,13 +283,20 @@ export default function TimeLifeSection({
             <label style={S.labelSm}>TV, computer, or phone not related to social media</label>
             {!dd.screenOtherNone && (
               <>
-                <input
-                  style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: screenOtherMissing ? '2px solid #cc0000' : undefined }}
-                  readOnly={dayComplete}
-                  placeholder="e.g. 2 hrs"
-                  value={dd.screenOther || ''}
-                  onChange={e => upd('screenOther', e.target.value)}
-                />
+                <div style={{ display: 'flex', gap: '8px', border: screenOtherMissing ? '2px solid #cc0000' : undefined }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Hours</div>
+                    <input type="number" min="0" max="24" style={S.input} placeholder="0"
+                      readOnly={dayComplete} value={dd.screenOtherHrs || ''}
+                      onChange={e => upd('screenOtherHrs', e.target.value)} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Minutes</div>
+                    <input type="number" min="0" max="59" style={S.input} placeholder="0"
+                      readOnly={dayComplete} value={dd.screenOtherMins || ''}
+                      onChange={e => upd('screenOtherMins', e.target.value)} />
+                  </div>
+                </div>
                 {screenOtherMissing && (
                   <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
                 )}

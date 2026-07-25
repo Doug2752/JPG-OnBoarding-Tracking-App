@@ -114,7 +114,8 @@ export default function SleepSection({
   const fallAsleepMissing = attempted && !dd.fallAsleep;
   const wakeTimeMissing = attempted && !dd.wakeTime;
   const timesUpMissing = attempted && !dd.timesUp;
-  const durationAwakeMissing = attempted && !dd.durationAwake;
+  const timesUpIsZero = dd.timesUp === '0' || dd.timesUp === 0;
+  const durationAwakeMissing = attempted && !timesUpIsZero && !dd.durationAwake;
   const qualityMissing = attempted && !dd.quality;
 
   const reqBorder = { border: '2px solid #cc0000', borderRadius: 4 };
@@ -247,20 +248,22 @@ export default function SleepSection({
             />
             {timesUpMissing && <div style={reqMsg}>Required</div>}
           </SleepFieldCol>
-          <SleepFieldCol label={<>Awake Duration{dd.durationAwake && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Total time awake across all interruptions">
-            <div style={durationAwakeMissing ? reqBorder : undefined}>
-              <InputWithToggle
-                type="number"
-                value={dd.durationAwake}
-                placeholder="0"
-                onChange={e => upd('durationAwake', e.target.value)}
-                unitLabel={awakeUnit}
-                onToggle={toggleAwake}
-                readOnly={dayComplete}
-              />
-            </div>
-            {durationAwakeMissing && <div style={reqMsg}>Required</div>}
-          </SleepFieldCol>
+          {!timesUpIsZero && (
+            <SleepFieldCol label={<>Awake Duration{dd.durationAwake && <span style={{ color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Total time awake across all interruptions">
+              <div style={durationAwakeMissing ? reqBorder : undefined}>
+                <InputWithToggle
+                  type="number"
+                  value={dd.durationAwake}
+                  placeholder="0"
+                  onChange={e => upd('durationAwake', e.target.value)}
+                  unitLabel={awakeUnit}
+                  onToggle={toggleAwake}
+                  readOnly={dayComplete}
+                />
+              </div>
+              {durationAwakeMissing && <div style={reqMsg}>Required</div>}
+            </SleepFieldCol>
+          )}
           <SleepFieldCol label="Sleep Score (1–100)" labelSm="Wearable or app">
             <input
               type="number"
