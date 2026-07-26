@@ -1,5 +1,5 @@
 import React from 'react';
-import { MID, BORDER } from '../utils/constants.js';
+import { MID } from '../utils/constants.js';
 import { S } from '../utils/styles.js';
 
 export default function MealBlock({ mealKey, mealLabel, dayVal, estimates, estimating, getVal, onUpd, onEstimate, error }) {

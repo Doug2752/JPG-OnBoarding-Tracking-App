@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   NON_NEG_CATS,
-  GOLD, GOLD_LIGHT, GOLD_DARK,
+  GOLD, GOLD_DARK,
   STEEL, STEEL_LIGHT,
   RED
 } from '../utils/constants.js';
@@ -24,7 +24,7 @@ const WORK_OPTIONS = [
 export default function TimeLifeSection({
   dayData, selectedDay, onSave, startDate, onDaySelect,
   dayCompleteDates, onMarkDayComplete,
-  onUnlockDay, isoForDay, isDayComplete, dayComplete, attempted,
+  onUnlockDay, isoForDay, dayComplete, attempted,
   w1Submitted, w2Submitted, w1Sent, w2Sent, onSubmitToCoach,
 }) {
   const [saved, setSaved] = useState(false);

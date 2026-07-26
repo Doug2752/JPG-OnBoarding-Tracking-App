@@ -45,7 +45,7 @@ export default function FitnessSection({
       <div>
         <div style={S.blockOrange}>SECTION 03 — FITNESS & ACTIVITY TRACKING</div>
         <div style={S.card}>
-          <div style={S.infoBox}>
+          <div style={S.infoBoxOrange}>
             Your start date has not been set yet. Return to the Home screen and tap Start Today's Entry to begin, or enter your start date on the Client Info page.
           </div>
         </div>

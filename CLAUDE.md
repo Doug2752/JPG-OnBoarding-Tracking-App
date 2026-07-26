@@ -70,31 +70,107 @@
   `server: { open: false }` to prevent auto-launch of a browser tab.
   Verify this is set before starting the dev server.
 
-## CURRENT BUILD STATE
+## SECTION COLOR SYSTEM (LOCKED — do not change)
 
-**What is built:**
+Each section has a dedicated color constant used for banners,
+checkmarks, day tags, chips, and interactive elements. GOLD is
+reserved for global chrome (tab bar, BrandBar, Archive active state,
+Reflection headers, calorie display).
+
+| Section | Color | Hex |
+|---|---|---|
+| Client Info | GOLD | #B8860B |
+| Nutrition (01) | BURGUNDY | #7B3055 |
+| Alcohol (02) | PURPLE | #4A3575 |
+| Fitness (03) | ORANGE | #7A4418 |
+| Sleep (04) | GREEN | #2E5A4B |
+| Time & Life (05) | STEEL | #3A5A78 |
+
+GOLD and its variants (GOLD_DARK, GOLD_LIGHT) are also used in
+SummaryResults headers, Header pill, ArchiveView active tab,
+ReflectSection, and the Mark Day Complete button.
+
+## CURRENT BUILD STATE (confirmed in source 07/25/2026)
+
+### Built and verified in code (browser-verify pending)
+
+- **Section color pass — COMPLETE** for all five tracking sections
+  and Nutrition/SuppAdder:
+  - Per-section block headers, infoBoxes, banner bars
+  - Per-section day tags (dayTagBurgundy/Purple/Orange/Green/Steel
+    in styles.js)
+  - Per-section checkmarks on all interactive fields
+  - RatingButtons activeColor/activeBorderColor per section
+  - SleepSection InputWithToggle unitColor=GREEN
+  - TimeLifeSection PM Check-In unselected buttons: white border +
+    white text on STEEL_MID background; selected: white highlight
+  - TimeLifeSection TODAY label white; score box white border
+  - TimeLifeSection None checkboxes accentColor=STEEL
+  - NutritionSection/SuppAdder: all chips, buttons, recent-panel
+    rows use Burgundy variants
+  - styles.js: dayTagBurgundy/Purple/Orange/Green/Steel; chipBurgundy,
+    chipXBurgundy, suppRecentBurgundy, suppRecentItemBurgundy,
+    copyBtnBurgundy all added
+
+- **SummaryResults screen-time regression fixed:** weekStats and
+  DayGrid now read screenSocialHrs/Mins/None and
+  screenOtherHrs/Mins/None (two-box keys). Screen Social Media
+  checkmark added to TimeLifeSection.
+
+- **dayComplete source corrected:** OBApp derives dayComplete from
+  dayCompleteDates.includes() (explicit mark), not isDayComplete()
+  (data gate).
+
+- **Client Info auto-format:** phone → (XXX) XXX-XXXX, date →
+  MM/DD/YYYY. Email type=email. All placeholders set.
+
+- **SleepSection 3-column grid drops to 2 columns** when timesUpIsZero.
+
+- **TimeLifeSection Relationship/PIT grid:** alignItems:start +
+  labelSm minHeight:30px on both cells.
+
+- **Group 9 cleanup complete:**
+  - Shared.jsx: DayBtn, SummaryBtn, MID import removed
+  - constants.js: LOGO_LIGHT, LOGO_DARK removed
+  - CoverPage.jsx: PATCH_SRC, patchOk state, useState import removed;
+    font useEffect cleanup with null-parent guard added
+  - AlcoholSection infoBox copy corrected ("check the None box")
+  - OBApp: section, setSection, streak removed from Header call;
+    isDayComplete comments updated to match current field logic
+
 - Class 3 modular structure
 - Working login: Doug / JPG2026
 - 14-day tracking metrics structure (Fuel / Output / Recovery /
   Processing categories, daily subjective scoring)
+- Cover page with LIMITLESS branding, daily quote, program status
 
-**What is NOT verified as working:**
-- Whether the "test" user account works in OBT (not confirmed —
-  verify before assuming)
+### Known issues (flagged, not fixed)
+
+- **FitnessSection no-startDate branch** uses `S.infoBox` (gold)
+  instead of `S.infoBoxOrange` — pending color pass follow-up.
+- **Dead imports** (harmless, pending cleanup):
+  - Shared.jsx: STEEL_MID, GOLD_LIGHT now unused after DayBtn removal
+  - TimeLifeSection.jsx: GOLD_LIGHT unused after non-neg chip
+    migration to STEEL_LIGHT; isDayComplete prop received but not
+    referenced in body
+  - MealBlock.jsx: BORDER imported but unused (pre-existing)
+- **Client Info copy:** "Date Started" label may need updating to
+  "Date Starting Tracking" per prior spec — not yet addressed.
+- **Header** does not match the shared standard used in DOP/PIT —
+  no cross-app standardization done.
+- **Top tab bar** extends only partway across — needs browser check
+  to confirm current state.
+- **Calorie AI estimates** call api.anthropic.com with no API key
+  wired — estimates silently return null. Consistent with documented
+  "no backend, no API keys" state.
+
+### What is NOT verified as working
+
+- All section changes above need Firefox localhost:5175 browser
+  verification before commit.
+- Whether the "test" user account works in OBT (not confirmed).
 - Live behavior of each individual tracking section against spec
-  (not recently browser-verified)
-
-**Known issues (flagged, not fixed):**
-- Header does not match the standard shared across DOP and PIT
-- Section coloring inconsistent (sections 1–3 gold, 4–5 blue,
-  rest black; intended standard is all-black)
-- Missing centered "14-Day Tracking and Onboarding" title at top
-- Top tab bar is undersized, only extends ~half page width
-- "Reflect" tab click locks out all other tabs — confirmed
-  functional bug
-- Copy edits pending in Client Info ("Date Starting" → "Date
-  Starting Tracking", "Goals" → "Desired Outcomes", etc.)
-- File name shown at top of app screen — not CS-compliant
+  (not recently browser-verified after color pass).
 
 ## KEY ARCHITECTURAL FACTS
 
@@ -106,6 +182,13 @@
 - Login credential matching is case-insensitive (Core Standard v1.8
   Section 8.2 — locked)
 - All app code lives at C:\JPG-PROJECTS\ only — never OneDrive
+- Storage prefix: `<username-lowercase>_ob6_`; day keys: `day_<YYYY-MM-DD>`
+- `dayComplete` prop on all sections = explicit mark
+  (`dayCompleteDates.includes(isoForDay(selectedDay))`), not the
+  10-field data gate (`isDayComplete`)
+- `isDayComplete(dayData)` is still used in two places intentionally:
+  (1) gating the Mark Day Complete button, (2) Header's "Required
+  Fields Done" pill
 
 ## REFERENCED GOVERNING DOCUMENTS
 
@@ -134,5 +217,5 @@ development work.
 
 ---
 
-*OBT CLAUDE.md — v1.0 initial — created for Desktop Code migration
-pilot. Update as build state or working rules evolve.*
+*OBT CLAUDE.md — v1.1 — updated 07/25/2026. Section color system
+locked; build state refreshed through Group 9 cleanup completion.*
