@@ -225,8 +225,8 @@ function DayGrid({ week, calEst }) {
     <div style={{ overflowX: 'auto' }}>
       <table style={{
         borderCollapse: 'collapse',
-        width: '100%',
-        minWidth: 880,
+        width: 'max-content',
+        minWidth: '100%',
       }}>
         <thead>
           <tr>
