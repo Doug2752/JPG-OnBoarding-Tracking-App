@@ -407,6 +407,7 @@ if (n === null) return;
       <BrandBar
         neverTwiceRead={neverTwiceRead}
         setNeverTwice={setNeverTwice}
+        user={user}
       />
 
       <div style={{

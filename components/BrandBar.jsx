@@ -4,7 +4,7 @@ import { GOLD, DARK } from '../utils/constants';
 const LOGO_SRC = '/jpglogo.png';
 
 export default function BrandBar({
-  neverTwiceRead, setNeverTwice,
+  neverTwiceRead, setNeverTwice, user,
 }) {
   return (
     <div
@@ -18,8 +18,8 @@ export default function BrandBar({
         maxWidth: 900,
         margin: '0 auto',
         display: 'grid',
-        gridTemplateColumns: '260px auto 1fr',
-        alignItems: 'center',
+        gridTemplateColumns: '260px auto 240px',
+        alignItems: 'flex-start',
         width: '100%',
         boxSizing: 'border-box',
       }}>
@@ -118,8 +118,52 @@ export default function BrandBar({
           </div>
         </div>
 
-        {/* Right spacer */}
-        <div style={{ width: 76 }} />
+        {(() => {
+          const tier = (() => {
+            try {
+              const val = localStorage.getItem(`${(user || '').toLowerCase()}_ob6_tier`);
+              return val ? parseInt(val, 10) : 4;
+            } catch { return 4; }
+          })();
+
+          const tierNames = { 1: 'UNSTOPPABLE', 2: 'GREATNESS', 3: 'PERFORMANCE', 4: 'APPRENTICE' };
+          const tierName = tierNames[tier] || 'APPRENTICE';
+          const patchSrc = `/LIMITLESS_Tier_${tier}_Patch.png`;
+
+          const clientInfoRaw = (() => {
+            try { return JSON.parse(localStorage.getItem(`${(user || '').toLowerCase()}_ob6_clientInfo`) || '{}'); }
+            catch { return {}; }
+          })();
+
+          const fullName = clientInfoRaw.fullName || '';
+          const parts = fullName.trim().split(/\s+/);
+          const nameLabel = parts.length >= 2
+            ? `${parts[0][0].toUpperCase()}. ${parts[parts.length - 1]}`
+            : fullName || user || '';
+
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 0 }}>
+              <div style={{ background: '#FFFFFF', display: 'inline-block', lineHeight: 0 }}>
+                <img
+                  src={patchSrc}
+                  alt={`Tier ${tier} patch`}
+                  style={{ width: 220, height: 'auto', display: 'block', border: 'none', outline: 'none' }}
+                />
+              </div>
+              <div style={{
+                marginTop: 2,
+                fontSize: 9,
+                fontWeight: 700,
+                color: '#000',
+                letterSpacing: 0.5,
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+              }}>
+                TIER {tier} | {tierName} | {nameLabel}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
