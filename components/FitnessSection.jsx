@@ -10,16 +10,28 @@ export default function FitnessSection({
   const [saved, setSaved] = useState(false);
 
   const dd = dayData.fitness || {
-    activity: '', activityOther: '', duration: '',
+    activity: '', activityOther: '', duration: '', durationHrs: '', durationMins: '',
     intensity: null, notes: '', addl: '',
   };
 
   const activitySet = dd.activity && dd.activity !== '' && dd.activity !== 'None' && dd.activity !== 'Rest';
-  const durationMissing = attempted && activitySet && !dd.duration;
+  const durationMissing = attempted && activitySet && !(dd.durationHrs || dd.durationMins);
   const intensityMissing = attempted && activitySet && !dd.intensity;
 
   function upd(k, v) {
     onSave('fitness', { ...dd, [k]: v });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1500);
+  }
+
+  function updDuration(newHrs, newMins) {
+    const totalMins = (parseFloat(newHrs) || 0) * 60 + (parseFloat(newMins) || 0);
+    onSave('fitness', {
+      ...dd,
+      durationHrs: newHrs,
+      durationMins: newMins,
+      duration: totalMins > 0 ? String(totalMins) : '',
+    });
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   }
@@ -112,22 +124,42 @@ export default function FitnessSection({
         {activitySet && (
           <div style={S.grid2}>
             <Field label={<>Duration (minutes){dd.duration && <span style={{ color: ORANGE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
-              <input type="number" min="0" style={{ ...S.input, background: dayComplete ? '#f5f5f3' : undefined, border: durationMissing ? '2px solid #cc0000' : undefined }} readOnly={dayComplete} placeholder="e.g. 45"
-                value={dd.duration || ''} onChange={e => upd('duration', e.target.value)} />
+              <div style={{ display: 'flex', gap: '8px', border: durationMissing ? '2px solid #cc0000' : undefined }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Hours</div>
+                  <input type="number" min="0" max="23" style={S.input} readOnly={dayComplete} placeholder="0"
+                    value={dd.durationHrs || ''} onChange={e => updDuration(e.target.value, dd.durationMins || '')} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Minutes</div>
+                  <input type="number" min="0" max="59" style={S.input} readOnly={dayComplete} placeholder="0"
+                    value={dd.durationMins || ''} onChange={e => updDuration(dd.durationHrs || '', e.target.value)} />
+                </div>
+              </div>
               {durationMissing && (
                 <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
               )}
             </Field>
-            <Field label="Notes">
-              <input style={S.input} value={dd.notes || ''} onChange={e => upd('notes', e.target.value)} />
-            </Field>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+              <Field label="Notes">
+                <input style={S.input} value={dd.notes || ''} onChange={e => upd('notes', e.target.value)} />
+              </Field>
+            </div>
           </div>
         )}
 
         {activitySet && (
-          <Field label={<>Intensity 1–10 (RPE) — 10 = Most Intense{dd.intensity && <span style={{ color: ORANGE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
-            <div style={intensityMissing ? { border: '2px solid #cc0000', borderRadius: 4 } : undefined}>
-              <RatingButtons value={dd.intensity} onChange={v => upd('intensity', v)} disabled={dayComplete} activeColor={ORANGE} activeBorderColor={ORANGE} />
+          <Field label="Intensity (RPE) 1–10">
+            <div style={S.fitnessRpeBlock}>
+              <div style={{ ...S.pmEyebrow, fontSize: '11px', color: '#fff', fontWeight: 600, marginBottom: '10px' }}>
+                INTENSITY (RPE) — RATE YOUR EFFORT{dd.intensity && <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}
+              </div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '10px' }}>
+                1 = Minimal · 10 = Maximum
+              </div>
+              <div style={intensityMissing ? { border: '2px solid #cc0000', borderRadius: 4 } : undefined}>
+                <RatingButtons value={dd.intensity} steel onChange={v => upd('intensity', v)} disabled={dayComplete} />
+              </div>
             </div>
             {intensityMissing && (
               <div style={{ color: '#cc0000', fontSize: 11, marginTop: 4 }}>Required</div>
@@ -142,7 +174,7 @@ export default function FitnessSection({
               {rate > 0 ? 'Based on ' + rate + ' kcal/hr' : 'Select activity and duration to calculate'}
             </div>
           </div>
-          <div style={S.calValue}>{burnKcal > 0 ? burnKcal.toLocaleString() + ' kcal' : '—'}</div>
+          <div style={{ ...S.calValue, color: ORANGE }}>{burnKcal > 0 ? burnKcal.toLocaleString() + ' kcal' : '—'}</div>
         </div>
 
         <div style={S.addlWrap}>

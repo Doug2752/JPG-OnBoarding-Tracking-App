@@ -3,7 +3,7 @@ import {
   GOLD, GOLD_DARK, GOLD_LIGHT,
   BG, DARK, CHARCOAL, MID, BORDER,
   STEEL, STEEL_MID, STEEL_LIGHT,
-  GREEN, GREEN_LIGHT, RED
+  GREEN, GREEN_LIGHT, ORANGE, RED
 } from './constants.js';
 
 export const S = {
@@ -70,6 +70,12 @@ export const S = {
 
   // ── One Thing block ──────────────────────────────────────────
   oneThingBlock: { background: '#fff', border: '2px solid ' + RED, borderRadius: '4px', padding: '12px', marginTop: '12px' },
+
+  // ── Sleep Quality block ──────────────────────────────────────
+  sleepQualityBlock: { background: GREEN, borderRadius: '4px', padding: '12px', marginTop: '12px' },
+
+  // ── Fitness RPE block ────────────────────────────────────────
+  fitnessRpeBlock: { background: ORANGE, borderRadius: '4px', padding: '12px', marginTop: '12px' },
 
   // ── Additional / chips ───────────────────────────────────────
   addlWrap:  { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid ' + BORDER },

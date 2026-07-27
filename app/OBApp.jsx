@@ -52,7 +52,7 @@ function isDayComplete(dd) {
   // and intensity are required; notes optional
   const f = dd.fitness || {};
   if (f.activity && f.activity !== '' && f.activity !== 'None' && f.activity !== 'Rest') {
-    if (!f.duration || !f.intensity) return false;
+    if (!(f.durationHrs || f.durationMins) || !f.intensity) return false;
   }
 
   // SLEEP — bedtime, fallAsleep, wakeTime,

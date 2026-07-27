@@ -193,7 +193,7 @@ export default function NutritionSection({
               <div style={S.calLabel}>Estimated Daily Calories</div>
               <div style={{ fontSize: '10px', color: '#888', marginTop: '1px' }}>AI estimate — approximate only</div>
             </div>
-            <div style={S.calValue}>{dayCal.toLocaleString()} kcal</div>
+            <div style={{ ...S.calValue, color: BURGUNDY }}>{dayCal.toLocaleString()} kcal</div>
           </div>
         )}
 

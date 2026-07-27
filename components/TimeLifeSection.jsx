@@ -55,7 +55,7 @@ export default function TimeLifeSection({
     (a.otherAlc && String(a.otherAlc).trim())
   );
   const f = dayData.fitness || {};
-  const fitnessMissing = attempted && f.activity && f.activity !== '' && f.activity !== 'None' && f.activity !== 'Rest' && (!f.duration || !f.intensity);
+  const fitnessMissing = attempted && f.activity && f.activity !== '' && f.activity !== 'None' && f.activity !== 'Rest' && (!(f.durationHrs || f.durationMins) || !f.intensity);
   const sl = dayData.sleep || {};
   const sleepMissing = attempted && (
     !sl.bedtime || !sl.fallAsleep || !sl.wakeTime ||

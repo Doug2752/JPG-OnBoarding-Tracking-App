@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOLD, BORDER } from '../utils/constants.js';
+import { BURGUNDY, BORDER } from '../utils/constants.js';
 import { S } from '../utils/styles.js';
 
 export default function SnackBlock({ idx, snackText, dayVal, estimates, estimating, onUpdText, onEstimate, onRemove }) {
@@ -17,7 +17,7 @@ export default function SnackBlock({ idx, snackText, dayVal, estimates, estimati
   return (
     <div style={{ marginBottom: '10px', background: '#fafaf8', border: '1px solid ' + BORDER, borderRadius: '4px', padding: '10px 12px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
-        <div style={{ fontSize: '11px', fontWeight: '700', color: GOLD, textTransform: 'uppercase', letterSpacing: '1px' }}>
+        <div style={{ fontSize: '11px', fontWeight: '700', color: BURGUNDY, textTransform: 'uppercase', letterSpacing: '1px' }}>
           Snack {idx + 1}
         </div>
         <button

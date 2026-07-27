@@ -295,9 +295,17 @@ export default function SleepSection({
           />
         </Field>
 
-        <Field label={<>Sleep Quality 1–10 — 10 = Great{dd.quality && <span style={{ color: GREEN, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
-          <div style={qualityMissing ? reqBorder : undefined}>
-            <RatingButtons value={dd.quality} onChange={v => upd('quality', v)} disabled={dayComplete} activeColor={GREEN} activeBorderColor={GREEN} />
+        <Field label="Sleep Quality 1–10">
+          <div style={S.sleepQualityBlock}>
+            <div style={{ ...S.pmEyebrow, fontSize: '11px', color: '#fff', fontWeight: 600, marginBottom: '10px' }}>
+              SLEEP QUALITY — RATE YOUR SLEEP{dd.quality && <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}
+            </div>
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '10px' }}>
+              1 = Poor · 10 = Outstanding
+            </div>
+            <div style={qualityMissing ? reqBorder : undefined}>
+              <RatingButtons value={dd.quality} steel onChange={v => upd('quality', v)} disabled={dayComplete} />
+            </div>
           </div>
           {qualityMissing && <div style={reqMsg}>Required</div>}
         </Field>
