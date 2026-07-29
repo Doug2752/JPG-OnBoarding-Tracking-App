@@ -234,6 +234,7 @@ if (n === null) return;
       : ['w2_well', 'w2_challenge', 'w2_energy', 'w2_different'];
     const reflectData = {};
     reflectKeys.forEach(k => reflectData[k] = reflect[k] || '');
+    // TODO: wire to Supabase — replace this block with API call when backend is ready
     const payload = {
       week,
       submittedAt: todayISO(),
