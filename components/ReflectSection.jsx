@@ -14,7 +14,7 @@ const W1_KEYS = ['w1_well', 'w1_challenge', 'w1_energy', 'w1_different'];
 const W2_KEYS = ['w2_well', 'w2_challenge', 'w2_energy', 'w2_different'];
 
 const checkStyle = {
-  color: '#B8860B', fontSize: 13, fontWeight: 700, marginLeft: 6,
+  color: GOLD, fontSize: 13, fontWeight: 700, marginLeft: 6,
 };
 const reqMsg = { color: '#cc0000', fontSize: 11, marginTop: 4 };
 const submitBtn = {
@@ -25,7 +25,7 @@ const submitBtn = {
   fontSize: 12,
   fontWeight: 700,
   letterSpacing: 0.5,
-  background: '#ddb94a',
+  background: GOLD,
   color: '#000',
   marginTop: 12,
 };

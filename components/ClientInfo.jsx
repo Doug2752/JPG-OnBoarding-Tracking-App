@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { GOLD, RED } from '../utils/constants.js';
 import { S } from '../utils/styles.js';
 import { Field, SaveNote } from './Shared';
 
@@ -29,7 +30,7 @@ function isValidDate(str) {
 }
 
 const checkStyle = {
-  color: '#B8860B',
+  color: GOLD,
   fontWeight: 700,
   marginLeft: 6,
   fontSize: '1rem',
@@ -121,7 +122,7 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
             <input
               style={{
                 ...S.input,
-                border: dateError ? '2px solid #B02020' : S.input.border,
+                border: dateError ? '2px solid ' + RED : S.input.border,
               }}
               placeholder="MM/DD/YYYY"
               value={data.dateStarted || ''}
@@ -130,7 +131,7 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
             {dateError && (
               <div style={{
                 fontSize: '0.78rem',
-                color: '#B02020',
+                color: RED,
                 marginTop: 4,
               }}>
                 Please use MM/DD/YYYY format (e.g. 07/20/2026)

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStorage } from '../services/storage';
 import { S } from '../utils/styles';
-import { GOLD, DARK, BG } from '../utils/constants';
+import { GOLD, GOLD_LIGHT, DARK, BG } from '../utils/constants';
 import { startPlusDay, todayISO } from '../utils/date';
 import Login from '../components/Login.jsx';
 import InstructionsPanel from '../components/InstructionsPanel.jsx';
@@ -500,7 +500,7 @@ if (n === null) return;
                   fontSize: 12,
                   fontWeight: 700,
                   letterSpacing: 0.5,
-                  background: '#ddb94a',
+                  background: GOLD_LIGHT,
                   color: '#000',
                 }}
               >Go to Reflect</button>

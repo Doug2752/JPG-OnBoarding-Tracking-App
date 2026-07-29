@@ -399,7 +399,7 @@ export default function TimeLifeSection({
           )}
         </div>
 
-        <div style={{ ...S.oneThingBlock, borderColor: oneThingMissing ? '#ff0000' : RED }}>
+        <div style={{ ...S.oneThingBlock, borderColor: RED }}>
           <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: RED, marginBottom: '4px', letterSpacing: '0.5px' }}>
             TOMORROW'S ONE THING * <span style={{ fontSize: '10px', fontWeight: '400' }}>(Required)</span>{dd.oneThing && dd.oneThing.trim() && <span style={{ color: STEEL, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}
           </label>
@@ -407,7 +407,7 @@ export default function TimeLifeSection({
             The single task that — by completing or starting it — makes everything else easier or unnecessary.
           </label>
           <textarea
-            style={{ ...S.textarea, border: '1px solid ' + (oneThingMissing ? '#ff0000' : RED), background: dayComplete ? '#f5f5f3' : '#fff9f9', minHeight: '66px' }}
+            style={{ ...S.textarea, border: '1px solid ' + RED, background: dayComplete ? '#f5f5f3' : '#fff9f9', minHeight: '66px' }}
             readOnly={dayComplete}
             placeholder="My one task for tomorrow..."
             value={dd.oneThing || ''}

@@ -79,7 +79,7 @@ export default function AlcoholSection({
             <input
               type="checkbox"
               id="alcoholNone"
-              style={{ accentColor: '#4A3575' }}
+              style={{ accentColor: PURPLE }}
               checked={dd.alcoholNone || false}
               disabled={dayComplete}
               onChange={e => upd('alcoholNone', e.target.checked)}

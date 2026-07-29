@@ -223,11 +223,11 @@ export default function CoverPage({
           onClick={onClientInfo}
           style={{
             background: 'transparent',
-            color: '#1A1A1A',
+            color: DARK,
             fontSize: '0.85rem',
             fontWeight: 700,
             letterSpacing: '0.08em',
-            border: '2px solid #1A1A1A',
+            border: '2px solid ' + DARK,
             borderRadius: 6,
             padding: '10px 36px',
             width: '100%',

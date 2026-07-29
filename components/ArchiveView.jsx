@@ -126,7 +126,7 @@ export default function ArchiveView({
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#222' }}>
                   {fmtIso(iso)}
                 </span>
-                <span style={{ color: '#ddb94a', fontSize: 12, fontWeight: 700 }}>
+                <span style={{ color: GOLD, fontSize: 12, fontWeight: 700 }}>
                   ✓ Day Complete
                 </span>
               </div>
