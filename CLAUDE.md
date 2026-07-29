@@ -50,6 +50,8 @@
    the actual original live text before editing. Rewriting from
    memory without retrieving the source is a trust violation.
 
+9. **Never touch .md files in the app folder during code builds.**
+
 ## MODEL SELECTION
 
 - **Opus** — complex multi-file logic builds, cross-component
@@ -63,19 +65,16 @@
 
 - **Firefox** — code/build testing and DevTools work. Default
   browser at the OS level.
-- **Brave** — reserved for Vite dev servers for Doug's daily
-  DOP/PIT entries only. Never used for OBT testing.
+- **Brave** — reserved for Doug's daily DOP/PIT entries only.
+  Never used for OBT testing.
 - **Edge** — Doug's browser for Claude.ai chat sessions.
-- **Vite config:** OBT vite.config.js should carry
-  `server: { open: false }` to prevent auto-launch of a browser tab.
-  Verify this is set before starting the dev server.
+- **Vite config:** OBT vite.config.js carries
+  `server: { open: false, port: 5175 }`.
 
 ## SECTION COLOR SYSTEM (LOCKED — do not change)
 
 Each section has a dedicated color constant used for banners,
-checkmarks, day tags, chips, and interactive elements. GOLD is
-reserved for global chrome (tab bar, BrandBar, Archive active state,
-Reflection headers, calorie display).
+checkmarks, day tags, chips, and interactive elements.
 
 | Section | Color | Hex |
 |---|---|---|
@@ -90,132 +89,147 @@ GOLD and its variants (GOLD_DARK, GOLD_LIGHT) are also used in
 SummaryResults headers, Header pill, ArchiveView active tab,
 ReflectSection, and the Mark Day Complete button.
 
-## CURRENT BUILD STATE (confirmed in source 07/25/2026)
+**Color system is FULLY CONSTANTS-ONLY as of 07/29/2026.**
+All component files and styles.js use named constants. No hardcoded
+brand hex values remain anywhere in the codebase.
+- BURGUNDY and PURPLE added to styles.js imports (07/29/2026)
+- All border-embedded hex strings replaced with constant concatenation
+- Header.jsx, Login.jsx, ClientInfo.jsx, CoverPage.jsx,
+  AlcoholSection.jsx, ReflectSection.jsx, ArchiveView.jsx,
+  TimeLifeSection.jsx, OBApp.jsx all constants-only
+- Intentional exceptions: #8B6508 (CoverPage quote block — no
+  constant exists), light tint backgrounds, rgba values, neutral grays
 
-### Built and verified in code (browser-verify pending)
+## CURRENT BUILD STATE (confirmed in source 07/29/2026)
 
-- **Section color pass — COMPLETE** for all five tracking sections
-  and Nutrition/SuppAdder:
-  - Per-section block headers, infoBoxes, banner bars
-  - Per-section day tags (dayTagBurgundy/Purple/Orange/Green/Steel
-    in styles.js)
-  - Per-section checkmarks on all interactive fields
-  - RatingButtons activeColor/activeBorderColor per section
-  - SleepSection InputWithToggle unitColor=GREEN
-  - TimeLifeSection PM Check-In unselected buttons: white border +
-    white text on STEEL_MID background; selected: white highlight
-  - TimeLifeSection TODAY label white; score box white border
-  - TimeLifeSection None checkboxes accentColor=STEEL
-  - NutritionSection/SuppAdder: all chips, buttons, recent-panel
-    rows use Burgundy variants
-  - styles.js: dayTagBurgundy/Purple/Orange/Green/Steel; chipBurgundy,
-    chipXBurgundy, suppRecentBurgundy, suppRecentItemBurgundy,
-    copyBtnBurgundy all added
+### Built and verified
 
-- **SummaryResults screen-time regression fixed:** weekStats and
-  DayGrid now read screenSocialHrs/Mins/None and
-  screenOtherHrs/Mins/None (two-box keys). Screen Social Media
-  checkmark added to TimeLifeSection.
+- **OBT operability review COMPLETE (07/29/2026)** — all 14 source
+  files audited. All findings triaged, resolved, or logged.
 
-- **dayComplete source corrected:** OBApp derives dayComplete from
-  dayCompleteDates.includes() (explicit mark), not isDayComplete()
-  (data gate).
+- **Bug fixes (07/29/2026):**
+  - Sleep score clear-field: field now saves blank when emptied.
+    Previously saved 1 instead of empty string.
+  - sleepMissing timesUpIsZero exemption: TimeLifeSection now matches
+    isDayComplete logic. False "Sleep fields required" error eliminated
+    when timesUp = 0.
+  - Duration field label: updated from "Duration (minutes)" to
+    "Duration" — label was stale after hours/minutes split was built.
 
-- **Client Info auto-format:** phone → (XXX) XXX-XXXX, date →
-  MM/DD/YYYY. Email type=email. All placeholders set.
+- **Submit to Coach (07/29/2026):** console.log removed. Payload
+  assembled and marked with TODO comment as Supabase integration
+  anchor. Backend = placeholder until Supabase.
 
-- **SleepSection 3-column grid drops to 2 columns** when timesUpIsZero.
+- **Dead code removed (07/29/2026):**
+  - GOLD_DARK dead import — TimeLifeSection.jsx
+  - STEEL dead import — Shared.jsx
+  - Dead `view` prop — ArchiveView.jsx
+  - Redundant RED ternary collapsed — TimeLifeSection.jsx (two lines)
 
-- **TimeLifeSection Relationship/PIT grid:** alignItems:start +
-  labelSm minHeight:30px on both cells.
+- **Section color pass COMPLETE (07/25/2026, finalized 07/29/2026)**
+  for all five tracking sections. All per-section block headers,
+  infoBoxes, banners, day tags, checkmarks, rating buttons, chips,
+  and supplement UI use section color constants.
 
-- **Group 9 cleanup complete:**
-  - Shared.jsx: DayBtn, SummaryBtn, MID import removed
-  - constants.js: LOGO_LIGHT, LOGO_DARK removed
-  - CoverPage.jsx: PATCH_SRC, patchOk state, useState import removed;
-    font useEffect cleanup with null-parent guard added
-  - AlcoholSection infoBox copy corrected ("check the None box")
-  - OBApp: section, setSection, streak removed from Header call;
-    isDayComplete comments updated to match current field logic
+- **Fitness duration split (07/28/2026):** durationHrs + durationMins
+  two-box layout. duration (total minutes) computed and stored in sync
+  via updDuration(). isDayComplete gates on !(durationHrs || durationMins).
 
-- Class 3 modular structure
-- Working login: Doug / JPG2026
-- 14-day tracking metrics structure (Fuel / Output / Recovery /
-  Processing categories, daily subjective scoring)
-- Cover page with LIMITLESS branding, daily quote, program status
+- **Fitness Intensity RPE:** wrapped in ORANGE fitnessRpeBlock.
+  steel prop — white outlined buttons on ORANGE background.
 
-### Known issues (flagged, not fixed)
+- **Sleep Quality:** wrapped in GREEN sleepQualityBlock.
+  steel prop — white outlined buttons on GREEN background.
 
-- **FitnessSection no-startDate branch** uses `S.infoBox` (gold)
-  instead of `S.infoBoxOrange` — pending color pass follow-up.
-- **Dead imports** (harmless, pending cleanup):
-  - Shared.jsx: STEEL_MID, GOLD_LIGHT now unused after DayBtn removal
-  - TimeLifeSection.jsx: GOLD_LIGHT unused after non-neg chip
-    migration to STEEL_LIGHT; isDayComplete prop received but not
-    referenced in body
-  - MealBlock.jsx: BORDER imported but unused (pre-existing)
-- **Client Info copy:** "Date Started" label may need updating to
-  "Date Starting Tracking" per prior spec — not yet addressed.
-- **Header** does not match the shared standard used in DOP/PIT —
-  no cross-app standardization done.
-- **Top tab bar** extends only partway across — needs browser check
-  to confirm current state.
-- **Calorie AI estimates** call api.anthropic.com with no API key
-  wired — estimates silently return null. Consistent with documented
-  "no backend, no API keys" state.
+- **BrandBar tier patch (07/26/2026):** reads _ob6_tier (default 4)
+  and _ob6_clientInfo.fullName. Displays TIER # | TIER NAME | First. Last.
 
-### What is NOT verified as working
+- **Archive row navigation:** completed day rows → Nutrition read-only.
+  Reflection rows → Day 7 or Day 14 Reflect tab.
 
-- All section changes above need Firefox localhost:5175 browser
-  verification before commit.
-- Whether the "test" user account works in OBT (not confirmed).
-- Live behavior of each individual tracking section against spec
-  (not recently browser-verified after color pass).
+- **Submit to Coach strip:** five-state UI. Week 1 = days 1–7,
+  Week 2 = days 8–14.
+
+- **selectedDay globally shared** across all five sections — single
+  useState(1) in OBApp, passed via dayProps spread.
+
+- **30-day cycle architecture (locked 07/26/2026):** all cycles
+  exactly 30 days anchored to client's chosen start date. No calendar
+  month alignment.
+
+- **Vitest:** 9 passing tests — tests\archiveNav.test.js.
+
+### Known remaining dead code (low priority — do not touch without explicit direction)
+
+- Item 57 — screenSocialNone/screenOtherNone in SummaryResults
+  weekStats — declared, never assigned
+- Item 58 — isDayComplete prop spread in dayProps — no section
+  destructures it
+- Item 59 — Mixed &&/|| without parens in TimeLifeSection
+  workSchedule condition — evaluates correctly, reads ambiguously
+
+### Post-Supabase (do not build)
+
+- Streak persistence, coach-facing archive, legal agreement gating,
+  coach data transmission backend, SMS reminder, welcome name from
+  registered profile
+- Tier value written by graduation/period close logic (Phase 2)
+- Login "Stay logged in" checkbox (Item 41)
+- Nutrition AI calorie estimate (Item 42)
 
 ## KEY ARCHITECTURAL FACTS
 
 - React + Vite (npm run dev launches on port 5175)
 - localStorage for all state persistence (pre-Supabase migration)
-- Class 3 modular structure — components split into files, not a
-  monolith
+- Class 3 modular structure — components split into files, not a monolith
+- No src\ directory — all source files at repo root
 - No backend, no API keys wired
 - Login credential matching is case-insensitive (Core Standard v1.8
   Section 8.2 — locked)
 - All app code lives at C:\JPG-PROJECTS\ only — never OneDrive
-- Storage prefix: `<username-lowercase>_ob6_`; day keys: `day_<YYYY-MM-DD>`
-- `dayComplete` prop on all sections = explicit mark
-  (`dayCompleteDates.includes(isoForDay(selectedDay))`), not the
-  10-field data gate (`isDayComplete`)
-- `isDayComplete(dayData)` is still used in two places intentionally:
-  (1) gating the Mark Day Complete button, (2) Header's "Required
-  Fields Done" pill
+- Storage prefix: `{username_lowercase}_ob6_`
+- Day keys: `day_{YYYY-MM-DD}`
+- `dayComplete` prop = explicit mark (dayCompleteDates.includes()),
+  NOT the data gate (isDayComplete)
+- `isDayComplete(dayData)` used in two places: (1) gating Mark Day
+  Complete button, (2) Header Required Fields Done pill
+- isDayComplete is a module-level pure function — must remain
+  module-level, no hooks, no dependencies
+- CI_REQUIRED = 12 fields: fullName, dateStarted, phone, email,
+  occupation, primaryGoal, nonNeg, hobbies, fitnessActivity,
+  eatingHabits, sleepPatterns, injuries
+- familyTimeNone not in day default shape — handled inline via || false
+- _ob6_tier and _ob6_clientInfo read directly by BrandBar via
+  localStorage.getItem — not in storage layer
+
+## CREDENTIALS
+
+- Doug / JPG2026
+- Test / JPG2026
+- Login is case-insensitive
 
 ## REFERENCED GOVERNING DOCUMENTS
 
-Do not reproduce these documents — reference them by name only.
+Do not reproduce these documents — reference by name only.
 Doug provides them in Claude.ai chat when needed.
 
 - **Core Standard v1.8** — JPG governance foundation
-- **Troubleshooting Guide v3.2** — plain-language app behavior
-  reference
-- **Doc A — Migration guide** — one-time, archives post-migration
-- **Doc B — CAI Desktop Code Operating Manual** — standing
-  reference for operating in Desktop Code tab
+- **OBT Code Logic v2.2** — full app source of truth
+- **Troubleshooting Guide v6.1** — plain-language app behavior reference
 - **Session Handoff Primer** — uploaded to each new chat session
 
 ## SESSION START PROTOCOL
 
-First instruction in every Desktop Code session is always
-read-only:
+First instruction in every Desktop Code session is always read-only:
 
 > "Read CLAUDE.md and confirm you understand — do not run any
 > commands yet."
 
-Wait for Claude Code to confirm it has read this file and
-understood the rules. Only after confirmation, proceed to
-development work.
+Wait for Claude Code to confirm it has read this file and understood
+the rules. Only after confirmation, proceed to development work.
 
 ---
 
-*OBT CLAUDE.md — v1.1 — updated 07/25/2026. Section color system
-locked; build state refreshed through Group 9 cleanup completion.*
+*OBT CLAUDE.md — v1.2 — updated 07/29/2026. Operability review
+complete. Bug fixes, dead code removal, full color constants pass.
+Build state refreshed to 07/29/2026.*
