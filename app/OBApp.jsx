@@ -241,7 +241,6 @@ if (n === null) return;
       days,
       reflection: reflectData,
     };
-    console.log('[OBT] Submit to Coach — Week', week, JSON.stringify(payload, null, 2));
     const next = { ...coachSubmissions, [`w${week}Sent`]: true };
     setCoachSubmissions(next);
     await storage.save('coach_submissions', next);
