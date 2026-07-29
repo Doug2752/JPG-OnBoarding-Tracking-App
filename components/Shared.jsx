@@ -1,6 +1,6 @@
 import React from 'react';
 import { S } from '../utils/styles';
-import { GOLD, GOLD_DARK, STEEL } from '../utils/constants';
+import { GOLD, GOLD_DARK } from '../utils/constants';
 
 export function Field({ label, labelSm, children }) {
   return (

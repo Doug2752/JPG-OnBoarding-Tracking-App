@@ -34,9 +34,9 @@ export const S = {
   infoBox:      { background: GOLD_LIGHT,  border: '1px solid ' + GOLD,  borderRadius: '4px', padding: '10px 13px', marginBottom: '12px', fontSize: '12px', color: MID, lineHeight: '1.7' },
   infoBoxGreen: { background: GREEN_LIGHT, border: '1px solid ' + GREEN, borderRadius: '4px', padding: '10px 13px', marginBottom: '12px', fontSize: '12px', color: MID, lineHeight: '1.7' },
   infoBoxSteel:    { background: STEEL_LIGHT, border: '1px solid ' + STEEL, borderRadius: '4px', padding: '10px 13px', marginBottom: '12px', fontSize: '12px', color: MID, lineHeight: '1.7' },
-  infoBoxBurgundy: { background: '#f5eef1', border: '1px solid #7B3055', borderRadius: 4, padding: '8px 12px', marginBottom: 12, fontSize: 12, color: '#555' },
-  infoBoxPurple:   { background: '#eeeaf5', border: '1px solid #4A3575', borderRadius: 4, padding: '8px 12px', marginBottom: 12, fontSize: 12, color: '#555' },
-  infoBoxOrange:   { background: '#f5ede6', border: '1px solid #7A4418', borderRadius: 4, padding: '8px 12px', marginBottom: 12, fontSize: 12, color: '#555' },
+  infoBoxBurgundy: { background: '#f5eef1', border: '1px solid ' + BURGUNDY, borderRadius: 4, padding: '8px 12px', marginBottom: 12, fontSize: 12, color: '#555' },
+  infoBoxPurple:   { background: '#eeeaf5', border: '1px solid ' + PURPLE, borderRadius: 4, padding: '8px 12px', marginBottom: 12, fontSize: 12, color: '#555' },
+  infoBoxOrange:   { background: '#f5ede6', border: '1px solid ' + ORANGE, borderRadius: 4, padding: '8px 12px', marginBottom: 12, fontSize: 12, color: '#555' },
 
   // ── Form fields ──────────────────────────────────────────────
   field:    { marginBottom: '11px' },
@@ -54,11 +54,11 @@ export const S = {
   // ── Day picker ───────────────────────────────────────────────
   dayPicker: { display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '12px' },
   dayTag:    { display: 'inline-block', background: GOLD_LIGHT, border: '1px solid ' + GOLD, borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: GOLD_DARK, marginBottom: '8px' },
-  dayTagBurgundy: { display: 'inline-block', background: '#F5EEF3', border: '1px solid #7B3055', borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: BURGUNDY, marginBottom: '8px' },
-  dayTagPurple:   { display: 'inline-block', background: '#EEEAF5', border: '1px solid #4A3575', borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: PURPLE, marginBottom: '8px' },
-  dayTagOrange:   { display: 'inline-block', background: '#F5EDE8', border: '1px solid #7A4418', borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: ORANGE, marginBottom: '8px' },
-  dayTagGreen:    { display: 'inline-block', background: '#E8F2EE', border: '1px solid #2E5A4B', borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: '#2E5A4B', marginBottom: '8px' },
-  dayTagSteel:    { display: 'inline-block', background: '#E8EEF2', border: '1px solid #3A5A78', borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: '#3A5A78', marginBottom: '8px' },
+  dayTagBurgundy: { display: 'inline-block', background: '#F5EEF3', border: '1px solid ' + BURGUNDY, borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: BURGUNDY, marginBottom: '8px' },
+  dayTagPurple:   { display: 'inline-block', background: '#EEEAF5', border: '1px solid ' + PURPLE, borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: PURPLE, marginBottom: '8px' },
+  dayTagOrange:   { display: 'inline-block', background: '#F5EDE8', border: '1px solid ' + ORANGE, borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: ORANGE, marginBottom: '8px' },
+  dayTagGreen:    { display: 'inline-block', background: '#E8F2EE', border: '1px solid ' + GREEN, borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: GREEN, marginBottom: '8px' },
+  dayTagSteel:    { display: 'inline-block', background: '#E8EEF2', border: '1px solid ' + STEEL, borderRadius: '4px', padding: '2px 10px', fontSize: '11px', fontWeight: '700', color: STEEL, marginBottom: '8px' },
 
   // ── Rating buttons ───────────────────────────────────────────
   ratingRow: { display: 'flex', flexWrap: 'wrap', gap: '4px' },
@@ -83,7 +83,7 @@ export const S = {
   addlLabel: { fontSize: '10px', fontWeight: '700', color: MID, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' },
   chipWrap:  { display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '6px' },
   chip:      { background: GOLD_LIGHT, border: '1px solid ' + GOLD, borderRadius: '12px', padding: '3px 10px', fontSize: '11px', fontWeight: '600', color: GOLD_DARK, display: 'flex', alignItems: 'center', gap: '4px' },
-  chipBurgundy: { background: '#F5EEF3', border: '1px solid #7B3055', borderRadius: '12px', padding: '3px 10px', fontSize: '11px', fontWeight: '600', color: BURGUNDY, display: 'flex', alignItems: 'center', gap: '4px' },
+  chipBurgundy: { background: '#F5EEF3', border: '1px solid ' + BURGUNDY, borderRadius: '12px', padding: '3px 10px', fontSize: '11px', fontWeight: '600', color: BURGUNDY, display: 'flex', alignItems: 'center', gap: '4px' },
   chipX:     { background: 'none', border: 'none', cursor: 'pointer', color: GOLD_DARK, fontWeight: '700', fontSize: '13px', lineHeight: '1', padding: '0' },
   chipXBurgundy: { background: 'none', border: 'none', cursor: 'pointer', color: BURGUNDY, fontWeight: '700', fontSize: '13px', lineHeight: '1', padding: '0' },
 
@@ -92,7 +92,7 @@ export const S = {
   suppCat:        { background: '#f5f5f3', padding: '6px 10px', fontSize: '10px', fontWeight: '700', letterSpacing: '1px', color: MID, cursor: 'pointer', borderBottom: '1px solid ' + BORDER, textTransform: 'uppercase' },
   suppItem:       { padding: '5px 14px', fontSize: '12px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', color: DARK },
   suppRecent:     { background: GOLD_LIGHT, padding: '5px 10px', fontSize: '10px', fontWeight: '700', letterSpacing: '1px', color: GOLD_DARK, borderBottom: '1px solid ' + GOLD },
-  suppRecentBurgundy: { background: '#F5EEF3', padding: '5px 10px', fontSize: '10px', fontWeight: '700', letterSpacing: '1px', color: BURGUNDY, borderBottom: '1px solid #7B3055' },
+  suppRecentBurgundy: { background: '#F5EEF3', padding: '5px 10px', fontSize: '10px', fontWeight: '700', letterSpacing: '1px', color: BURGUNDY, borderBottom: '1px solid ' + BURGUNDY },
   suppRecentItem: { padding: '4px 14px', fontSize: '12px', cursor: 'pointer', borderBottom: '1px solid #f5e6c8', color: GOLD_DARK, background: GOLD_LIGHT },
   suppRecentItemBurgundy: { padding: '4px 14px', fontSize: '12px', cursor: 'pointer', borderBottom: '1px solid #e8d4df', color: BURGUNDY, background: '#F5EEF3' },
 
@@ -104,7 +104,7 @@ export const S = {
 
   // ── Buttons ──────────────────────────────────────────────────
   copyBtn: { background: 'none', border: '1px solid ' + GOLD, borderRadius: '4px', padding: '5px 10px', fontSize: '11px', fontWeight: '600', color: GOLD, cursor: 'pointer', fontFamily: 'inherit' },
-  copyBtnBurgundy: { border: '1px solid #7B3055', color: BURGUNDY, background: 'none', borderRadius: '4px', padding: '3px 10px', fontSize: '12px', cursor: 'pointer' },
+  copyBtnBurgundy: { border: '1px solid ' + BURGUNDY, color: BURGUNDY, background: 'none', borderRadius: '4px', padding: '3px 10px', fontSize: '12px', cursor: 'pointer' },
   unitBtn: { background: 'none', border: '1px solid ' + GOLD, borderRadius: '3px', color: GOLD, fontSize: '10px', fontWeight: '700', cursor: 'pointer', padding: '1px 6px', fontFamily: 'inherit', marginLeft: '4px', flexShrink: 0, whiteSpace: 'nowrap' },
 
   // ── Save note ────────────────────────────────────────────────

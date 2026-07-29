@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { USERS } from '../utils/constants.js';
+import { USERS, GOLD, RED } from '../utils/constants.js';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -21,7 +21,7 @@ export default function Login({ onLogin }) {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#B8860B',
+      background: GOLD,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -78,7 +78,7 @@ export default function Login({ onLogin }) {
               style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #CCCCCC', background: '#F0F0F0', color: '#2A2A2A', fontSize: '14px', boxSizing: 'border-box' }}
             />
 
-            <div style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.15em', color: '#B8860B', textAlign: 'center', marginTop: '16px', marginBottom: '12px' }}>
+            <div style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.15em', color: GOLD, textAlign: 'center', marginTop: '16px', marginBottom: '12px' }}>
               EXISTING OUTSIDE OF BOUNDARIES
             </div>
 
@@ -88,14 +88,14 @@ export default function Login({ onLogin }) {
             </label>
 
             {error && (
-              <div style={{ color: '#B02020', fontSize: '12px', textAlign: 'center', marginTop: '10px' }}>
+              <div style={{ color: RED, fontSize: '12px', textAlign: 'center', marginTop: '10px' }}>
                 {error}
               </div>
             )}
 
             <button
               type="submit"
-              style={{ width: '100%', padding: '12px', background: '#B8860B', color: '#000000', fontWeight: 'bold', fontSize: '14px', letterSpacing: '0.1em', border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '20px' }}
+              style={{ width: '100%', padding: '12px', background: GOLD, color: '#000000', fontWeight: 'bold', fontSize: '14px', letterSpacing: '0.1em', border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '20px' }}
             >
               ENTER
             </button>

@@ -26,7 +26,7 @@ export default function Header({
     pillBg = '#333';
     pillText = 'Day Complete';
   } else if (dayComplete) {
-    pillBg = '#B8860B';
+    pillBg = GOLD;
     pillText = 'Required Fields Done';
   }
   return (
