@@ -44,7 +44,7 @@ const rowStyle = {
 };
 
 export default function ArchiveView({
-  view, setView, onLogout, firstName, dayCompleteDates = [],
+  setView, onLogout, firstName, dayCompleteDates = [],
   reflectSubmissions = [], onViewDay, onViewReflect,
 }) {
   return (

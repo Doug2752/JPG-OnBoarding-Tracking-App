@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   NON_NEG_CATS,
-  GOLD, GOLD_DARK,
+  GOLD,
   STEEL, STEEL_LIGHT,
   RED
 } from '../utils/constants.js';
