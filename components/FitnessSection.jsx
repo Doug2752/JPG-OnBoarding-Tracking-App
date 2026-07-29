@@ -123,7 +123,7 @@ export default function FitnessSection({
 
         {activitySet && (
           <div style={S.grid2}>
-            <Field label={<>Duration (minutes){dd.duration && <span style={{ color: ORANGE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
+            <Field label={<>Duration{dd.duration && <span style={{ color: ORANGE, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}>
               <div style={{ display: 'flex', gap: '8px', border: durationMissing ? '2px solid #cc0000' : undefined }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px' }}>Hours</div>

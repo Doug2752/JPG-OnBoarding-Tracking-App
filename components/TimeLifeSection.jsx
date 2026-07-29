@@ -57,9 +57,10 @@ export default function TimeLifeSection({
   const f = dayData.fitness || {};
   const fitnessMissing = attempted && f.activity && f.activity !== '' && f.activity !== 'None' && f.activity !== 'Rest' && (!(f.durationHrs || f.durationMins) || !f.intensity);
   const sl = dayData.sleep || {};
+  const timesUpIsZero = sl.timesUp === '0' || sl.timesUp === 0;
   const sleepMissing = attempted && (
     !sl.bedtime || !sl.fallAsleep || !sl.wakeTime ||
-    !sl.timesUp || !sl.durationAwake || !sl.quality
+    !sl.timesUp || (!timesUpIsZero && !sl.durationAwake) || !sl.quality
   );
 
   const errorLines = [];

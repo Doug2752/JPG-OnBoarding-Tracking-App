@@ -277,8 +277,10 @@ export default function SleepSection({
               placeholder="Optional"
               value={dd.sleepScore || ''}
               onChange={e => {
-                const v = Math.min(100, Math.max(1, parseInt(e.target.value) || 0));
-                upd('sleepScore', v || '');
+                const raw = e.target.value;
+                if (!raw) { upd('sleepScore', ''); return; }
+                const v = Math.min(100, Math.max(1, parseInt(raw) || 1));
+                upd('sleepScore', v);
               }}
             />
           </SleepFieldCol>
