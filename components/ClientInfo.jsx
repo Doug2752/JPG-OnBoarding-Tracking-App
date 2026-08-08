@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GOLD, RED } from '../utils/constants.js';
 import { S } from '../utils/styles.js';
 import { Field, SaveNote } from './Shared';
@@ -48,9 +48,16 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
   const [saved, setSaved] = useState(false);
   const [dateError, setDateError] = useState(false);
   const [trackingDateError, setTrackingDateError] = useState(false);
+  const usernameRef = useRef('');
 
   useEffect(() => {
     storage.load('clientInfo', def).then(d => d && setData(d));
+    storage.save('_probe', '').then(r => {
+      if (r && r.key) {
+        usernameRef.current = r.key.slice(0, r.key.indexOf('_ob6_'));
+        try { localStorage.removeItem(r.key); } catch {}
+      }
+    });
   }, []);
 
   function upd(k, v) {
@@ -77,6 +84,23 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
       }
       setTrackingDateError(false);
       if (onTrackingStartDate && t) onTrackingStartDate(t);
+
+      if (t && usernameRef.current) {
+        try {
+          const raw = localStorage.getItem('hub_clients');
+          if (raw) {
+            const clients = JSON.parse(raw);
+            const match = clients.find(c =>
+              c.username && c.username.toLowerCase() === usernameRef.current.toLowerCase()
+            );
+            if (match) {
+              const [mm, dd, yyyy] = t.split('/');
+              match.tracking_start_date = `${yyyy}-${mm}-${dd}`;
+              localStorage.setItem('hub_clients', JSON.stringify(clients));
+            }
+          }
+        } catch {}
+      }
     }
 
     storage.save('clientInfo', n);
