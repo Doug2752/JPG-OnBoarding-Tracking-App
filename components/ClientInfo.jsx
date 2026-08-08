@@ -6,7 +6,7 @@ import { Field, SaveNote } from './Shared';
 // Mirrors CI_REQUIRED in app/OBApp.jsx — kept in sync manually,
 // ClientInfo cannot import from OBApp.
 const CI_REQUIRED = [
-  'fullName','dateStarted','phone','email','occupation','primaryGoal',
+  'fullName','dateStarted','trackingStartDate','phone','email','occupation','primaryGoal',
   'nonNeg','hobbies','fitnessActivity','eatingHabits','sleepPatterns',
   'injuries'
 ];
@@ -36,9 +36,9 @@ const checkStyle = {
   fontSize: '1rem',
 };
 
-export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
+export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate, onFillChange }) {
   const def = {
-    fullName: '', preferredName: '', dateStarted: '', phone: '', email: '', occupation: '',
+    fullName: '', preferredName: '', dateStarted: '', trackingStartDate: '', phone: '', email: '', occupation: '',
     primaryGoal: '', goal2: '', goal3: '', nonNeg: '', hobbies: '',
     fitnessActivity: '', eatingHabits: '', sleepPatterns: '',
     injuries: '', additional: '',
@@ -47,6 +47,7 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
   const [data, setData] = useState(def);
   const [saved, setSaved] = useState(false);
   const [dateError, setDateError] = useState(false);
+  const [trackingDateError, setTrackingDateError] = useState(false);
 
   useEffect(() => {
     storage.load('clientInfo', def).then(d => d && setData(d));
@@ -65,8 +66,17 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
         return;
       }
       setDateError(false);
-      // Keep OBApp's startDate in step — the day-number system reads it.
       if (onDateStarted && t) onDateStarted(t);
+    }
+
+    if (k === 'trackingStartDate') {
+      const t = v.trim();
+      if (t && !isValidDate(t)) {
+        setTrackingDateError(true);
+        return;
+      }
+      setTrackingDateError(false);
+      if (onTrackingStartDate && t) onTrackingStartDate(t);
     }
 
     storage.save('clientInfo', n);
@@ -139,6 +149,26 @@ export default function ClientInfo({ storage, onDateStarted, onFillChange }) {
             )}
           </Field>
         </div>
+        <Field label={lbl('Tracking Start Date (MM/DD/YYYY)', 'trackingStartDate')}>
+          <input
+            style={{
+              ...S.input,
+              border: trackingDateError ? '2px solid ' + RED : S.input.border,
+            }}
+            placeholder="MM/DD/YYYY"
+            value={data.trackingStartDate || ''}
+            onChange={e => upd('trackingStartDate', formatDate(e.target.value))}
+          />
+          {trackingDateError && (
+            <div style={{
+              fontSize: '0.78rem',
+              color: RED,
+              marginTop: 4,
+            }}>
+              Please use MM/DD/YYYY format (e.g. 07/20/2026)
+            </div>
+          )}
+        </Field>
         <Field label="Preferred Name">{inp('preferredName')}</Field>
         <div style={{ display: 'flex', gap: 12 }}>
           <div style={{ flex: 1 }}><Field label={lbl('Phone', 'phone')}>

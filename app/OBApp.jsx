@@ -21,7 +21,7 @@ import CoverPage from '../components/CoverPage.jsx';
 // Client Info counts as filled only when all eleven required fields
 // carry a non-empty value. goal2, goal3 and additional are optional.
 const CI_REQUIRED = [
-  'fullName','dateStarted','phone','email','occupation','primaryGoal',
+  'fullName','dateStarted','trackingStartDate','phone','email','occupation','primaryGoal',
   'nonNeg','hobbies','fitnessActivity','eatingHabits','sleepPatterns',
   'injuries'
 ];
@@ -96,6 +96,7 @@ export default function OBApp() {
   const [view, setView] = useState('today');
   const [showInstr, setShowInstr] = useState(false);
   const [startDate, setStartDate] = useState('');
+  const [trackingStartDate, setTrackingStartDate] = useState('');
   const [clientInfoFilled, setClientInfoFilled] = useState(false);
   const [neverTwiceRead, setNeverTwiceRead] = useState(false);
   const [selectedDay, setSelectedDay] = useState(1);
@@ -114,6 +115,7 @@ export default function OBApp() {
     if (!storage) return;
     const pClient = storage.load('clientInfo', {}).then(d => {
       if (d && d.dateStarted) setStartDate(d.dateStarted);
+      if (d && d.trackingStartDate) setTrackingStartDate(d.trackingStartDate);
       setClientInfoFilled(isClientInfoFilled(d));
     });
     const pNever = storage.load('neverTwiceRead', false).then(
@@ -357,6 +359,7 @@ if (n === null) return;
       <ClientInfo
         storage={storage}
         onDateStarted={v => setStartDate(v)}
+        onTrackingStartDate={v => setTrackingStartDate(v)}
         onFillChange={v => setClientInfoFilled(v)}
       />
     );
