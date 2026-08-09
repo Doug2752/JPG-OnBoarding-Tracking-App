@@ -36,12 +36,29 @@ const checkStyle = {
   fontSize: '1rem',
 };
 
+const RESIDENTIAL_TO_MAILING = {
+  residentialStreet: 'mailingStreet',
+  residentialCity:   'mailingCity',
+  residentialState:  'mailingState',
+  residentialZip:    'mailingZip',
+};
+
+const RESIDENTIAL_TO_HUB = {
+  residentialStreet: 'residential_street',
+  residentialCity:   'residential_city',
+  residentialState:  'residential_state',
+  residentialZip:    'residential_zip',
+};
+
 export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate, onFillChange }) {
   const def = {
     fullName: '', preferredName: '', dateStarted: '', trackingStartDate: '', phone: '', email: '', occupation: '',
     primaryGoal: '', goal2: '', goal3: '', nonNeg: '', hobbies: '',
     fitnessActivity: '', eatingHabits: '', sleepPatterns: '',
     injuries: '', additional: '',
+    residentialStreet: '', residentialCity: '', residentialState: '', residentialZip: '',
+    mailingStreet: '', mailingCity: '', mailingState: '', mailingZip: '',
+    mailingSameAsResidential: false,
   };
 
   const [data, setData] = useState(def);
@@ -61,7 +78,24 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
   }, []);
 
   function upd(k, v) {
-    const n = { ...data, [k]: v };
+    let n = { ...data, [k]: v };
+
+    // When same-as checkbox is checked, copy current residential into mailing.
+    if (k === 'mailingSameAsResidential' && v === true) {
+      n = {
+        ...n,
+        mailingStreet: n.residentialStreet,
+        mailingCity:   n.residentialCity,
+        mailingState:  n.residentialState,
+        mailingZip:    n.residentialZip,
+      };
+    }
+
+    // When a residential field changes and same-as is on, mirror into mailing.
+    if (RESIDENTIAL_TO_MAILING[k] && n.mailingSameAsResidential) {
+      n = { ...n, [RESIDENTIAL_TO_MAILING[k]]: v };
+    }
+
     setData(n);
 
     // A malformed start date stays on screen but is never persisted —
@@ -101,6 +135,26 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
           }
         } catch {}
       }
+    }
+
+    // hub_clients write-back for residential address fields.
+    if (RESIDENTIAL_TO_HUB[k] && usernameRef.current) {
+      try {
+        const raw = localStorage.getItem('hub_clients');
+        if (raw) {
+          const clients = JSON.parse(raw);
+          const match = clients.find(c =>
+            c.username && c.username.toLowerCase() === usernameRef.current.toLowerCase()
+          );
+          if (match) {
+            match.residential_street = n.residentialStreet;
+            match.residential_city   = n.residentialCity;
+            match.residential_state  = n.residentialState;
+            match.residential_zip    = n.residentialZip;
+            localStorage.setItem('hub_clients', JSON.stringify(clients));
+          }
+        }
+      } catch {}
     }
 
     storage.save('clientInfo', n);
@@ -202,6 +256,41 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
             <input style={S.input} type="email" placeholder="name@example.com" value={data.email || ''} onChange={e => upd('email', e.target.value)} />
           </Field></div>
         </div>
+
+        <div style={{ ...S.addlLabel, marginTop: 12, marginBottom: 6 }}>RESIDENTIAL ADDRESS</div>
+        <Field label="Street">{inp('residentialStreet')}</Field>
+        <div style={S.grid2}>
+          <Field label="City">{inp('residentialCity')}</Field>
+          <Field label="State">{inp('residentialState')}</Field>
+        </div>
+        <div style={{ maxWidth: '50%' }}>
+          <Field label="Zip">{inp('residentialZip')}</Field>
+        </div>
+
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, marginBottom: 10, fontSize: 12, cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={!!data.mailingSameAsResidential}
+            onChange={e => upd('mailingSameAsResidential', e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          Mailing address same as residential
+        </label>
+
+        {!data.mailingSameAsResidential && (
+          <>
+            <div style={{ ...S.addlLabel, marginBottom: 6 }}>MAILING ADDRESS</div>
+            <Field label="Street">{inp('mailingStreet')}</Field>
+            <div style={S.grid2}>
+              <Field label="City">{inp('mailingCity')}</Field>
+              <Field label="State">{inp('mailingState')}</Field>
+            </div>
+            <div style={{ maxWidth: '50%' }}>
+              <Field label="Zip">{inp('mailingZip')}</Field>
+            </div>
+          </>
+        )}
+
         <Field label={lbl('Occupation & Work Schedule', 'occupation')}>{ta('occupation', 3)}</Field>
         <Field label={lbl('Desired Outcome 1 — Primary Goal: why are you here?', 'primaryGoal')}>{ta('primaryGoal', 3)}</Field>
         <Field label="Desired Outcome 2">{ta('goal2', 2)}</Field>
