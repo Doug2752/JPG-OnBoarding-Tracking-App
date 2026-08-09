@@ -70,6 +70,9 @@
 - **Edge** — Doug's browser for Claude.ai chat sessions.
 - **Vite config:** OBT vite.config.js carries
   `server: { open: false, port: 5175 }`.
+- **Server mode:** always run `npm run dev` before any OBT build
+  work — confirm dev server (localhost:5175), not preview server
+  (localhost:4173).
 
 ## SECTION COLOR SYSTEM (LOCKED — do not change)
 
@@ -100,49 +103,52 @@ brand hex values remain anywhere in the codebase.
 - Intentional exceptions: #8B6508 (CoverPage quote block — no
   constant exists), light tint backgrounds, rgba values, neutral grays
 
-## CURRENT BUILD STATE (confirmed in source 07/29/2026)
+## CURRENT BUILD STATE (confirmed in source 08/08/2026)
 
 ### Built and verified
 
 - **OBT operability review COMPLETE (07/29/2026)** — all 14 source
   files audited. All findings triaged, resolved, or logged.
 
+- **trackingStartDate field added to ClientInfo (BUILT 08/08/2026):**
+  - Required field — added to CI_REQUIRED in both OBApp.jsx and ClientInfo.jsx
+  - Full date validation (MM/DD/YYYY, calendar-valid)
+  - Auto-format on input (same pattern as dateStarted)
+  - Gold checkmark on valid fill
+  - RED border + error message on invalid input
+  - hub_clients write-back on valid save — converts MM/DD/YYYY to YYYY-MM-DD,
+    finds matching client record by username (case-insensitive via probe pattern),
+    writes tracking_start_date to hub_clients array
+  - Username probe pattern: storage.save('_probe','') on mount, extracts
+    username from returned key, stores in usernameRef, removes probe key
+  - trackingStartDate state in OBApp — loaded from clientInfo on mount,
+    wired via onTrackingStartDate prop
+
 - **Bug fixes (07/29/2026):**
   - Sleep score clear-field: field now saves blank when emptied.
-    Previously saved 1 instead of empty string.
-  - sleepMissing timesUpIsZero exemption: TimeLifeSection now matches
-    isDayComplete logic. False "Sleep fields required" error eliminated
-    when timesUp = 0.
-  - Duration field label: updated from "Duration (minutes)" to
-    "Duration" — label was stale after hours/minutes split was built.
+  - sleepMissing timesUpIsZero exemption: false error eliminated.
+  - Duration field label: updated from "Duration (minutes)" to "Duration."
 
 - **Submit to Coach (07/29/2026):** console.log removed. Payload
-  assembled and marked with TODO comment as Supabase integration
-  anchor. Backend = placeholder until Supabase.
+  retained as Supabase anchor (TODO comment). Backend = placeholder.
 
 - **Dead code removed (07/29/2026):**
   - GOLD_DARK dead import — TimeLifeSection.jsx
   - STEEL dead import — Shared.jsx
   - Dead `view` prop — ArchiveView.jsx
-  - Redundant RED ternary collapsed — TimeLifeSection.jsx (two lines)
+  - Redundant RED ternary collapsed — TimeLifeSection.jsx
 
 - **Section color pass COMPLETE (07/25/2026, finalized 07/29/2026)**
-  for all five tracking sections. All per-section block headers,
-  infoBoxes, banners, day tags, checkmarks, rating buttons, chips,
-  and supplement UI use section color constants.
 
 - **Fitness duration split (07/28/2026):** durationHrs + durationMins
-  two-box layout. duration (total minutes) computed and stored in sync
-  via updDuration(). isDayComplete gates on !(durationHrs || durationMins).
+  two-box layout.
 
 - **Fitness Intensity RPE:** wrapped in ORANGE fitnessRpeBlock.
-  steel prop — white outlined buttons on ORANGE background.
 
 - **Sleep Quality:** wrapped in GREEN sleepQualityBlock.
-  steel prop — white outlined buttons on GREEN background.
 
 - **BrandBar tier patch (07/26/2026):** reads _ob6_tier (default 4)
-  and _ob6_clientInfo.fullName. Displays TIER # | TIER NAME | First. Last.
+  and _ob6_clientInfo.fullName.
 
 - **Archive row navigation:** completed day rows → Nutrition read-only.
   Reflection rows → Day 7 or Day 14 Reflect tab.
@@ -150,12 +156,10 @@ brand hex values remain anywhere in the codebase.
 - **Submit to Coach strip:** five-state UI. Week 1 = days 1–7,
   Week 2 = days 8–14.
 
-- **selectedDay globally shared** across all five sections — single
-  useState(1) in OBApp, passed via dayProps spread.
+- **selectedDay globally shared** across all five sections.
 
-- **30-day cycle architecture (locked 07/26/2026):** all cycles
-  exactly 30 days anchored to client's chosen start date. No calendar
-  month alignment.
+- **30-day cycle architecture (locked):** all cycles exactly 30 days
+  anchored to client's chosen tracking_start_date. No calendar month alignment.
 
 - **Vitest:** 9 passing tests — tests\archiveNav.test.js.
 
@@ -167,6 +171,14 @@ brand hex values remain anywhere in the codebase.
   destructures it
 - Item 59 — Mixed &&/|| without parens in TimeLifeSection
   workSchedule condition — evaluates correctly, reads ambiguously
+- OBApp.jsx comment line ~22 reads "eleven required fields" — stale
+  (now 13). Does not affect logic.
+
+### Pending natural browser verification
+- OBT supplements prior day button — enter supps Day 1, navigate Day 2,
+  confirm gold button, click, confirm list copies, persist
+- PIT One Thing check-off — tick One Thing, confirm First Action Step
+  text appended in parentheses, field cleared
 
 ### Post-Supabase (do not build)
 
@@ -195,12 +207,16 @@ brand hex values remain anywhere in the codebase.
   Complete button, (2) Header Required Fields Done pill
 - isDayComplete is a module-level pure function — must remain
   module-level, no hooks, no dependencies
-- CI_REQUIRED = 12 fields: fullName, dateStarted, phone, email,
-  occupation, primaryGoal, nonNeg, hobbies, fitnessActivity,
-  eatingHabits, sleepPatterns, injuries
+- **CI_REQUIRED = 13 fields (updated 08/08/2026):** fullName, dateStarted,
+  trackingStartDate, phone, email, occupation, primaryGoal, nonNeg, hobbies,
+  fitnessActivity, eatingHabits, sleepPatterns, injuries
 - familyTimeNone not in day default shape — handled inline via || false
 - _ob6_tier and _ob6_clientInfo read directly by BrandBar via
   localStorage.getItem — not in storage layer
+- **hub_clients write-back:** OBT ClientInfo.jsx writes tracking_start_date
+  to hub_clients when client saves a valid date. Username matched via
+  probe pattern (usernameRef). This is the only hub_clients write from OBT.
+  HUB owns this key.
 
 ## CREDENTIALS
 
@@ -214,8 +230,8 @@ Do not reproduce these documents — reference by name only.
 Doug provides them in Claude.ai chat when needed.
 
 - **Core Standard v1.8** — JPG governance foundation
-- **OBT Code Logic v2.2** — full app source of truth
-- **Troubleshooting Guide v6.1** — plain-language app behavior reference
+- **OBT Code Logic v2.3** — full app source of truth
+- **Troubleshooting Guide v6.4** — plain-language app behavior reference
 - **Session Handoff Primer** — uploaded to each new chat session
 
 ## SESSION START PROTOCOL
@@ -230,6 +246,4 @@ the rules. Only after confirmation, proceed to development work.
 
 ---
 
-*OBT CLAUDE.md — v1.2 — updated 07/29/2026. Operability review
-complete. Bug fixes, dead code removal, full color constants pass.
-Build state refreshed to 07/29/2026.*
+*OBT CLAUDE.md — v1.3 — updated 08/08/2026. trackingStartDate field built — required, full validation, hub_clients write-back via username probe pattern. CI_REQUIRED updated to 13 fields. trackingStartDate state in OBApp. hub_clients write-back documented in architectural facts. Code Logic reference updated to v2.3. Server mode reminder added.*
