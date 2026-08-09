@@ -204,59 +204,18 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
         <div style={S.infoBox}>
           Complete this section once at the start of your 14-day period. Be specific — vague answers produce ambiguity which may taint the results.
         </div>
-        <div style={S.grid2}>
-          <Field label={lbl('Full Name (first and last)', 'fullName')}>{inp('fullName')}</Field>
-          <Field label={lbl('Date Started (MM/DD/YYYY)', 'dateStarted')}>
-            <input
-              style={{
-                ...S.input,
-                border: dateError ? '2px solid ' + RED : S.input.border,
-              }}
-              placeholder="MM/DD/YYYY"
-              value={data.dateStarted || ''}
-              onChange={e => upd('dateStarted', formatDate(e.target.value))}
-            />
-            {dateError && (
-              <div style={{
-                fontSize: '0.78rem',
-                color: RED,
-                marginTop: 4,
-              }}>
-                Please use MM/DD/YYYY format (e.g. 07/20/2026)
-              </div>
-            )}
-          </Field>
-        </div>
-        <Field label={lbl('Tracking Start Date (MM/DD/YYYY)', 'trackingStartDate')}>
-          <input
-            style={{
-              ...S.input,
-              border: trackingDateError ? '2px solid ' + RED : S.input.border,
-            }}
-            placeholder="MM/DD/YYYY"
-            value={data.trackingStartDate || ''}
-            onChange={e => upd('trackingStartDate', formatDate(e.target.value))}
-          />
-          {trackingDateError && (
-            <div style={{
-              fontSize: '0.78rem',
-              color: RED,
-              marginTop: 4,
-            }}>
-              Please use MM/DD/YYYY format (e.g. 07/20/2026)
-            </div>
-          )}
-        </Field>
-        <Field label="Preferred Name">{inp('preferredName')}</Field>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <div style={{ flex: 1 }}><Field label={lbl('Phone', 'phone')}>
-            <input style={S.input} type="text" placeholder="(555) 555-5555" value={data.phone || ''} onChange={e => upd('phone', formatPhone(e.target.value))} />
-          </Field></div>
-          <div style={{ flex: 1 }}><Field label={lbl('Email', 'email')}>
-            <input style={S.input} type="email" placeholder="name@example.com" value={data.email || ''} onChange={e => upd('email', e.target.value)} />
-          </Field></div>
+
+        {/* 1. Full Name + Preferred Name */}
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', flex: 1 }}>
+            <Field label={lbl('Full Name (first and last)', 'fullName')}>{inp('fullName')}</Field>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', flex: 1 }}>
+            <Field label="Preferred Name">{inp('preferredName')}</Field>
+          </div>
         </div>
 
+        {/* 2. Residential address */}
         <div style={{ ...S.addlLabel, marginTop: 12, marginBottom: 6 }}>RESIDENTIAL ADDRESS</div>
         <Field label="Street">{inp('residentialStreet')}</Field>
         <div style={S.grid2}>
@@ -267,6 +226,7 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
           <Field label="Zip">{inp('residentialZip')}</Field>
         </div>
 
+        {/* 3. Same-as checkbox */}
         <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, marginBottom: 10, fontSize: 12, cursor: 'pointer' }}>
           <input
             type="checkbox"
@@ -277,6 +237,7 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
           Mailing address same as residential
         </label>
 
+        {/* 4. Mailing address (conditional) */}
         {!data.mailingSameAsResidential && (
           <>
             <div style={{ ...S.addlLabel, marginBottom: 6 }}>MAILING ADDRESS</div>
@@ -291,6 +252,53 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
           </>
         )}
 
+        {/* 5. Phone + Email */}
+        <div style={{ display: 'flex', gap: 12 }}>
+          <div style={{ flex: 1 }}><Field label={lbl('Phone', 'phone')}>
+            <input style={S.input} type="text" placeholder="(555) 555-5555" value={data.phone || ''} onChange={e => upd('phone', formatPhone(e.target.value))} />
+          </Field></div>
+          <div style={{ flex: 1 }}><Field label={lbl('Email', 'email')}>
+            <input style={S.input} type="email" placeholder="name@example.com" value={data.email || ''} onChange={e => upd('email', e.target.value)} />
+          </Field></div>
+        </div>
+
+        {/* 6. Date Started + Tracking Start Date */}
+        <div style={S.grid2}>
+          <Field label={lbl('Date Started (MM/DD/YYYY)', 'dateStarted')}>
+            <input
+              style={{
+                ...S.input,
+                border: dateError ? '2px solid ' + RED : S.input.border,
+              }}
+              placeholder="MM/DD/YYYY"
+              value={data.dateStarted || ''}
+              onChange={e => upd('dateStarted', formatDate(e.target.value))}
+            />
+            {dateError && (
+              <div style={{ fontSize: '0.78rem', color: RED, marginTop: 4 }}>
+                Please use MM/DD/YYYY format (e.g. 07/20/2026)
+              </div>
+            )}
+          </Field>
+          <Field label={lbl('Tracking Start Date (MM/DD/YYYY)', 'trackingStartDate')}>
+            <input
+              style={{
+                ...S.input,
+                border: trackingDateError ? '2px solid ' + RED : S.input.border,
+              }}
+              placeholder="MM/DD/YYYY"
+              value={data.trackingStartDate || ''}
+              onChange={e => upd('trackingStartDate', formatDate(e.target.value))}
+            />
+            {trackingDateError && (
+              <div style={{ fontSize: '0.78rem', color: RED, marginTop: 4 }}>
+                Please use MM/DD/YYYY format (e.g. 07/20/2026)
+              </div>
+            )}
+          </Field>
+        </div>
+
+        {/* 7+. Remaining fields */}
         <Field label={lbl('Occupation & Work Schedule', 'occupation')}>{ta('occupation', 3)}</Field>
         <Field label={lbl('Desired Outcome 1 — Primary Goal: why are you here?', 'primaryGoal')}>{ta('primaryGoal', 3)}</Field>
         <Field label="Desired Outcome 2">{ta('goal2', 2)}</Field>
