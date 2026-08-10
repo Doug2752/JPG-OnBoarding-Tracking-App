@@ -68,11 +68,56 @@ export default function ClientInfo({ storage, onDateStarted, onTrackingStartDate
   const usernameRef = useRef('');
 
   useEffect(() => {
-    storage.load('clientInfo', def).then(d => d && setData(d));
-    storage.save('_probe', '').then(r => {
+    Promise.all([
+      storage.load('clientInfo', def),
+      storage.save('_probe', ''),
+    ]).then(([d, r]) => {
+      if (d) setData(d);
       if (r && r.key) {
-        usernameRef.current = r.key.slice(0, r.key.indexOf('_ob6_'));
+        const username = r.key.slice(0, r.key.indexOf('_ob6_'));
+        usernameRef.current = username;
         try { localStorage.removeItem(r.key); } catch {}
+
+        console.log('[ClientInfo mount] usernameRef.current:', username);
+        console.log('[ClientInfo mount] residential fields from loaded data:', {
+          residentialStreet: d ? d.residentialStreet : undefined,
+          residentialCity:   d ? d.residentialCity   : undefined,
+          residentialState:  d ? d.residentialState  : undefined,
+          residentialZip:    d ? d.residentialZip    : undefined,
+        });
+
+        if (d && username && (d.residentialStreet || d.residentialCity || d.residentialState || d.residentialZip)) {
+          try {
+            const raw = localStorage.getItem('hub_clients');
+            console.log('[ClientInfo mount] hub_clients raw exists:', !!raw);
+            if (raw) {
+              const clients = JSON.parse(raw);
+              const match = clients.find(c =>
+                c.username && c.username.toLowerCase() === username.toLowerCase()
+              );
+              console.log('[ClientInfo mount] client match found:', !!match, match ? match.username : null);
+              if (match) {
+                console.log('[ClientInfo mount] match before write:', {
+                  residential_street: match.residential_street,
+                  residential_city:   match.residential_city,
+                  residential_state:  match.residential_state,
+                  residential_zip:    match.residential_zip,
+                });
+                match.residential_street = d.residentialStreet || '';
+                match.residential_city   = d.residentialCity   || '';
+                match.residential_state  = d.residentialState  || '';
+                match.residential_zip    = d.residentialZip    || '';
+                localStorage.setItem('hub_clients', JSON.stringify(clients));
+                console.log('[ClientInfo mount] match after write:', {
+                  residential_street: match.residential_street,
+                  residential_city:   match.residential_city,
+                  residential_state:  match.residential_state,
+                  residential_zip:    match.residential_zip,
+                });
+              }
+            }
+          } catch {}
+        }
       }
     });
   }, []);
