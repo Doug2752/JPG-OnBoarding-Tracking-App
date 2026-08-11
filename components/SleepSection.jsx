@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { GREEN } from '../utils/constants.js';
-import { formatDayDate, startPlusDay } from '../utils/date.js';
 import { S } from '../utils/styles.js';
 import {
   Field, SaveNote, RatingButtons, InputWithToggle, SleepFieldCol,
@@ -152,29 +151,6 @@ export default function SleepSection({
             Day marked complete — unlock to edit
           </div>
         )}
-        <div style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: 5, marginBottom: 12 }}>
-          {Array.from({ length: 14 }, (_, i) => i + 1).map(n => {
-            const iso = startPlusDay(startDate, n);
-            let lbl = '—';
-            if (iso) {
-              const [, m, d] = iso.split('-');
-              const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-              lbl = MON[parseInt(m, 10) - 1] + ' ' + parseInt(d, 10);
-            }
-            const active = n === selectedDay;
-            return (
-              <button key={n} onClick={() => onDaySelect(n)} style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                border: '1.5px solid #000', borderRadius: 4, padding: '5px 8px',
-                cursor: 'pointer', background: active ? GREEN : '#333', color: '#fff', lineHeight: 1.2,
-              }}>
-                <span style={{ fontSize: 11, fontWeight: 700 }}>Day {n}</span>
-                <span style={{ fontSize: 9, fontWeight: 400 }}>{lbl}</span>
-              </button>
-            );
-          })}
-        </div>
-        <div style={S.dayTagGreen}>{formatDayDate(startDate, selectedDay)}</div>
 
         <div style={{ ...rowStyle, gridTemplateColumns: '1fr 1fr' }}>
           <SleepFieldCol label={<>Bedtime{dd.bedtime && <span style={{ color: GREEN, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>} labelSm="Time you got into bed">

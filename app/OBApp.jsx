@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { makeStorage } from '../services/storage';
 import { S } from '../utils/styles';
-import { GOLD, GOLD_LIGHT, DARK, BG } from '../utils/constants';
-import { startPlusDay, todayISO } from '../utils/date';
+import { GOLD, GOLD_LIGHT, DARK, BG, MONTHS } from '../utils/constants';
+import { startPlusDay, todayISO, parseDateStr } from '../utils/date';
 import Login from '../components/Login.jsx';
 import InstructionsPanel from '../components/InstructionsPanel.jsx';
 import ClientInfo from '../components/ClientInfo.jsx';
@@ -97,6 +97,7 @@ export default function OBApp() {
   const [showInstr, setShowInstr] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [trackingStartDate, setTrackingStartDate] = useState('');
+  const [trackingAnchorDate, setTrackingAnchorDate] = useState('');
   const [clientInfoFilled, setClientInfoFilled] = useState(false);
   const [neverTwiceRead, setNeverTwiceRead] = useState(false);
   const [selectedDay, setSelectedDay] = useState(1);
@@ -139,11 +140,16 @@ export default function OBApp() {
         storage.save('instrSeen6', true);
       }
     });
-    // Cover shows once per session, only after the loads above have landed
-    // so the day count and status line render with real values.
-    Promise.all([pClient, pNever, pDays, pSubs, pSeen, pCoach, pInstr])
+    const pAnchor = storage.load('trackingAnchorDate', '').then(d => {
+      if (d) setTrackingAnchorDate(d);
+    });
+    Promise.all([pClient, pNever, pDays, pSubs, pSeen, pCoach, pInstr, pAnchor])
       .then(() => setShowCover(true));
   }, [user]);
+
+  useEffect(() => {
+    setSelectedDay(Math.min(14, dayCompleteDates.length + 1));
+  }, [dayCompleteDates]);
 
   function setNeverTwice(v) {
     setNeverTwiceRead(v);
@@ -193,6 +199,11 @@ if (n === null) return;
     setDayData(next);
     storage.saveDay(iso, next);
     storage.addToList('obt_arch', iso);
+    if (!trackingAnchorDate) {
+      const today = todayISO();
+      setTrackingAnchorDate(today);
+      storage.save('trackingAnchorDate', today);
+    }
   }
 
   function onMarkDayComplete() {
@@ -338,6 +349,18 @@ if (n === null) return;
     );
   }
 
+  const dayNumber = Math.min(14, dayCompleteDates.length + 1);
+  let calendarDate = '';
+  const anchorForDisplay = trackingAnchorDate || startDate;
+  if (anchorForDisplay) {
+    const base = parseDateStr(anchorForDisplay);
+    if (base) {
+      const d = new Date(base);
+      d.setDate(d.getDate() + dayNumber - 1);
+      calendarDate = MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+    }
+  }
+
   const dayProps = {
     storage,
     startDate,
@@ -400,22 +423,16 @@ if (n === null) return;
         showInstr={showInstr}
         onLogout={() => setUser(null)}
         firstName={user}
-        view={view}
-        setView={setView}
         daysComplete={dayCompleteDates.length}
-        dayComplete={isDayComplete(dayData)}
-        isDayMarked={dayCompleteDates.includes(isoForDay(selectedDay) || '')}
       />
 
       <BrandBar
-        neverTwiceRead={neverTwiceRead}
-        setNeverTwice={setNeverTwice}
-        user={user}
+        dayNumber={dayNumber}
+        calendarDate={calendarDate}
       />
 
       <div style={{
         background: '#111',
-        borderBottom: `2px solid ${GOLD}`,
         padding: '0 20px',
         display: 'flex',
         gap: 8,

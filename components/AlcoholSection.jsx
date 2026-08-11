@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { PURPLE } from '../utils/constants.js';
-import { formatDayDate, startPlusDay } from '../utils/date.js';
 import { S } from '../utils/styles.js';
 import { Field, SaveNote } from './Shared';
 
@@ -51,41 +50,16 @@ export default function AlcoholSection({
             Day marked complete — unlock to edit
           </div>
         )}
-        <div style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: 5, marginBottom: 12 }}>
-          {Array.from({ length: 14 }, (_, i) => i + 1).map(n => {
-            const iso = startPlusDay(startDate, n);
-            let lbl = '—';
-            if (iso) {
-              const [, m, d] = iso.split('-');
-              const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-              lbl = MON[parseInt(m, 10) - 1] + ' ' + parseInt(d, 10);
-            }
-            const active = n === selectedDay;
-            return (
-              <button key={n} onClick={() => onDaySelect(n)} style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                border: '1.5px solid #000', borderRadius: 4, padding: '5px 8px',
-                cursor: 'pointer', background: active ? PURPLE : '#333', color: '#fff', lineHeight: 1.2,
-              }}>
-                <span style={{ fontSize: 11, fontWeight: 700 }}>Day {n}</span>
-                <span style={{ fontSize: 9, fontWeight: 400 }}>{lbl}</span>
-              </button>
-            );
-          })}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={S.dayTagPurple}>{formatDayDate(startDate, selectedDay)}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input
-              type="checkbox"
-              id="alcoholNone"
-              style={{ accentColor: PURPLE }}
-              checked={dd.alcoholNone || false}
-              disabled={dayComplete}
-              onChange={e => upd('alcoholNone', e.target.checked)}
-            />
-            <label htmlFor="alcoholNone" style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}>None</label>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+          <input
+            type="checkbox"
+            id="alcoholNone"
+            style={{ accentColor: PURPLE }}
+            checked={dd.alcoholNone || false}
+            disabled={dayComplete}
+            onChange={e => upd('alcoholNone', e.target.checked)}
+          />
+          <label htmlFor="alcoholNone" style={{ fontSize: 11, color: '#888', cursor: 'pointer' }}>None</label>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
           <div style={S.field}>

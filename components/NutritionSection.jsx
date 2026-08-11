@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { BURGUNDY } from '../utils/constants.js';
-import { formatDayDate, startPlusDay } from '../utils/date.js';
 import { S } from '../utils/styles.js';
 import { SaveNote } from './Shared';
 import MealBlock from './MealBlock';
@@ -125,29 +124,6 @@ export default function NutritionSection({
             Day marked complete — unlock to edit
           </div>
         )}
-        <div style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: 5, marginBottom: 12 }}>
-          {Array.from({ length: 14 }, (_, i) => i + 1).map(n => {
-            const iso = startPlusDay(startDate, n);
-            let lbl = '—';
-            if (iso) {
-              const [, m, d] = iso.split('-');
-              const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-              lbl = MON[parseInt(m, 10) - 1] + ' ' + parseInt(d, 10);
-            }
-            const active = n === selectedDay;
-            return (
-              <button key={n} onClick={() => onDaySelect(n)} style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                border: '1.5px solid #000', borderRadius: 4, padding: '5px 8px',
-                cursor: 'pointer', background: active ? BURGUNDY : '#333', color: '#fff', lineHeight: 1.2,
-              }}>
-                <span style={{ fontSize: 11, fontWeight: 700 }}>Day {n}</span>
-                <span style={{ fontSize: 9, fontWeight: 400 }}>{lbl}</span>
-              </button>
-            );
-          })}
-        </div>
-        <div style={S.dayTagBurgundy}>{formatDayDate(startDate, selectedDay)}</div>
         <div style={{ pointerEvents: dayComplete ? 'none' : 'auto', opacity: dayComplete ? 0.7 : 1 }}>
           <MealBlock mealKey="am"
             mealLabel={<>AM{dd.am && dd.am.trim() && <span style={{ color: BURGUNDY, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}</>}
