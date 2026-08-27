@@ -376,14 +376,6 @@ if (n === null) return;
   };
 
   function renderSection() {
-    if (section === 'info') return (
-      <ClientInfo
-        storage={storage}
-        onDateStarted={v => setStartDate(v)}
-        onTrackingStartDate={v => setTrackingStartDate(v)}
-        onFillChange={v => setClientInfoFilled(v)}
-      />
-    );
     if (section === 'nutrition') return <NutritionSection {...dayProps} />;
     if (section === 'alcohol') return <AlcoholSection {...dayProps} />;
     if (section === 'fitness') return <FitnessSection {...dayProps} />;
@@ -438,7 +430,6 @@ if (n === null) return;
         height: 40,
       }}>
         {[
-          { id: 'info',      label: 'Client Info' },
           { id: 'nutrition', label: 'Nutrition' },
           { id: 'alcohol',   label: 'Alcohol' },
           { id: 'fitness',   label: 'Fitness' },
