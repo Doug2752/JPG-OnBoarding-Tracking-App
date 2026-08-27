@@ -307,8 +307,6 @@ if (n === null) return;
         user={user}
         startDate={startDate}
         dayCompleteDates={dayCompleteDates}
-        clientInfoFilled={clientInfoFilled}
-        onClientInfo={() => { setShowCover(false); setSection('info'); }}
         onEnter={() => {
           // First entry with no start date stamps today as Day 1.
           // resolvedStart is used locally because setStartDate is async.
@@ -328,7 +326,7 @@ if (n === null) return;
             if (n === 14) dayNum = 14;
           }
           setShowCover(false);
-          setSection(!clientInfoFilled && dayNum === 1 ? 'info' : 'nutrition');
+          setSection('nutrition');
         }}
       />
     );

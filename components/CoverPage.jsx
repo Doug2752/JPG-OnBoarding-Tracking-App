@@ -52,7 +52,6 @@ function pickQuote() {
 
 export default function CoverPage({
   user, startDate, dayCompleteDates = [], onEnter,
-  clientInfoFilled, onClientInfo,
 }) {
   // Pull in Rajdhani for the cover typography.
   useEffect(() => {
@@ -218,30 +217,7 @@ export default function CoverPage({
           </div>
         </div>
 
-        {/* 6 — Client Info */}
-        <button
-          onClick={onClientInfo}
-          style={{
-            background: 'transparent',
-            color: DARK,
-            fontSize: '0.85rem',
-            fontWeight: 700,
-            letterSpacing: '0.08em',
-            border: '2px solid ' + DARK,
-            borderRadius: 6,
-            padding: '10px 36px',
-            width: '100%',
-            maxWidth: 320,
-            display: 'block',
-            margin: '0 auto',
-            marginBottom: 10,
-            cursor: 'pointer',
-          }}
-        >
-          {clientInfoFilled ? 'EDIT CLIENT INFO' : 'COMPLETE CLIENT INFO'}
-        </button>
-
-        {/* 7 — Enter */}
+        {/* 6 — Enter */}
         <button
           onClick={onEnter}
           style={{
