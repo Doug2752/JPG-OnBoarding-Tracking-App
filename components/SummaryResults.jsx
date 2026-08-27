@@ -206,6 +206,55 @@ const td = {
   whiteSpace: 'nowrap',
 };
 
+// ── DRILL-DOWN STYLES ─────────────────────────────────────────
+const backBtn = {
+  background: 'transparent',
+  border: '1.5px solid ' + DARK,
+  borderRadius: 4,
+  color: DARK,
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: 0.5,
+  padding: '6px 14px',
+  cursor: 'pointer',
+  marginBottom: 12,
+  display: 'inline-block',
+};
+
+const dayRowStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '10px 14px',
+  borderBottom: '1px solid ' + BORDER,
+  cursor: 'pointer',
+  background: '#fff',
+};
+
+const detailRowStyle = {
+  display: 'flex',
+  padding: '8px 0',
+  borderBottom: '1px solid ' + BORDER,
+  fontSize: 13,
+};
+
+const detailLbl = {
+  flex: '0 0 180px',
+  fontSize: 11,
+  fontWeight: 700,
+  color: MID,
+  letterSpacing: 0.5,
+  textTransform: 'uppercase',
+};
+
+const detailVal = {
+  flex: 1,
+  fontSize: 13,
+  color: DARK,
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-word',
+};
+
 const Stat = ({ label, value, sub }) => (
   <div style={statBox}>
     <div style={statLbl}>{label}</div>
@@ -290,11 +339,28 @@ function DayGrid({ week, calEst }) {
 }
 
 // ── WEEK SECTION ──────────────────────────────────────────────
-function WeekSection({ title, bg, week, calEst }) {
+function WeekSection({ title, bg, week, calEst, onHeaderClick }) {
   const s = weekStats(week, calEst);
   return (
     <div>
-      <div style={weekHead(bg)}>{title}</div>
+      {onHeaderClick ? (
+        <button
+          onClick={onHeaderClick}
+          style={{
+            ...weekHead(bg),
+            color: '#000',
+            width: '100%',
+            textAlign: 'left',
+            cursor: 'pointer',
+            border: 'none',
+            display: 'block',
+          }}
+        >
+          {title}
+        </button>
+      ) : (
+        <div style={weekHead(bg)}>{title}</div>
+      )}
       <div style={weekCard}>
         <div style={statGrid}>
           <Stat label="AVG SLEEP HOURS" value={s.sleep} />
@@ -306,7 +372,120 @@ function WeekSection({ title, bg, week, calEst }) {
           <Stat label="AVG PIT TIME" value={s.pit} />
           <Stat label="AVG RELATIONSHIP TIME" value={s.rel} />
         </div>
-        <DayGrid week={week} calEst={calEst} />
+      </div>
+    </div>
+  );
+}
+
+// ── DAY DETAIL VIEW ───────────────────────────────────────────
+function DayDetail({ dayEntry, calEst, onBack }) {
+  if (!dayEntry) return null;
+  const { dayNum, iso, data } = dayEntry;
+  const sl = data.sleep || {};
+  const f = data.fitness || {};
+  const n = data.nutrition || {};
+  const a = data.alcohol || {};
+  const t = data.timelife || {};
+
+  const cal = dayCalories(calEst, dayNum);
+
+  let alcoholStr = '—';
+  if (a.alcoholNone) {
+    alcoholStr = 'None';
+  } else {
+    const parts = [];
+    if (a.beer && String(a.beer).trim()) parts.push('Beer: ' + a.beer);
+    if (a.mixed && String(a.mixed).trim()) parts.push('Mixed: ' + a.mixed);
+    if (a.otherAlc && String(a.otherAlc).trim()) parts.push('Other: ' + a.otherAlc);
+    if (parts.length) alcoholStr = parts.join(' · ');
+  }
+
+  const nonNegStr = (t.nonNegList || []).length > 0
+    ? (t.nonNegList || []).map(item =>
+        item.cat + (item.detail ? ': ' + item.detail : '')
+      ).join(', ')
+    : '—';
+
+  const screenSocialStr = t.screenSocialNone ? 'None'
+    : pairToHm(t.screenSocialHrs, t.screenSocialMins) || '—';
+  const screenOtherStr = t.screenOtherNone ? 'None'
+    : pairToHm(t.screenOtherHrs, t.screenOtherMins) || '—';
+  const pitStr = t.pitNone ? 'None'
+    : pairToHm(t.pitHrs, t.pitMins) || '—';
+  const relStr = t.familyTimeNone ? 'None'
+    : pairToHm(t.familyTimeHrs, t.familyTimeMins) || '—';
+
+  let actStr = '—';
+  if (f.activity && f.activity !== '') {
+    actStr = f.activity === 'Other — Write In'
+      ? (String(f.activityOther || '').trim() || 'Other')
+      : f.activity;
+    if (f.duration) actStr += ' · ' + f.duration + ' min';
+    if (f.intensity) actStr += ' · RPE ' + f.intensity;
+  }
+
+  const Row = ({ label, value }) => (
+    <div style={detailRowStyle}>
+      <div style={detailLbl}>{label}</div>
+      <div style={detailVal}>{value || '—'}</div>
+    </div>
+  );
+
+  const SectionHead = ({ label, color }) => (
+    <div style={{
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: 1.5,
+      color: color || MID,
+      textTransform: 'uppercase',
+      marginTop: 18,
+      marginBottom: 4,
+      paddingBottom: 4,
+      borderBottom: '2px solid ' + (color || MID),
+    }}>
+      {label}
+    </div>
+  );
+
+  return (
+    <div>
+      <button style={backBtn} onClick={onBack}>← BACK TO WEEK LIST</button>
+      <div style={{ fontWeight: 700, fontSize: 18, color: DARK, marginBottom: 2 }}>
+        Day {dayNum}
+      </div>
+      <div style={{ fontSize: 12, color: MID, marginBottom: 14 }}>{fmtShort(iso)}</div>
+
+      <div style={{ background: '#fff', border: '1px solid ' + BORDER, borderRadius: 4, padding: '4px 16px 16px 16px' }}>
+        <SectionHead label="Sleep" color="#2E5A4B" />
+        <Row label="Bedtime" value={sl.bedtime || '—'} />
+        <Row label="Wake Time" value={sl.wakeTime || '—'} />
+        <Row label="Hours Slept" value={sl.totalHrs ? sl.totalHrs + ' hrs' : '—'} />
+        <Row label="Sleep Score" value={sl.sleepScore ? String(sl.sleepScore) : '—'} />
+        <Row label="Sleep Quality" value={sl.quality ? sl.quality + ' / 10' : '—'} />
+        <Row label="Weight" value="—" />
+        <Row label="Energy Level" value="—" />
+        <Row label="Location" value="—" />
+
+        <SectionHead label="Fitness" color="#7A4418" />
+        <Row label="Activity" value={actStr} />
+
+        <SectionHead label="Nutrition" color="#7B3055" />
+        <Row label="Calories" value={cal > 0 ? cal.toLocaleString() + ' kcal' : '—'} />
+        <Row label="AM Meal" value={n.am || '—'} />
+        <Row label="Midday Meal" value={n.midday || '—'} />
+        <Row label="PM Meal" value={n.pm || '—'} />
+
+        <SectionHead label="Alcohol" color="#4A3575" />
+        <Row label="Alcohol" value={alcoholStr} />
+
+        <SectionHead label="Time & Life" color="#3A5A78" />
+        <Row label="Screen Time — Social" value={screenSocialStr} />
+        <Row label="Screen Time — Other" value={screenOtherStr} />
+        <Row label="PIT Time" value={pitStr} />
+        <Row label="Relationship Time" value={relStr} />
+        <Row label="Day Rating" value={t.rating ? t.rating + ' / 10' : '—'} />
+        <Row label="Tomorrow's One Thing" value={t.oneThing || '—'} />
+        <Row label="Non-Negotiables" value={nonNegStr} />
       </div>
     </div>
   );
@@ -317,6 +496,8 @@ export default function SummaryResults({ storage, startDate }) {
   const [days, setDays] = useState([]);
   const [calEst, setCalEst] = useState({});
   const [loading, setLoading] = useState(true);
+  const [drillWeek, setDrillWeek] = useState(null);
+  const [drillDay, setDrillDay] = useState(null);
 
   useEffect(() => {
     if (!startDate || !storage) {
@@ -374,19 +555,83 @@ export default function SummaryResults({ storage, startDate }) {
   const week1 = days.filter(d => d.dayNum <= 7);
   const week2 = days.filter(d => d.dayNum >= 8);
 
+  // ── Day detail view ──────────────────────────────────────────
+  if (drillDay !== null) {
+    const entry = days.find(d => d.iso === drillDay);
+    return (
+      <div style={{ padding: '0 0 24px 0' }}>
+        <DayDetail
+          dayEntry={entry}
+          calEst={calEst}
+          onBack={() => setDrillDay(null)}
+        />
+      </div>
+    );
+  }
+
+  // ── Week list view ───────────────────────────────────────────
+  if (drillWeek !== null) {
+    const weekDays = drillWeek === 1 ? week1 : week2;
+    const weekColor = drillWeek === 1 ? GOLD : STEEL;
+    const weekLabel = drillWeek === 1 ? 'WEEK 1 — DAYS 1–7' : 'WEEK 2 — DAYS 8–14';
+    return (
+      <div style={{ padding: '0 0 24px 0' }}>
+        <button
+          style={backBtn}
+          onClick={() => { setDrillWeek(null); setDrillDay(null); }}
+        >
+          ← BACK
+        </button>
+        <div style={{ ...weekHead(weekColor), marginTop: 0 }}>{weekLabel}</div>
+        <div style={{
+          background: '#fff',
+          border: '1px solid ' + BORDER,
+          borderTop: 'none',
+          borderRadius: '0 0 4px 4px',
+        }}>
+          {weekDays.map(({ dayNum, iso, data }) => {
+            const hasData = data && Object.keys(data).length > 0;
+            return (
+              <div
+                key={dayNum}
+                style={{
+                  ...dayRowStyle,
+                  opacity: hasData ? 1 : 0.45,
+                  cursor: hasData && iso ? 'pointer' : 'default',
+                }}
+                onClick={() => { if (hasData && iso) setDrillDay(iso); }}
+              >
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: DARK }}>Day {dayNum}</div>
+                  <div style={{ fontSize: 11, color: MID }}>{fmtShort(iso) || '—'}</div>
+                </div>
+                {hasData && (
+                  <div style={{ fontSize: 11, color: weekColor, fontWeight: 700 }}>VIEW →</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Default view — both weeks ────────────────────────────────
   return (
     <div>
       <WeekSection
-        title="WEEK 1 — DAYS 1–7"
+        title="VIEW DAYS 1–7 — Click to view full detail"
         bg={GOLD}
         week={week1}
         calEst={calEst}
+        onHeaderClick={() => { setDrillWeek(1); setDrillDay(null); }}
       />
       <WeekSection
-        title="WEEK 2 — DAYS 8–14"
+        title="VIEW DAYS 8–14 — Click to view full detail"
         bg={STEEL}
         week={week2}
         calEst={calEst}
+        onHeaderClick={() => { setDrillWeek(2); setDrillDay(null); }}
       />
     </div>
   );
