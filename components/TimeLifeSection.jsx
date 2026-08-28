@@ -33,7 +33,7 @@ export default function TimeLifeSection({
     screenSocialHrs: '', screenSocialMins: '', screenSocialNone: false,
     screenOtherHrs: '', screenOtherMins: '', screenOtherNone: false,
     familyTimeNone: false, familyTimeHrs: '', familyTimeMins: '',
-    pitHrs: '', pitMins: '', pitNone: false, mood: '', rating: null,
+    pitHrs: '', pitMins: '', pitNone: false, rating: null,
     addl: '',
   };
 
