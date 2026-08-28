@@ -158,7 +158,7 @@ export default function NutritionSection({
           ))}
           {snacks.length < 10 && (
             <button style={{ ...S.copyBtnBurgundy, fontSize: '11px' }} onClick={() => upd('snacks', [...snacks, ''])}>
-              + Add Another Snack
+              {snacks.length === 0 ? '+ Add Snack' : '+ Add Another Snack'}
             </button>
           )}
         </div>

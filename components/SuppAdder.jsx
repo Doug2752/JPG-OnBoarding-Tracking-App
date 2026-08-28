@@ -105,7 +105,7 @@ export default function SuppAdder({ suppLog, onUpdSupps, recentSupps, onUpdateRe
       )}
 
       <button style={{ ...S.copyBtnBurgundy, marginBottom: '6px' }} onClick={() => setOpen(!open)}>
-        {open ? '▲ Close' : '＋ Add Another Supplement'}
+        {open ? '▲ Close' : suppLog.length === 0 ? '＋ Add Supplement' : '＋ Add Another Supplement'}
       </button>
 
       {open && (
