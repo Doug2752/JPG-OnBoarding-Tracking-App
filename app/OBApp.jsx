@@ -66,8 +66,7 @@ function isDayComplete(dd) {
   }
 
   // TIME & LIFE — nonNegList must have at least
-  // one entry; screenSocial, screenOther, rating,
-  // oneThing must be filled
+  // one entry; screenSocial, screenOther, rating must be filled
   const t = dd.timelife || {};
   if (!t.nonNegList || t.nonNegList.length === 0)
     return false;
@@ -76,8 +75,6 @@ function isDayComplete(dd) {
   if (!t.screenOtherNone && !t.screenOtherHrs && !t.screenOtherMins)
     return false;
   if (!t.rating) return false;
-  if (!t.oneThing || !t.oneThing.trim())
-    return false;
 
   // WORK HOURS — required unless schedule is Retired
   const workSchedule = t.workSchedule || '';

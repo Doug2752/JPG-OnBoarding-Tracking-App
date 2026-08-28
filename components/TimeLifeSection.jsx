@@ -34,10 +34,9 @@ export default function TimeLifeSection({
     screenOtherHrs: '', screenOtherMins: '', screenOtherNone: false,
     familyTimeNone: false, familyTimeHrs: '', familyTimeMins: '',
     pitHrs: '', pitMins: '', pitNone: false, mood: '', rating: null,
-    oneThing: '', addl: '',
+    addl: '',
   };
 
-  const oneThingMissing = attempted && (!dd.oneThing || !dd.oneThing.trim());
   const nonNegMissing = attempted && (!dd.nonNegList || dd.nonNegList.length === 0);
   const screenSocialMissing = attempted && !dd.screenSocialNone && !dd.screenSocialHrs && !dd.screenSocialMins;
   const screenOtherMissing = attempted && !dd.screenOtherNone && !dd.screenOtherHrs && !dd.screenOtherMins;
@@ -71,7 +70,6 @@ export default function TimeLifeSection({
   if (screenSocialMissing) errorLines.push('Time & Life — Screen Time Social Media required');
   if (screenOtherMissing) errorLines.push('Time & Life — Screen Time Other required');
   if (ratingMissing) errorLines.push('Time & Life — PM Check-In rating required');
-  if (oneThingMissing) errorLines.push("Time & Life — Tomorrow's One Thing required");
   if (workHoursMissing) errorLines.push('Time & Life — Work Hours required');
 
   function upd(k, v) {
@@ -348,8 +346,8 @@ export default function TimeLifeSection({
           </div>
         </div>
 
-        <Field label="Mood / Stress / Notes">
-          <textarea style={S.textarea} value={dd.mood || ''} onChange={e => upd('mood', e.target.value)} />
+        <Field label="Mood / Stress / Notes / Additional Information">
+          <textarea style={S.textarea} value={dd.addl || ''} onChange={e => upd('addl', e.target.value)} />
         </Field>
 
         <div style={S.pmBlock}>
@@ -373,32 +371,6 @@ export default function TimeLifeSection({
               </div>
             </div>
           )}
-        </div>
-
-        <div style={{ ...S.oneThingBlock, borderColor: RED }}>
-          <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: RED, marginBottom: '4px', letterSpacing: '0.5px' }}>
-            TOMORROW'S ONE THING * <span style={{ fontSize: '10px', fontWeight: '400' }}>(Required)</span>{dd.oneThing && dd.oneThing.trim() && <span style={{ color: STEEL, fontSize: 13, fontWeight: 700, marginLeft: 6 }}>✓</span>}
-          </label>
-          <label style={S.labelSm}>
-            The single task that — by completing or starting it — makes everything else easier or unnecessary.
-          </label>
-          <textarea
-            style={{ ...S.textarea, border: '1px solid ' + RED, background: dayComplete ? '#f5f5f3' : '#fff9f9', minHeight: '66px' }}
-            readOnly={dayComplete}
-            placeholder="My one task for tomorrow..."
-            value={dd.oneThing || ''}
-            onChange={e => upd('oneThing', e.target.value)}
-          />
-          {oneThingMissing && (
-            <div style={{ color: RED, fontSize: '11px', marginTop: '4px' }}>
-              ⚠ Tomorrow's One Thing is required to complete this day's entry.
-            </div>
-          )}
-        </div>
-
-        <div style={S.addlWrap}>
-          <div style={S.addlLabel}>Additional Information — Day {selectedDay}</div>
-          <textarea style={S.textarea} value={dd.addl || ''} onChange={e => upd('addl', e.target.value)} />
         </div>
 
         <SaveNote show={saved} />

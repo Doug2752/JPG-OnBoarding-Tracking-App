@@ -484,7 +484,6 @@ function DayDetail({ dayEntry, calEst, onBack }) {
         <Row label="PIT Time" value={pitStr} />
         <Row label="Relationship Time" value={relStr} />
         <Row label="Day Rating" value={t.rating ? t.rating + ' / 10' : '—'} />
-        <Row label="Tomorrow's One Thing" value={t.oneThing || '—'} />
         <Row label="Non-Negotiables" value={nonNegStr} />
       </div>
     </div>
