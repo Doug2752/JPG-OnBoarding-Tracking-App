@@ -5,8 +5,8 @@
 - Name: OBT — OnBoarding & Tracking
 - Full folder: C:\JPG-PROJECTS\JPG-OnBoarding-Tracking-App
 - GitHub repo: Doug2752/JPG-OnBoarding-Tracking-App
-- Dev port (master): 5175 (npm run dev)
-- Dev port (Chris-Mods): 5178 (npm run dev -- --port 5178)
+- Dev port (master): 5175 (npm run dev) — ARCHIVED
+- Dev port (Chris-Mods): 5178 (npm run dev -- --port 5178) — ACTIVE
 - Purpose: 14-day client onboarding and tracking baseline app. Establishes habits, biometrics, and baseline data before program entry. First app in the client journey.
 - Architecture: React + Vite, Class 3 modular structure, localStorage (pre-Supabase).
 - Migration pilot: OBT is the pilot app for the terminal-to-Claude-Desktop migration. Workflow issues get resolved here first before HUB, PIT, or DOP are touched.
@@ -15,9 +15,8 @@
 
 ## BRANCH STRUCTURE
 
-- **master** — protected. All prior builds intact. Runs at localhost:5175. Never modified during Chris-Mods build work.
-- **Chris-Mods** — active redesign branch. Created from current master 08/11/2026. Runs at localhost:5178. Both branches can run simultaneously.
-- To switch: stop dev server → switch branch in GitHub Desktop → restart with correct port command.
+- **master** — ARCHIVED. All prior builds intact. Runs at localhost:5175. No further development.
+- **Chris-Mods** — ACTIVE. Only branch receiving development. Phase One complete as of 08/27/2026. Runs at localhost:5178.
 - Never merge Chris-Mods to master without explicit decision from Doug.
 
 ---
@@ -30,9 +29,10 @@
 4. One task at a time. Logic changes stay isolated from styling from copy. Do not batch across concern types in a single pass. Related fixes within the same concern type may be grouped.
 5. Plan mode always on. Every action must be reviewed and approved before it executes. Auto-accept mode is never enabled.
 6. GitHub Desktop is the only trusted push mechanism. Never trust terminal or Desktop push output as confirmation. After any commit, remind Doug to verify in GitHub Desktop (Push origin button, commits waiting to push count).
-7. Browser-verify before commit. Every feature must be verified in Firefox before it is committed. Master verifies at localhost:5175. Chris-Mods verifies at localhost:5178. Code-verified is not the same as browser-verified.
+7. Browser-verify before commit. Every feature must be verified in Firefox before it is committed. Chris-Mods verifies at localhost:5178. Code-verified is not the same as browser-verified.
 8. Never redraft finalized copy from scratch. Always retrieve the actual original live text before editing. Rewriting from memory without retrieving the source is a trust violation.
 9. Never touch .md files in the app folder during code builds.
+10. Always state branch and repo at the top of every Claude Code prompt.
 
 ---
 
@@ -49,7 +49,6 @@
 - **Firefox** — code/build testing and DevTools work. Default browser for all OBT verification.
 - **Brave** — reserved for Doug's daily DOP/PIT entries only. Never used for OBT testing.
 - **Edge** — Doug's browser for Claude.ai chat sessions.
-- Master server: npm run dev → localhost:5175
 - Chris-Mods server: npm run dev -- --port 5178 → localhost:5178
 - Server mode: always confirm dev server port before build work. Never run preview server (localhost:4173) during active development.
 
@@ -57,11 +56,11 @@
 
 ## FILE EXTENSIONS (updated 08/11/2026)
 
-All component files are .jsx (renamed from .js during Chris-Mods session 08/11/2026). This applies to both branches.
+All component files are .jsx (renamed from .js during Chris-Mods session 08/11/2026).
 
 - app/OBApp.jsx
-- components/*.jsx (all 14 components)
-- main.jsx (root entry point — renamed from main.js)
+- components/*.jsx (all components)
+- main.jsx (root entry point)
 - vite.config.js (unchanged extension)
 - utils/.js and services/.js (unchanged)
 
@@ -73,101 +72,91 @@ Each section has a dedicated color constant used for banners, checkmarks, day ta
 
 | Section | Color | Hex |
 |---|---|---|
-| Client Info | GOLD | #B8860B |
 | Nutrition (01) | BURGUNDY | #7B3055 |
 | Alcohol (02) | PURPLE | #4A3575 |
 | Fitness (03) | ORANGE | #7A4418 |
 | Sleep (04) | GREEN | #2E5A4B |
 | Time & Life (05) | STEEL | #3A5A78 |
 
-GOLD and its variants (GOLD_DARK, GOLD_LIGHT) are also used in SummaryResults headers, Header pill, ArchiveView active tab, ReflectSection, and the Mark Day Complete button.
+Note: Client Info color row removed — Client Info tab no longer exists in Chris-Mods.
+
+GOLD and its variants (GOLD_DARK, GOLD_LIGHT) are also used in SummaryResults headers, Header pill, ReflectSection, and the Mark Day Complete button.
 
 Color system is FULLY CONSTANTS-ONLY as of 07/29/2026. All component files and styles.js use named constants. No hardcoded brand hex values remain anywhere in the codebase.
 
 ---
 
-## CURRENT BUILD STATE — MASTER BRANCH (confirmed in source 08/10/2026)
+## CURRENT BUILD STATE — MASTER BRANCH (ARCHIVED)
 
-### Built and verified
-
-**Residential and mailing address fields (BUILT 08/10/2026):**
-- residentialStreet, residentialCity, residentialState, residentialZip
-- mailingStreet, mailingCity, mailingState, mailingZip
-- mailingSameAsResidential checkbox — collapses mailing fields, auto-copies residential values
-- Residential address writes back to hub_clients on mount and on field change via RESIDENTIAL_TO_HUB map, probe pattern
-- Address fields optional — NOT in CI_REQUIRED
-
-**Form field order:** Full Name + Preferred Name, Addresses, Phone + Email, Date Started + Tracking Start Date, Occupation+
-
-**trackingStartDate field (BUILT 08/08/2026):**
-- Required field — added to CI_REQUIRED (13 fields total)
-- Full date validation, auto-format, gold checkmark, RED border
-- hub_clients write-back via username probe pattern
-- trackingStartDate state in OBApp
-
-**Other built and verified:**
-- OBT operability review COMPLETE (07/29/2026)
-- Bug fixes (07/29/2026): sleep score clear-field, sleepMissing timesUpIsZero exemption, duration field label
-- Submit to Coach (07/29/2026): payload retained as Supabase anchor (TODO comment). Backend = placeholder.
-- Section color pass COMPLETE (07/25/2026, finalized 07/29/2026)
-- Fitness duration split (07/28/2026): durationHrs + durationMins
-- BrandBar tier patch (07/26/2026): reads _ob6_tier and _ob6_clientInfo.fullName. (Master branch only — removed in Chris-Mods.)
-- Archive row navigation, Submit to Coach strip, selectedDay globally shared, 30-day cycle architecture, Vitest 9 tests — all built and verified on master
-
-### Known remaining dead code (low priority — do not touch)
-- Items 57, 58, 59 — see Code Logic v2.5 Section K
-- OBApp.jsx stale comment ("eleven required fields")
-
-### Pending natural browser verification (master)
-- OBT supplements prior-day button: enter supps Day 1 → navigate Day 2 → confirm button gold → click → confirm list copies → navigate away/back → confirm persistence
-- PIT One Thing check-off: tick One Thing → confirm First Action Step text appended in parentheses and field cleared
-
-### Not yet built (master)
-- Age (number input) and Birth Month (dropdown, January–December) fields — add to ClientInfo under Full Name + Preferred Name row. Optional, NOT added to CI_REQUIRED.
-- Instructions panel copy pass — ALL HELD as one combined pass (do not split)
-- Streak badge logic — confirmed absent, not yet built
-
-### Post-Supabase (do not build)
-- Streak persistence, coach-facing archive, legal agreement gating, coach data transmission backend, SMS reminder, welcome name
-- Tier value written by graduation/period close logic (Phase 2)
-- Login "Stay logged in" (Item 41)
-- Nutrition AI calorie estimate (Item 42)
+Master branch is archived as of 08/27/2026. No further development. Reference Code Logic v2.6 for full master branch build history.
 
 ---
 
-## CURRENT BUILD STATE — CHRIS-MODS BRANCH (committed 08/11/2026)
+## CURRENT BUILD STATE — CHRIS-MODS BRANCH (Phase One Complete 08/27/2026)
 
-### Built and committed
+### Built and committed — 08/11/2026
 
-**JSX migration:**
-- All .js files renamed .jsx. All imports updated. main.jsx at root. vite.config.js updated.
+**JSX migration:** All .js files renamed .jsx. All imports updated. main.jsx at root. vite.config.js updated.
 
-**Header redesigned:**
-- Left: "Day N of 14" gold text
-- Right: Set-Up and Instructions | username | logout — all right-justified gold. logout lowercase. No bottom border on bar.
-- Removed: logo, Today tab, Archive tab, NEVER TWICE banner, tier patch, tier text
+**Header redesigned:** Left: "Day N of 14" gold text. Right: Set-Up and Instructions | username | logout — all right-justified gold. logout lowercase. No bottom border on bar. Removed: logo, Today tab, Archive tab, NEVER TWICE banner, tier patch, tier text.
 
-**BrandBar redesigned (hero section):**
-- Left: DAY N in large bold text
-- Right (stacked, vertically centered): "Onboarding & Tracking" above calendar date — both substantially smaller than DAY N
-- No logo, no NEVER TWICE, no tier patch, no border lines
+**BrandBar redesigned (hero section):** Left: DAY N in large bold text. Right (stacked): "Onboarding & Tracking" above calendar date — both substantially smaller than DAY N. No logo, no NEVER TWICE, no tier patch, no border lines.
 
-**trackingAnchorDate logic:**
-- New localStorage key: trackingAnchorDate
-- Written automatically on first real section save (saveDayData) if not already set — never overwritten after first write
-- Day number = Math.max(1, dayCompleteDates.length + 1)
-- Calendar date = trackingAnchorDate + (dayNumber - 1) days
-- "Day N of 14" counter minimum = 1, never 0
+**trackingAnchorDate logic:** New localStorage key. Written automatically on first real section save (saveDayData) if not already set — never overwritten. Day number = Math.max(1, dayCompleteDates.length + 1). Calendar date = trackingAnchorDate + (dayNumber - 1) days.
 
-**14-day date button row removed from all 5 sections.**
-**Day pill label removed from all 5 sections.**
-**Tab row unchanged — all 8 tabs stay exactly as-is.**
-**Archive dormant — Today/Archive toggle removed. Code remains but no UI path to reach it.**
+**14-day date button row removed from all 5 sections. Day pill label removed from all 5 sections. Archive dormant — no UI path. Today/Archive toggle removed.**
 
-### Chris-Mods backlog (not yet built)
-- Summary Results drill-down — week-grouped prior day access (Week 1 gold header, Week 2 blue header, list of completed days, full read-only scrollable day view, back button)
-- Client Info isolated as own page — currently still a tab
-- Section content simplification pass — requires visual walkthrough with Doug before any code
+### Built and committed — 08/27/2026
+
+**CoverPage.jsx:**
+- clientInfoFilled and onClientInfo props removed
+- Client Info button removed entirely
+- Only START TODAY'S ENTRY button remains
+
+**OBApp.jsx:**
+- Client Info tab removed from tabs array (7 tabs remain: Nutrition, Alcohol, Fitness, Sleep, Time & Life, Reflection, Summary Results)
+- renderSection 'info' case removed
+- ClientInfo import RETAINED — post-Supabase integration anchor. Do not remove.
+- onEnter handler always routes to 'nutrition' — no conditional branch
+- oneThing removed from isDayComplete check and comment
+
+**SummaryResults.jsx — drill-down built:**
+- drillWeek state (null | 1 | 2) and drillDay state (null | ISO string) added
+- Week 1 header button: "VIEW DAYS 1–7 — Click to view full detail" (GOLD background)
+- Week 2 header button: "VIEW DAYS 8–14 — Click to view full detail" (STEEL background)
+- Week list view: back button, filtered day rows by week, clickable rows set drillDay
+- DayDetail view: back to week list, read-only display of all recorded fields for that day
+- DayGrid removed from both WeekSection blocks
+- Tomorrow's One Thing row removed from DayDetail
+
+**NutritionSection.jsx:**
+- Snack button label conditional: "Add Snack" when snacks.length === 0, "Add Another Snack" when 1 or more
+
+**SuppAdder.jsx:**
+- Supplement button label conditional: "Add Supplement" when suppLog.length === 0, "Add Another Supplement" when 1 or more
+
+**TimeLifeSection.jsx:**
+- Tomorrow's One Thing block removed entirely (label, textarea, oneThingMissing validation, error push, oneThingBlock style reference)
+- oneThing key removed from default shape
+- mood key removed from default shape (was dead — no UI read/write)
+- Standalone Additional Information textarea removed
+- Mood / Stress / Notes label updated to "Mood / Stress / Notes / Additional Information"
+- addl key now serves as combined Mood/Notes/Additional Information field
+
+**InstructionsPanel.jsx:**
+- Client Information section removed
+- Section 05 Tomorrow's One Thing paragraph removed — ends at "Complete the PM Check-In by rating your day 1 to 10."
+- Snack button reference updated to "Add Snack or Add Another Snack"
+
+### Chris-Mods backlog (Phase Two — not yet built)
+- OBT Guided version — design pass required first
+- OBT Structured version — design pass required first
+
+### Post-Supabase (do not build)
+- Streak persistence, coach-facing archive, legal agreement gating, coach data transmission backend, SMS reminder, welcome name from registered profile
+- Tier value written by graduation/period close logic
+- Residential address cross-origin sync
+- ClientInfo full integration (tab, UI path, data pre-population from Supabase)
 
 ---
 
@@ -182,10 +171,12 @@ Color system is FULLY CONSTANTS-ONLY as of 07/29/2026. All component files and s
 - Day keys: day_{YYYY-MM-DD}
 - dayComplete prop = explicit mark (dayCompleteDates.includes()), NOT the data gate (isDayComplete)
 - isDayComplete(dayData) — module-level pure function. Must remain module-level, no hooks, no dependencies.
-- CI_REQUIRED = 13 fields: fullName, dateStarted, trackingStartDate, phone, email, occupation, primaryGoal, nonNeg, hobbies, fitnessActivity, eatingHabits, sleepPatterns, injuries
+- timelife default shape (Chris-Mods): screenSocialHrs, screenSocialMins, screenSocialNone, screenOtherHrs, screenOtherMins, screenOtherNone, workSchedule, workHoursNum, nonNeg: [], pmRating, relationshipTime, pitTime, familyTimeNone, addl. oneThing and mood REMOVED 08/27/2026.
+- addl in TimeLifeSection serves as combined Mood / Stress / Notes / Additional Information field.
+- ClientInfo import retained in OBApp.jsx — post-Supabase anchor. Do not remove.
 - familyTimeNone not in day default shape — handled inline via || false
-- _ob6_tier and _ob6_clientInfo read directly by BrandBar via localStorage.getItem — not in storage layer (master branch only)
-- hub_clients write-back (master): tracking_start_date AND residential address fields written by ClientInfo.jsx. Cross-origin limitation applies — only works when apps share same origin. Resolved post-Supabase.
+- trackingAnchorDate — Chris-Mods only. Written on first real section save. Never overwritten.
+- hub_clients write-back: cross-origin limitation — resolved post-Supabase only
 
 ---
 
@@ -194,7 +185,7 @@ Color system is FULLY CONSTANTS-ONLY as of 07/29/2026. All component files and s
 - Doug / JPG2026
 - Test / JPG2026
 - Login is case-insensitive
-- Both master (5175) and Chris-Mods (5178) use same credentials
+- Chris-Mods: localhost:5178
 
 ---
 
@@ -203,9 +194,9 @@ Color system is FULLY CONSTANTS-ONLY as of 07/29/2026. All component files and s
 Do not reproduce these documents — reference by name only.
 
 - Core Standard v1.8 — JPG governance foundation
-- OBT Code Logic v2.5 — full app source of truth (updated 08/11/2026)
-- Troubleshooting Guide v7.2 — plain-language app behavior reference (updated 08/16/2026)
-- Session Handoff Primer — uploaded to each new chat session
+- OBT Code Logic v2.6 — full app source of truth (updated 08/27/2026)
+- Troubleshooting Guide v8.1 — plain-language app behavior reference (updated 08/27/2026)
+- Session Handoff Primer v7.4 — uploaded to each new chat session
 
 ---
 
@@ -219,6 +210,6 @@ Wait for Claude Code to confirm it has read this file and understood the rules. 
 
 ---
 
-*CLAUDE.md v1.5 | JPG-OnBoarding-Tracking-App | 08/16/2026*
+*CLAUDE.md v1.6 | JPG-OnBoarding-Tracking-App | 08/27/2026*
 
-Changes v1.4 → v1.5: Troubleshooting Guide reference updated to v7.2. Pending browser verification section added (supplements prior-day button, PIT One Thing check-off). Post-Supabase items confirmed. No structural changes to codebase this session.
+Changes v1.5 → v1.6: Master branch marked archived. Chris-Mods marked as sole active branch. Client Info tab removed from tabs array and renderSection — ClientInfo import retained as post-Supabase anchor. CoverPage client info props removed. oneThing and mood keys removed from timelife default shape. addl repurposed as combined Mood/Notes/Additional Information field. SummaryResults drill-down documented (drillWeek, drillDay state, DayDetail view, DayGrid removed). NutritionSection and SuppAdder conditional button labels documented. InstructionsPanel updates documented. Section color table updated — Client Info row removed. Phase One complete noted. Backlog updated to Phase Two only.
